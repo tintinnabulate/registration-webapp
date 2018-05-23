@@ -1,7 +1,12 @@
 {
-    "SMTPUsername": "sender@mydomain.com",
-    "SMTPPassword": "mypassword",
-    "SMTPServer": "smtp.mydomain.com",
-    "SiteDomain": "mydomain.com",
-    "SiteName": "MyDomain"
+    "SMTPUsername":         "sender@mydomain.com",
+    "SMTPPassword":         "mypassword",
+    "SMTPServer":           "smtp.mydomain.com",
+    "SiteDomain":           "mydomain.com",
+    "SiteName":             "MyDomain",
+    "CSRF_Key":             "my-random-32-bytes",
+    "IsLiveSite":  	        true,
+    "SignupURL":            "my-signup-verifier.com/signup",
+    "StripePublishableKey": "pk_test_foo",
+    "StripeSecretKey":      "sk_test_foo"
 }

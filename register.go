@@ -1,197 +1,231 @@
 package main
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"log"
+	"html/template"
 	"net/http"
 	"os"
+	"time"
+
+	"github.com/gorilla/csrf"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
+	"github.com/stripe/stripe-go"
+	stripeClient "github.com/stripe/stripe-go/client"
 
 	"golang.org/x/net/context"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/mail"
+
+	"google.golang.org/appengine/urlfetch"
 )
 
-func Monkeys(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	params := mux.Vars(req)
-	fmt.Fprintf(w, "banana: %s", params["poop"])
+func CreateHandler(f ContextHandlerToHandlerHOF) *mux.Router {
+	appRouter := mux.NewRouter()
+	appRouter.HandleFunc("/signup", f(GetSignupHandler)).Methods("GET")
+	appRouter.HandleFunc("/signup", f(PostSignupHandler)).Methods("POST")
+	appRouter.HandleFunc("/register", f(GetRegistrationFormHandler)).Methods("GET")
+	appRouter.HandleFunc("/register", f(PostRegistrationFormHandler)).Methods("POST")
+	appRouter.HandleFunc("/charge", f(PostRegistrationFormPaymentHandler)).Methods("POST")
+	appRouter.HandleFunc("/new_convention", f(GetNewConventionHandlerForm)).Methods("GET")
+	appRouter.HandleFunc("/new_convention", f(PostNewConventionHandlerForm)).Methods("POST")
+
+	return appRouter
 }
 
-func VerifyCodeEndpoint(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	params := mux.Vars(req)
-	w.Header().Set("Content-Type", "application/json")
-	var verification Verification
-	verification.Code = params["code"]
-	err := MarkVerified(ctx, verification.Code)
-	verification.Success = true
-	verification.Note = ""
+func GetSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	templates.ExecuteTemplate(w,
+		"signup_form.tmpl",
+		map[string]interface{}{
+			csrf.TemplateTag: csrf.TemplateField(req),
+		})
+}
+
+func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	err := req.ParseForm()
+	CheckErr(err)
+	var signup Signup
+	err = schemaDecoder.Decode(&signup, req.PostForm)
+	client := urlfetch.Client(ctx)
+	resp, err := client.Post(fmt.Sprintf("%s/%s", config.SignupURL, signup.Email_Address), "", nil)
 	if err != nil {
-		verification.Success = false
-		verification.Note = err.Error()
-	}
-	json.NewEncoder(w).Encode(verification)
-}
-
-func ComposeVerificationEmail(address, code string) *mail.Message {
-	return &mail.Message{
-		Sender:  "[DONUT REPLY] Admin <donotreply@seraphic-lock-199316.appspotmail.com>",
-		To:      []string{address},
-		Subject: "Your verification code",
-		Body:    fmt.Sprintf(emailBody, code),
-	}
-}
-
-func EmailVerificationCode(ctx context.Context, address, code string) error {
-	msg := ComposeVerificationEmail(address, code)
-	return mail.Send(ctx, msg)
-}
-
-func CreateSignupEndpoint(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	params := mux.Vars(req)
-	w.Header().Set("Content-Type", "application/json")
-	var email Email
-	email.Address = params["email"]
-	code := ""
-	for {
-		code = randToken()
-		codeIsOkayToUse, err := IsCodeFree(ctx, code)
-		checkErr(err)
-		if codeIsOkayToUse {
-			break
-		}
-	}
-	if err := EmailVerificationCode(ctx, email.Address, code); err != nil {
-		email.Success = false
-		email.Note = err.Error()
-		json.NewEncoder(w).Encode(email)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	_, err := AddSignup(ctx, email.Address, code)
-	if err != nil {
-		email.Success = false
-		email.Note = err.Error()
-	} else {
-		email.Success = true
-	}
-	json.NewEncoder(w).Encode(email)
+	fmt.Fprintf(w, "HTTP GET returned status %v", resp.Status)
 }
 
-func CheckSignupEndpoint(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	params := mux.Vars(req)
-	w.Header().Set("Content-Type", "application/json")
-	var email Email
-	email.Address = params["email"]
-	exists, err := CheckSignup(ctx, email.Address)
+func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	t, err := template.New("registration_form.tmpl").Funcs(funcMap).ParseFiles("registration_form.tmpl")
+	CheckErr(err)
+	t.ExecuteTemplate(w,
+		"registration_form.tmpl",
+		map[string]interface{}{
+			"Countries":      Countries,
+			"Fellowships":    Fellowships,
+			csrf.TemplateTag: csrf.TemplateField(req),
+		})
+}
+
+func PostRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	var regform RegistrationForm
+	var signup Signup
+	err := req.ParseForm()
+	CheckErr(err)
+	err = schemaDecoder.Decode(&regform, req.PostForm)
+	CheckErr(err)
+	client := urlfetch.Client(ctx)
+	resp, err := client.Get(fmt.Sprintf("%s/%s", config.SignupURL, regform.Email_Address))
+	CheckErr(err)
+	json.NewDecoder(resp.Body).Decode(&signup)
+	if signup.Success {
+		regform.Creation_Date = time.Now()
+		_, err := StashRegistrationForm(ctx, &regform)
+		CheckErr(err)
+		showPaymentForm(ctx, w, req, &regform)
+	} else {
+		fmt.Fprint(w, "I'm sorry, you need to sign up first. Go to /signup")
+	}
+}
+
+func showPaymentForm(ctx context.Context, w http.ResponseWriter, req *http.Request, regform *RegistrationForm) {
+	tmpl := templates.Lookup("stripe.tmpl")
+	tmpl.Execute(w,
+		map[string]interface{}{
+			"Key":            publishableKey,
+			csrf.TemplateTag: csrf.TemplateField(req),
+			"Email":          regform.Email_Address,
+		})
+}
+
+func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	emailAddress := r.Form.Get("stripeEmail")
+
+	customerParams := &stripe.CustomerParams{Email: emailAddress}
+	customerParams.SetSource(r.Form.Get("stripeToken"))
+
+	httpClient := urlfetch.Client(ctx)
+	sc := stripeClient.New(stripe.Key, stripe.NewBackends(httpClient))
+
+	newCustomer, err := sc.Customers.New(customerParams)
 	if err != nil {
-		email.Success = false
-		email.Note = err.Error()
-		json.NewEncoder(w).Encode(email)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if !exists {
-		email.Success = false
-	} else {
-		email.Success = true
+
+	chargeParams := &stripe.ChargeParams{
+		Amount:   500,
+		Currency: "usd",
+		Desc:     "Sample Charge",
+		Customer: newCustomer.ID,
 	}
-	json.NewEncoder(w).Encode(email)
+	charge, err := sc.Charges.New(chargeParams)
+	if err != nil {
+		fmt.Fprintf(w, "Could not process payment: %v", err)
+		return
+	}
+	regform, err := GetRegistrationForm(ctx, emailAddress)
+	CheckErr(err)
+	user := &User{
+		Creation_Date:      time.Now(),
+		First_Name:         regform.First_Name,
+		Last_Name:          regform.Last_Name,
+		Email_Address:      regform.Email_Address,
+		Password:           regform.Password,
+		Country:            regform.Country,
+		City:               regform.City,
+		Sobriety_Date:      regform.Sobriety_Date,
+		Member_Of:          regform.Member_Of,
+		Stripe_Customer_ID: charge.Customer.ID}
+	_, err = AddUser(ctx, user)
+	CheckErr(err)
+	fmt.Fprintf(w, "Completed payment! Well not really... this was a test :-P")
+}
+
+func GetNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	t, err := template.New("new_convention.tmpl").Funcs(funcMap).ParseFiles("new_convention.tmpl")
+	CheckErr(err)
+	t.ExecuteTemplate(w,
+		"new_convention.tmpl",
+		map[string]interface{}{
+			"Countries":      EURYPAA_Countries,
+			csrf.TemplateTag: csrf.TemplateField(req),
+		})
+}
+
+func PostNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	var convention Convention
+	err := req.ParseForm()
+	CheckErr(err)
+	err = schemaDecoder.Decode(&convention, req.PostForm)
+	CheckErr(err)
+	convention.Creation_Date = time.Now()
+	_, err = CreateConvention(ctx, &convention)
+	CheckErr(err)
+	fmt.Fprint(w, "Convention created")
+}
+
+type Signup struct {
+	Email_Address string `json:"address"`
+	Success       bool   `json:"success"`
+	Note          string `json:"note"`
 }
 
 type configuration struct {
-	SiteName     string
-	SiteDomain   string
-	SMTPServer   string
-	SMTPUsername string
-	SMTPPassword string
-	ProjectID    string
-}
-
-type Email struct {
-	Address string `json:"address"`
-	Success bool   `json:"success"`
-	Note    string `json:"note"`
-}
-
-type Verification struct {
-	Code    string `json:"code"`
-	Success bool   `json:success"`
-	Note    string `json:note"`
+	SiteName             string
+	SiteDomain           string
+	SMTPServer           string
+	SMTPUsername         string
+	SMTPPassword         string
+	ProjectID            string
+	CSRF_Key             string
+	IsLiveSite           bool
+	SignupURL            string
+	StripePublishableKey string
+	StripeSecretKey      string
 }
 
 var (
-	config    configuration
-	appRouter mux.Router
+	config         configuration
+	schemaDecoder  = schema.NewDecoder()
+	funcMap        = template.FuncMap{"inc": func(i int) int { return i + 1 }}
+	publishableKey string
+	templates      = template.Must(template.ParseGlob("views/*.tmpl"))
 )
 
-const emailBody = `
-Code: %s
-
-Yours randomly,
-Bert.
-`
-
-func checkErr(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func LoadConfig() {
+func ConfigInit() {
 	file, _ := os.Open("config.json")
 	defer file.Close()
 	decoder := json.NewDecoder(file)
 	config = configuration{}
 	err := decoder.Decode(&config)
-	checkErr(err)
+	CheckErr(err)
 }
 
-func randToken() string {
-	b := make([]byte, 4)
-	rand.Read(b)
-	return fmt.Sprintf("%x", b)
+func SchemaDecoderInit() {
+	schemaDecoder.RegisterConverter(time.Time{}, TimeConverter)
+	schemaDecoder.IgnoreUnknownKeys(true)
 }
 
-/*
-Standard http handler
-*/
-type HandlerFunc func(w http.ResponseWriter, r *http.Request)
-
-/*
-Our context.Context http handler
-*/
-type ContextHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request)
-
-/*
-  Higher order function for changing a HandlerFunc to a ContextHandlerFunc,
-  usually creating the context.Context along the way.
-*/
-type ContextHandlerToHandlerHOF func(f ContextHandlerFunc) HandlerFunc
-
-/*
-Creates a new Context and uses it when calling f
-*/
-func ContextHanderToHttpHandler(f ContextHandlerFunc) HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := appengine.NewContext(r)
-		f(ctx, w, r)
-	}
+func RouterInit() {
+	// TODO: https://youtu.be/xyDkyFjzFVc?t=1308
+	router := CreateHandler(ContextHandlerToHttpHandler)
+	csrfProtector := csrf.Protect(
+		[]byte(config.CSRF_Key),
+		csrf.Secure(config.IsLiveSite))
+	csrfProtectedRouter := csrfProtector(router)
+	http.Handle("/", csrfProtectedRouter)
 }
 
-/*
-Creates my mux.Router. Uses f to convert ContextHandlerFunc's to HandlerFuncs.
-*/
-func CreateHandler(f ContextHandlerToHandlerHOF) *mux.Router {
-	appRouter := mux.NewRouter()
-	appRouter.HandleFunc("/verify/{code}", f(VerifyCodeEndpoint)).Methods("GET")
-	appRouter.HandleFunc("/signup/{email}", f(CreateSignupEndpoint)).Methods("POST")
-	appRouter.HandleFunc("/signup/{email}", f(CheckSignupEndpoint)).Methods("GET")
-	appRouter.HandleFunc("/monkeys/{poop}", f(Monkeys)).Methods("GET")
-
-	return appRouter
+func StripeInit() {
+	publishableKey = config.StripePublishableKey
+	stripe.Key = config.StripeSecretKey
 }
 
 func init() {
-	LoadConfig()
-	http.Handle("/", CreateHandler(ContextHanderToHttpHandler))
+	ConfigInit()
+	SchemaDecoderInit()
+	RouterInit()
+	StripeInit()
 }

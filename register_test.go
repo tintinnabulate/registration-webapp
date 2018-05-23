@@ -9,8 +9,8 @@ import (
 	c "github.com/smartystreets/goconvey/convey"
 
 	"golang.org/x/net/context"
-	//"google.golang.org/appengine"
 	"google.golang.org/appengine/aetest"
+	//"google.golang.org/appengine"
 )
 
 func CreateContextHandlerToHttpHandler(ctx context.Context) ContextHandlerToHandlerHOF {
@@ -21,100 +21,57 @@ func CreateContextHandlerToHttpHandler(ctx context.Context) ContextHandlerToHand
 	}
 }
 
-func TestMonkeys(t *testing.T) {
-	LoadConfig()
+func TestPostRegistrationHandler(t *testing.T) {
+	ConfigInit()
 
 	ctx, _, _ := aetest.NewContext()
 
-	c.Convey("When you want to do foo", t, func() {
+	c.Convey("When user tries to register with an unverified email address", t, func() {
 		r := CreateHandler(CreateContextHandlerToHttpHandler(ctx))
 		record := httptest.NewRecorder()
 
-		req, err := http.NewRequest("GET", "/monkeys/dong", nil)
+		req, err := http.NewRequest("POST", "/register", nil)
 		c.So(err, c.ShouldBeNil)
 
-		c.Convey("It should return a 200 response", func() {
+		c.Convey("It should return a 200 response, but suggest /signup", func() {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, 200)
-			c.So(fmt.Sprint(record.Body), c.ShouldEqual, "banana: dong")
+			c.So(fmt.Sprint(record.Body), c.ShouldEqual, "Please sign up first /signup")
 		})
 	})
 }
 
-func TestCreateSignupEndpoint(t *testing.T) {
-	LoadConfig()
+/*
+func TestGetRegistrationHandler(t *testing.T) {
+	c.Convey("If you do not sign up", t, func() {
 
-	ctx, _, _ := aetest.NewContext()
+		c.Convey("...then register", func() {
 
-	c.Convey("When you want to do foo", t, func() {
-		r := CreateHandler(CreateContextHandlerToHttpHandler(ctx))
-		record := httptest.NewRecorder()
+			c.Convey("it should return 200 response and suggest /signup", nil)
 
-		req, err := http.NewRequest("POST", "/signup/lolz", nil)
-		c.So(err, c.ShouldBeNil)
-
-		c.Convey("It should return a 200 response", func() {
-			r.ServeHTTP(record, req)
-			c.So(record.Code, c.ShouldEqual, 200)
-			c.So(fmt.Sprint(record.Body), c.ShouldEqual, `{"address":"lolz","success":true,"note":""}
-`)
 		})
+
 	})
-}
 
-func TestCreateAndCheckSignupEndpoint(t *testing.T) {
-	LoadConfig()
+	c.Convey("If you sign up first", t, func() {
 
-	ctx, _, _ := aetest.NewContext()
+		c.Convey("...but forget to verify", func() {
 
-	c.Convey("When you want to do foo", t, func() {
-		r := CreateHandler(CreateContextHandlerToHttpHandler(ctx))
-		record := httptest.NewRecorder()
-		record2 := httptest.NewRecorder()
+			c.Convey("it should return 200 response and suggest /signup", nil)
 
-		req, err := http.NewRequest("POST", "/signup/lolz", nil)
-		c.So(err, c.ShouldBeNil)
+		})
 
-		c.Convey("It should return a 200 response", func() {
+		c.Convey("...and verify", func() {
 
-			r.ServeHTTP(record, req)
-			c.So(record.Code, c.ShouldEqual, 200)
-			c.So(fmt.Sprint(record.Body), c.ShouldEqual, `{"address":"lolz","success":true,"note":""}
-`)
+			c.Convey("...then register", func() {
 
-			req2, err2 := http.NewRequest("GET", "/signup/lolz", nil)
-			c.So(err2, c.ShouldBeNil)
+				c.Convey("it should return 200 response and succeed", nil)
 
-			c.Convey("It should return a 200 response", func() {
-				r.ServeHTTP(record2, req2)
-				c.So(record2.Code, c.ShouldEqual, 200)
-				c.So(fmt.Sprint(record2.Body), c.ShouldEqual, `{"address":"lolz","success":false,"note":""}
-`)
 			})
+
 		})
 
 	})
+
 }
-
-func TestVerifySignupEndpoint(t *testing.T) {
-	LoadConfig()
-
-	ctx, _, _ := aetest.NewContext()
-
-	c.Convey("When you want to do foo", t, func() {
-		r := CreateHandler(CreateContextHandlerToHttpHandler(ctx))
-		record := httptest.NewRecorder()
-
-		req, err := http.NewRequest("GET", "/verify/lolz", nil)
-		c.So(err, c.ShouldBeNil)
-
-		c.Convey("It should return a 200 response", func() {
-			r.ServeHTTP(record, req)
-			c.So(record.Code, c.ShouldEqual, 200)
-			c.So(fmt.Sprint(record.Body), c.ShouldEqual, `{"code":"lolz","Success":false,"Note":"no such verification code"}
-`)
-		})
-	})
-}
-
-// TODO test adding a valid signup and look for that code
+*/
