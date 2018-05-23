@@ -33,8 +33,8 @@ func CreateHandler(f ContextHandlerToHandlerHOF) *mux.Router {
 }
 
 func GetSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	templates.ExecuteTemplate(w,
-		"signup_form.tmpl",
+	tmpl := templates.Lookup("signup_form.tmpl")
+	tmpl.Execute(w,
 		map[string]interface{}{
 			csrf.TemplateTag: csrf.TemplateField(req),
 		})
@@ -55,10 +55,8 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 }
 
 func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	t, err := template.New("registration_form.tmpl").Funcs(funcMap).ParseFiles("registration_form.tmpl")
-	CheckErr(err)
-	t.ExecuteTemplate(w,
-		"registration_form.tmpl",
+	tmpl := templates.Lookup("registration_form.tmpl")
+	tmpl.Execute(w,
 		map[string]interface{}{
 			"Countries":      Countries,
 			"Fellowships":    Fellowships,
@@ -144,10 +142,8 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 }
 
 func GetNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	t, err := template.New("new_convention.tmpl").Funcs(funcMap).ParseFiles("new_convention.tmpl")
-	CheckErr(err)
-	t.ExecuteTemplate(w,
-		"new_convention.tmpl",
+	tmpl := templates.Lookup("new_convention.tmpl")
+	tmpl.Execute(w,
 		map[string]interface{}{
 			"Countries":      EURYPAA_Countries,
 			csrf.TemplateTag: csrf.TemplateField(req),
@@ -166,12 +162,6 @@ func PostNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, re
 	fmt.Fprint(w, "Convention created")
 }
 
-type Signup struct {
-	Email_Address string `json:"address"`
-	Success       bool   `json:"success"`
-	Note          string `json:"note"`
-}
-
 type configuration struct {
 	SiteName             string
 	SiteDomain           string
@@ -188,10 +178,9 @@ type configuration struct {
 
 var (
 	config         configuration
-	schemaDecoder  = schema.NewDecoder()
-	funcMap        = template.FuncMap{"inc": func(i int) int { return i + 1 }}
+	schemaDecoder  *schema.Decoder
 	publishableKey string
-	templates      = template.Must(template.ParseGlob("views/*.tmpl"))
+	templates      *template.Template
 )
 
 func ConfigInit() {
@@ -204,6 +193,7 @@ func ConfigInit() {
 }
 
 func SchemaDecoderInit() {
+	schemaDecoder = schema.NewDecoder()
 	schemaDecoder.RegisterConverter(time.Time{}, TimeConverter)
 	schemaDecoder.IgnoreUnknownKeys(true)
 }
@@ -223,8 +213,13 @@ func StripeInit() {
 	stripe.Key = config.StripeSecretKey
 }
 
+func TemplatesInit() {
+	templates = template.Must(template.New("").Funcs(FuncMap).ParseGlob("templates/*.tmpl"))
+}
+
 func init() {
 	ConfigInit()
+	TemplatesInit()
 	SchemaDecoderInit()
 	RouterInit()
 	StripeInit()

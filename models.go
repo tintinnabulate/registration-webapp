@@ -56,3 +56,10 @@ type RegistrationForm struct {
 	Sobriety_Date time.Time
 	Member_Of     []Fellowship
 }
+
+// Signup is used to parse JSON response from the signup microservice
+type Signup struct {
+	Email_Address string `json:"address"`
+	Success       bool   `json:"success"`
+	Note          string `json:"note"`
+}
