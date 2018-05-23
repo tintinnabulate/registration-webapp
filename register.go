@@ -55,9 +55,14 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 }
 
 func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	convention, err := GetLatestConvention(ctx)
+	CheckErr(err)
 	tmpl := templates.Lookup("registration_form.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
+			"Year":           convention.Year,
+			"City":           convention.City,
+			"Country":        convention.Country,
 			"Countries":      Countries,
 			"Fellowships":    Fellowships,
 			csrf.TemplateTag: csrf.TemplateField(req),

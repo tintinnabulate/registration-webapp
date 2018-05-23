@@ -9,6 +9,7 @@
 package main
 
 import (
+	"errors"
 	"time"
 
 	"google.golang.org/appengine/datastore"
@@ -47,4 +48,15 @@ func CreateConvention(ctx context.Context, convention *Convention) (*datastore.K
 	key := datastore.NewKey(ctx, "Convention", "", 0, nil)
 	k, err := datastore.Put(ctx, key, convention)
 	return k, err
+}
+
+func GetLatestConvention(ctx context.Context) (Convention, error) {
+	var conventions []Convention
+	q := datastore.NewQuery("Convention").Order("-Creation_Date")
+	_, err := q.GetAll(ctx, &conventions)
+	CheckErr(err)
+	if len(conventions) < 1 {
+		return Convention{}, errors.New("No conventions in DB")
+	}
+	return conventions[0], nil
 }
