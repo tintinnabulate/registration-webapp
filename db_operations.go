@@ -45,7 +45,7 @@ func AddUser(ctx context.Context, user *User) (*datastore.Key, error) {
 
 func CreateConvention(ctx context.Context, convention *Convention) (*datastore.Key, error) {
 	convention.Creation_Date = time.Now()
-	key := datastore.NewKey(ctx, "Convention", "", 0, nil)
+	key := datastore.NewKey(ctx, "Convention", "", 0, nil) // TODO: get it to use ID as the unique ID
 	k, err := datastore.Put(ctx, key, convention)
 	return k, err
 }
