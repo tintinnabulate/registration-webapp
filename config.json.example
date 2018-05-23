@@ -1,0 +1,7 @@
+{
+    "SMTPUsername": "sender@mydomain.com",
+    "SMTPPassword": "mypassword",
+    "SMTPServer": "smtp.mydomain.com",
+    "SiteDomain": "mydomain.com",
+    "SiteName": "MyDomain"
+}
