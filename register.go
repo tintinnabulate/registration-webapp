@@ -76,7 +76,6 @@ func PostRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req
 	CheckErr(err)
 	json.NewDecoder(resp.Body).Decode(&signup)
 	if signup.Success {
-		regform.Creation_Date = time.Now()
 		_, err := StashRegistrationForm(ctx, &regform)
 		CheckErr(err)
 		showPaymentForm(ctx, w, req, &regform)
@@ -126,7 +125,6 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 	regform, err := GetRegistrationForm(ctx, emailAddress)
 	CheckErr(err)
 	user := &User{
-		Creation_Date:      time.Now(),
 		First_Name:         regform.First_Name,
 		Last_Name:          regform.Last_Name,
 		Email_Address:      regform.Email_Address,
@@ -156,7 +154,6 @@ func PostNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, re
 	CheckErr(err)
 	err = schemaDecoder.Decode(&convention, req.PostForm)
 	CheckErr(err)
-	convention.Creation_Date = time.Now()
 	_, err = CreateConvention(ctx, &convention)
 	CheckErr(err)
 	fmt.Fprint(w, "Convention created")

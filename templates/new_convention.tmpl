@@ -12,21 +12,24 @@
     <div class="container">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h2>New Convention form</h2>
-        <p class="lead">Lorem ipsum.</p>
+        <h2>New Convention</h2>
+        <p class="lead">omg.</p>
       </div>
         <div class="col-md-8 mx-auto order-md-1">
-          <h4 class="mb-3">Your Details</h4>
+          <h4 class="mb-3">Enter details below</h4>
 		    <form class="needs-validation" id="register" action="/new_convention" method="post" novalidate>
 		    {{ .csrfField }}
-            <div class="row">
-              <div class="col-md-6 mb-3">
+			<div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="firstName">Year</label>
                 <input type="text" class="form-control required" id="Year" name="Year" placeholder="" value="" required>
                 <div class="invalid-feedback">
                   Valid first name is required.
                 </div>
               </div>
+			</div>
+
+            <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="Cost">Cost</label>
                 <input type="text" class="form-control required" id="Cost" name="Cost" placeholder="" value="" required>
@@ -34,29 +37,19 @@
                   Valid last name is required.
                 </div>
               </div>
-            </div>
-
-            <div class="mb-3">
-              <label for="email">Currency Code</label>
-              <input type="email" class="form-control required" id="Currency_Code" name="Currency_Code" placeholder="EUR">
-              <div class="invalid-feedback">
-                Please enter a valid email address so we can send you convention details.
+              <div class="col-md-6 mb-3">
+                <label for="Currency_Code">Currency Code</label>
+                <input type="text" class="form-control required" id="Currency_Code" name="Currency_Code" placeholder="EUR">
+                <div class="invalid-feedback">
+                  Please enter a valid email address so we can send you convention details.
+                </div>
               </div>
-            </div>
-
-            <div class="mb-3">
-              <label for="Password" class="control-label">Start Date</label>
-                <input type="Password" class="form-control required" id="Start_Date" name="Start_Date">
-            </div>
-            <div class="mb-3">
-              <label for="Conf_Password" class="control-label">End Date</label>
-                <input type="Password" class="form-control required" id="End_Date" name="End_Date">
-            </div>
+			</div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="Country">Country</label>
-                <select name="Country" id="Country" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $country := $.Countries }}
+                <select name="Country" id="Country" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $country := .Countries }}
                   <option value="{{ inc $i }}">{{ $country }}</option>{{ end }}
                 </select>
                 <div class="invalid-feedback">
@@ -69,23 +62,6 @@
               </div>
             </div>
 
-            <div class="mb-3">
-              <label for="Hotel" class="control-label">Hotel</label>
-                <input type="text" class="form-control datepickerMasked valid" id="Hotel" name="Hotel" value="">
-            </div>
-
-            <div class="mb-3">
-              <label for="Venue" class="control-label">Venue</label>
-                <input type="text" class="form-control datepickerMasked valid" id="Venue" name="Venue" value="">
-            </div>
-
-            <div class="mb-3">
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="" name="Hotel_Is_Venue">
-                  <label class="custom-control-label" for="Hotel_Is_Venue">Hotel_Is_Venue</label>
-              </div>
-            </div>
-
             <hr class="mb-4">
             <button class="btn btn-primary btn-lg btn-block" type="submit">Create Convention</button>
           </form>
@@ -93,12 +69,7 @@
       </div>
 
       <footer class="my-5 pt-5 text-muted text-center text-small">
-        <p class="mb-1">&copy; 2017-2018 Company Name</p>
-          <ul class="list-inline">
-            <li class="list-inline-item"><a href="#">Privacy</a></li>
-            <li class="list-inline-item"><a href="#">Terms</a></li>
-            <li class="list-inline-item"><a href="#">Support</a></li>
-          </ul>
+        <p class="mb-1">&copy; 2018</p>
       </footer>
 
 	  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

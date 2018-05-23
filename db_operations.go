@@ -9,6 +9,8 @@
 package main
 
 import (
+	"time"
+
 	"google.golang.org/appengine/datastore"
 
 	"golang.org/x/net/context"
@@ -17,6 +19,7 @@ import (
 // StashRegistrationForm adds a signup with the given verification code to the datastore,
 // returning the key of the newly created entity.
 func StashRegistrationForm(ctx context.Context, regform *RegistrationForm) (*datastore.Key, error) {
+	regform.Creation_Date = time.Now()
 	key := datastore.NewKey(ctx, "RegistrationForm", regform.Email_Address, 0, nil)
 	k, err := datastore.Put(ctx, key, regform)
 	return k, err
@@ -33,12 +36,14 @@ func GetRegistrationForm(ctx context.Context, email string) (RegistrationForm, e
 
 // AddUser does a thing
 func AddUser(ctx context.Context, user *User) (*datastore.Key, error) {
+	user.Creation_Date = time.Now()
 	key := datastore.NewKey(ctx, "User", user.Email_Address, 0, nil)
 	k, err := datastore.Put(ctx, key, user)
 	return k, err
 }
 
 func CreateConvention(ctx context.Context, convention *Convention) (*datastore.Key, error) {
+	convention.Creation_Date = time.Now()
 	key := datastore.NewKey(ctx, "Convention", "", 0, nil)
 	k, err := datastore.Put(ctx, key, convention)
 	return k, err
