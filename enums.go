@@ -129,7 +129,6 @@ const (
 	Lithuania
 	Luxembourg
 	Macau
-	Macedonia
 	Madagascar
 	Malawi
 	Malaysia
@@ -163,6 +162,7 @@ const (
 	Nigeria
 	Niue
 	Norfork_Island
+	North_Macedonia_Republic_of
 	Northern_Mariana_Islands
 	Norway
 	Oman
@@ -372,7 +372,6 @@ var Countries = []CountryType{
 	Lithuania,
 	Luxembourg,
 	Macau,
-	Macedonia,
 	Madagascar,
 	Malawi,
 	Malaysia,
@@ -405,6 +404,7 @@ var Countries = []CountryType{
 	Nigeria,
 	Niue,
 	Norfork_Island,
+	North_Macedonia_Republic_of,
 	Northern_Mariana_Islands,
 	Norway,
 	Oman,
@@ -506,7 +506,6 @@ const (
 	Denmark_
 	Estonia_
 	Finland_
-	Macedonia_
 	France_
 	Georgia_
 	Germany_
@@ -525,6 +524,7 @@ const (
 	Monaco_
 	Montenegro_
 	Netherlands_
+	North_Macedonia_Republic_of_
 	Norway_
 	Poland_
 	Portugal_
@@ -555,7 +555,6 @@ var EURYPAA_Countries = []EURYPAA_Country{
 	Denmark_,
 	Estonia_,
 	Finland_,
-	Macedonia_,
 	France_,
 	Georgia_,
 	Germany_,
@@ -574,6 +573,7 @@ var EURYPAA_Countries = []EURYPAA_Country{
 	Monaco_,
 	Montenegro_,
 	Netherlands_,
+	North_Macedonia_Republic_of_,
 	Norway_,
 	Poland_,
 	Portugal_,
