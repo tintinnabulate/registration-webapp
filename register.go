@@ -117,9 +117,9 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 	}
 
 	chargeParams := &stripe.ChargeParams{
-		Amount:   500,
-		Currency: "usd",
-		Desc:     "Sample Charge",
+		Amount:   2000,
+		Currency: "EUR",
+		Desc:     "EURYPAA Registration",
 		Customer: newCustomer.ID,
 	}
 	charge, err := sc.Charges.New(chargeParams)
