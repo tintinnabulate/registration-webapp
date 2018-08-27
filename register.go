@@ -53,7 +53,7 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 	var signup Signup
 	err = schemaDecoder.Decode(&signup, req.PostForm)
 	client := urlfetch.Client(ctx)
-	resp, err := client.Post(fmt.Sprintf("%s/%s", config.SignupURL, signup.Email_Address), "", nil)
+	_, err = client.Post(fmt.Sprintf("%s/%s", config.SignupURL, signup.Email_Address), "", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -148,7 +148,7 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		Stripe_Customer_ID: charge.Customer.ID}
 	_, err = AddUser(ctx, user)
 	CheckErr(err)
-	fmt.Fprintf(w, "<h1>Completed payment!</h1>")
+	fmt.Fprintf(w, "<h1>Payment complete. You are now registered :)</h1>")
 }
 
 func GetNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
