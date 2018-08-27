@@ -58,7 +58,7 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "Please check your email for the verification code.", resp.Status)
+	fmt.Fprintf(w, "<h1>Please check your email account for the verification code.</h1>")
 }
 
 func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
@@ -92,7 +92,7 @@ func PostRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req
 		CheckErr(err)
 		showPaymentForm(ctx, w, req, &regform)
 	} else {
-		fmt.Fprint(w, "I'm sorry, you need to sign up first. Go to /signup")
+		http.Redirect(w, req, config.SignupURL, 301)
 	}
 }
 
@@ -148,7 +148,7 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		Stripe_Customer_ID: charge.Customer.ID}
 	_, err = AddUser(ctx, user)
 	CheckErr(err)
-	fmt.Fprintf(w, "Completed payment! Well not really... this was a test :-P")
+	fmt.Fprintf(w, "<h1>Completed payment!</h1>")
 }
 
 func GetNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
