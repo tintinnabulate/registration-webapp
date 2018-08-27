@@ -33,9 +33,16 @@ func CreateHandler(f ContextHandlerToHandlerHOF) *mux.Router {
 }
 
 func GetSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	convention, err := GetLatestConvention(ctx)
+	CheckErr(err)
 	tmpl := templates.Lookup("signup_form.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
+			"Year":           convention.Year,
+			"City":           convention.City,
+			"Country":        convention.Country,
+			"Countries":      Countries,
+			"Fellowships":    Fellowships,
 			csrf.TemplateTag: csrf.TemplateField(req),
 		})
 }
@@ -51,7 +58,7 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "HTTP GET returned status %v", resp.Status)
+	fmt.Fprintf(w, "Please check your email for the verification code.", resp.Status)
 }
 
 func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
