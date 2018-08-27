@@ -55,7 +55,7 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 	var signup Signup
 	err = schemaDecoder.Decode(&signup, req.PostForm)
 	client := urlfetch.Client(ctx)
-	_, err = client.Post(fmt.Sprintf("%s/%s", config.SignupURL, signup.Email_Address), "", nil)
+	_, err = client.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, signup.Email_Address), "", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -95,7 +95,7 @@ func PostRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req
 	err = schemaDecoder.Decode(&regform, req.PostForm)
 	CheckErr(err)
 	client := urlfetch.Client(ctx)
-	resp, err := client.Get(fmt.Sprintf("%s/%s", config.SignupURL, regform.Email_Address))
+	resp, err := client.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
 	CheckErr(err)
 	json.NewDecoder(resp.Body).Decode(&signup)
 	if signup.Success {
@@ -203,6 +203,7 @@ type configuration struct {
 	CSRF_Key             string
 	IsLiveSite           bool
 	SignupURL            string
+	SignupServiceURL     string
 	StripePublishableKey string
 	StripeSecretKey      string
 }
