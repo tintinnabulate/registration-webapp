@@ -12,17 +12,15 @@
     <div class="container">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h2>Sign up to Register</h2>
+        <h2>Register</h2>
         <p class="lead">EURYPAA {{ .Year }} - {{ .City }}, {{ .Country }}</p>
       </div>
 
-        <div class="col-md-8 mx-auto order-md-1">
-          <h4 class="mb-3">Please check your email and click the link to verify</h4>
+          <h4 class="mb-3">Please check your email inbox, and click the link we've sent you</h4>
 		    <form class="needs-validation" id="register" action="/signup" method="post" novalidate>
 		    {{ .csrfField }}
           </form>
-        </div>
-      </div>
+    </div>
 
       <footer class="my-5 pt-5 text-muted text-center text-small">
         <p class="mb-1">&copy; 2018</p>
