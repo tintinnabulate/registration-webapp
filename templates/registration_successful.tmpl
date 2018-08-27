@@ -12,36 +12,13 @@
     <div class="container">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h2>Complete payment to Register</h2>
+        <h2>You are now registered!</h2>
         <p class="lead">EURYPAA {{ .Year }} - {{ .City }}, {{ .Country }}</p>
       </div>
 
         <div class="col-md-8 mx-auto order-md-1">
-          <h4 class="mb-3">Payment Details</h4>
-            <form action="/charge" method="post" class="payment">
+		    <form class="needs-validation" id="register" action="/signup" method="post" novalidate>
 		    {{ .csrfField }}
-            <div class="row">
-              <div class="col-md-6 mb-3">
-
-  <article>
-    <label class="amount">
-      <span>Amount: €20.00</span>
-    </label>
-  </article>
-
-  {{ .csrfField }}
-              </div>
-            </div>
-
-            <hr class="mb-4">
-  <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="{{ .Key }}"
-    data-description="Registration"
-    data-amount="2000"
-	data-currency="EUR"
-    data-locale="auto"
-	data-email="{{ .Email }}"
-	data-zip-code="true"></script>
           </form>
         </div>
       </div>
@@ -54,13 +31,4 @@
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     </body>
-</html>
-
-<html>
-<head>
-  <title>Checkout Example</title>
-</head>
-<body>
-</form>
-</body>
 </html>

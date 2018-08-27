@@ -48,7 +48,9 @@ func GetSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Requ
 }
 
 func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	err := req.ParseForm()
+	convention, err := GetLatestConvention(ctx)
+	CheckErr(err)
+	err = req.ParseForm()
 	CheckErr(err)
 	var signup Signup
 	err = schemaDecoder.Decode(&signup, req.PostForm)
@@ -58,7 +60,16 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "<h1>Please check your email account for the verification code.</h1>")
+	tmpl := templates.Lookup("check_email.tmpl")
+	tmpl.Execute(w,
+		map[string]interface{}{
+			"Year":           convention.Year,
+			"City":           convention.City,
+			"Country":        convention.Country,
+			"Countries":      Countries,
+			"Fellowships":    Fellowships,
+			csrf.TemplateTag: csrf.TemplateField(req),
+		})
 }
 
 func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
@@ -106,13 +117,15 @@ func showPaymentForm(ctx context.Context, w http.ResponseWriter, req *http.Reque
 		})
 }
 
-func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	convention, err := GetLatestConvention(ctx)
+	CheckErr(err)
+	req.ParseForm()
 
-	emailAddress := r.Form.Get("stripeEmail")
+	emailAddress := req.Form.Get("stripeEmail")
 
 	customerParams := &stripe.CustomerParams{Email: emailAddress}
-	customerParams.SetSource(r.Form.Get("stripeToken"))
+	customerParams.SetSource(req.Form.Get("stripeToken"))
 
 	httpClient := urlfetch.Client(ctx)
 	sc := stripeClient.New(stripe.Key, stripe.NewBackends(httpClient))
@@ -148,7 +161,16 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		Stripe_Customer_ID: charge.Customer.ID}
 	_, err = AddUser(ctx, user)
 	CheckErr(err)
-	fmt.Fprintf(w, "<h1>Payment complete. You are now registered :)</h1>")
+	tmpl := templates.Lookup("registration_successful.tmpl")
+	tmpl.Execute(w,
+		map[string]interface{}{
+			"Year":           convention.Year,
+			"City":           convention.City,
+			"Country":        convention.Country,
+			"Countries":      Countries,
+			"Fellowships":    Fellowships,
+			csrf.TemplateTag: csrf.TemplateField(req),
+		})
 }
 
 func GetNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
