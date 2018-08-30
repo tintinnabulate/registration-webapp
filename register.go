@@ -26,8 +26,8 @@ func CreateHandler(f ContextHandlerToHandlerHOF) *mux.Router {
 	appRouter.HandleFunc("/register", f(GetRegistrationFormHandler)).Methods("GET")
 	appRouter.HandleFunc("/register", f(PostRegistrationFormHandler)).Methods("POST")
 	appRouter.HandleFunc("/charge", f(PostRegistrationFormPaymentHandler)).Methods("POST")
-	//appRouter.HandleFunc("/new_convention", f(GetNewConventionHandlerForm)).Methods("GET")
-	//appRouter.HandleFunc("/new_convention", f(PostNewConventionHandlerForm)).Methods("POST")
+	appRouter.HandleFunc("/new_convention", f(GetNewConventionHandlerForm)).Methods("GET")
+	appRouter.HandleFunc("/new_convention", f(PostNewConventionHandlerForm)).Methods("POST")
 
 	return appRouter
 }
@@ -124,7 +124,7 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 
 	emailAddress := req.Form.Get("stripeEmail")
 
-	customerParams := &stripe.CustomerParams{Email: emailAddress}
+	customerParams := &stripe.CustomerParams{Email: stripe.String(emailAddress)}
 	customerParams.SetSource(req.Form.Get("stripeToken"))
 
 	httpClient := urlfetch.Client(ctx)
@@ -137,10 +137,10 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 	}
 
 	chargeParams := &stripe.ChargeParams{
-		Amount:   2000,
-		Currency: "EUR",
-		Desc:     "EURYPAA Registration",
-		Customer: newCustomer.ID,
+		Amount:      stripe.Int64(1000),
+		Currency:    stripe.String(string(stripe.CurrencyEUR)),
+		Description: stripe.String("IREYPAA Registration"),
+		Customer:    stripe.String(newCustomer.ID),
 	}
 	charge, err := sc.Charges.New(chargeParams)
 	if err != nil {
