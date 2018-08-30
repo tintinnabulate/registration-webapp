@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Registered for IREYPAA!</title>
+    <title>Registered for {{ .Name }}!</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body class="bg-light">
@@ -13,7 +13,7 @@
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
         <h2>You are now registered!</h2>
-        <p class="lead">IREYPAA {{ .Year }} - {{ .City }}, {{ .Country }}</p>
+        <p class="lead">{{ .Name }} {{ .Year }} - {{ .City }}, {{ .Country }}</p>
       </div>
 
         <div class="col-md-8 mx-auto order-md-1">

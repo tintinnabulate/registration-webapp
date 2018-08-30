@@ -38,6 +38,7 @@ func GetSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Requ
 	tmpl := templates.Lookup("signup_form.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
+			"Name":           convention.Name,
 			"Year":           convention.Year,
 			"City":           convention.City,
 			"Country":        convention.Country,
@@ -63,6 +64,7 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 	tmpl := templates.Lookup("check_email.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
+			"Name":           convention.Name,
 			"Year":           convention.Year,
 			"City":           convention.City,
 			"Country":        convention.Country,
@@ -78,6 +80,7 @@ func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req 
 	tmpl := templates.Lookup("registration_form.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
+			"Name":           convention.Name,
 			"Year":           convention.Year,
 			"City":           convention.City,
 			"Country":        convention.Country,
@@ -139,7 +142,7 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 	chargeParams := &stripe.ChargeParams{
 		Amount:      stripe.Int64(1000),
 		Currency:    stripe.String(string(stripe.CurrencyEUR)),
-		Description: stripe.String("IREYPAA Registration"),
+		Description: stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
 		Customer:    stripe.String(newCustomer.ID),
 	}
 	charge, err := sc.Charges.New(chargeParams)
@@ -164,6 +167,7 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 	tmpl := templates.Lookup("registration_successful.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
+			"Name":           convention.Name,
 			"Year":           convention.Year,
 			"City":           convention.City,
 			"Country":        convention.Country,

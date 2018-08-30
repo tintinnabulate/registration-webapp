@@ -29,6 +29,7 @@ type Registration struct {
 
 type Convention struct {
 	ID                int64 // pk
+	Name              string
 	Creation_Date     time.Time
 	Year              int
 	Country           EURYPAA_Country
