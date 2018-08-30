@@ -26,8 +26,8 @@ func CreateHandler(f ContextHandlerToHandlerHOF) *mux.Router {
 	appRouter.HandleFunc("/register", f(GetRegistrationFormHandler)).Methods("GET")
 	appRouter.HandleFunc("/register", f(PostRegistrationFormHandler)).Methods("POST")
 	appRouter.HandleFunc("/charge", f(PostRegistrationFormPaymentHandler)).Methods("POST")
-	appRouter.HandleFunc("/new_convention", f(GetNewConventionHandlerForm)).Methods("GET")
-	appRouter.HandleFunc("/new_convention", f(PostNewConventionHandlerForm)).Methods("POST")
+	//appRouter.HandleFunc("/new_convention", f(GetNewConventionHandlerForm)).Methods("GET")
+	//appRouter.HandleFunc("/new_convention", f(PostNewConventionHandlerForm)).Methods("POST")
 
 	return appRouter
 }
