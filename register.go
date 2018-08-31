@@ -118,7 +118,7 @@ func showPaymentForm(ctx context.Context, w http.ResponseWriter, req *http.Reque
 		map[string]interface{}{
 			"Name":           convention.Name,
 			"Cost":           convention.Cost,
-			"CostPrint":      convention.Cost / 10,
+			"CostPrint":      convention.Cost / 100,
 			"Currency":       convention.Currency_Code,
 			"Year":           convention.Year,
 			"City":           convention.City,
