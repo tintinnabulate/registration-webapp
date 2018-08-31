@@ -140,7 +140,7 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 	}
 
 	chargeParams := &stripe.ChargeParams{
-		Amount:      stripe.Int64(1000),
+		Amount:      stripe.Int64(convention.Cost),
 		Currency:    stripe.String(string(stripe.CurrencyEUR)),
 		Description: stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
 		Customer:    stripe.String(newCustomer.ID),
