@@ -111,9 +111,19 @@ func PostRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req
 }
 
 func showPaymentForm(ctx context.Context, w http.ResponseWriter, req *http.Request, regform *RegistrationForm) {
+	convention, err := GetLatestConvention(ctx)
+	CheckErr(err)
 	tmpl := templates.Lookup("stripe.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
+			"Name":           convention.Name,
+			"Cost":           convention.Cost,
+			"Currency":       convention.Currency_Code,
+			"Year":           convention.Year,
+			"City":           convention.City,
+			"Country":        convention.Country,
+			"Countries":      Countries,
+			"Fellowships":    Fellowships,
 			"Key":            publishableKey,
 			csrf.TemplateTag: csrf.TemplateField(req),
 			"Email":          regform.Email_Address,
@@ -141,7 +151,7 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 
 	chargeParams := &stripe.ChargeParams{
 		Amount:      stripe.Int64(int64(convention.Cost)),
-		Currency:    stripe.String(string(stripe.CurrencyEUR)),
+		Currency:    stripe.String(convention.Currency_Code),
 		Description: stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
 		Customer:    stripe.String(newCustomer.ID),
 	}

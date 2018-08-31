@@ -25,7 +25,7 @@
 
   <article>
     <label class="amount">
-      <span>Amount: €20.00</span>
+      <span>Amount: {{ .Cost }} {{ .Currency }}</span>
     </label>
   </article>
 
@@ -35,9 +35,9 @@
             <hr class="mb-4">
   <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ .Key }}"
-    data-description="Registration"
-    data-amount="2000"
-	data-currency="EUR"
+    data-description="{{ .Name }} Registration"
+    data-amount="{{ .Cost }}"
+	data-currency="{{ .Currency }}"
     data-locale="auto"
 	data-email="{{ .Email }}"
 	data-zip-code="true"></script>
