@@ -3,6 +3,7 @@
 2. Make /signup the landing page (not /register)
 3. Beautify the signup form
 4. Add form fields to /register to match https://eurypaa2018.com ?
+5. Use Braintree? https://www.braintreepayments.com/blog/braintree-in-europe-and-canada/ Stripe only supported in 26 countries :(
 
 # 1.
 
