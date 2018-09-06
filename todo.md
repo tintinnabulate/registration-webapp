@@ -23,6 +23,9 @@
 * Since IRE and EUR use the same codebase, why not just have one app, and have `/eury/signup` and `/irey/signup` select which registration form to load?
 * Remove all instances of `CheckErr(err)` and replace with **PROPER ERROR HANDLING!!!**
 * Add pegistration pin map showing country/city where people have registered from (Google Maps?)
+* Load Customer ID based on email address (if seen before).
+* Add Captcha on sign-up email entry (for rate-limiting, to stop abuse)
+* Add Rate-limiting AND OAuth2 on Email verifier microservice itself
 
 ## Status bar for:
 * N users registered today, N users registered total 
