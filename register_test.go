@@ -38,8 +38,8 @@ func getContext() (context.Context, aetest.Instance) {
 	return ctx, inst
 }
 
-// TestCreateSignupEndpoint tests that we can create a signup
-func TestCreateSignupEndpoint(t *testing.T) {
+// TestSubmitEmptyEmailAddress does just that
+func TestSubmitEmptyEmailAddress(t *testing.T) {
 	ConfigInit()
 
 	ctx, inst := getContext()
@@ -67,6 +67,7 @@ func TestCreateSignupEndpoint(t *testing.T) {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, 200)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Please check your email inbox, and click the link we've sent you`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
 		})
 	})
 }
