@@ -71,3 +71,44 @@ func TestSubmitEmptyEmailAddress(t *testing.T) {
 		})
 	})
 }
+
+// TestRegisterWithValidEmail does just that
+func TestRegisterWithValidEmail(t *testing.T) {
+	ConfigInit()
+
+	ctx, inst := getContext()
+	defer inst.Close()
+
+	cnv := &Convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
+
+	CreateConvention(ctx, cnv)
+
+	c.Convey("When you register with a valid email address", t, func() {
+		r := CreateHandler(CreateContextHandlerToHTTPHandler(ctx))
+		record := httptest.NewRecorder()
+
+		formData := url.Values{}
+		formData.Set("Email_Address", config.TestEmailAddress)
+		formData.Set("Country", "1")
+		formData.Set("City", "Foo")
+		formData.Set("First_Name", "Bar")
+
+		req, err := http.NewRequest("POST", "/register", strings.NewReader(formData.Encode())) // URL-encoded payload
+		//req.Header.Add("Authorization", "auth_token=\"XXXXXXX\"")
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
+
+		c.So(err, c.ShouldBeNil)
+
+		c.Convey("The next page body should contain \"stripe-button\"", func() {
+			r.ServeHTTP(record, req)
+			c.So(record.Code, c.ShouldEqual, 200)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `stripe-button`)
+			c.Convey("There should be a registration entry in the Registration table", func() {
+				reg, err := GetRegistrationForm(ctx, config.TestEmailAddress)
+				CheckErr(err)
+				c.So(reg.City, c.ShouldEqual, "Foo")
+			})
+		})
+	})
+}

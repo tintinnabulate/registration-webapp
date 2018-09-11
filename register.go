@@ -221,6 +221,9 @@ type configuration struct {
 	SignupServiceURL     string
 	StripePublishableKey string
 	StripeSecretKey      string
+	StripeTestPK         string
+	StripeTestSK         string
+	TestEmailAddress     string
 }
 
 var (
