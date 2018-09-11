@@ -4,9 +4,14 @@
     "SMTPServer":           "smtp.mydomain.com",
     "SiteDomain":           "mydomain.com",
     "SiteName":             "MyDomain",
+    "ProjectID":            "my-appspot-project-id",
     "CSRF_Key":             "my-random-32-bytes",
-    "IsLiveSite":  	        true,
-    "SignupURL":            "my-signup-verifier.com/signup",
-    "StripePublishableKey": "pk_test_foo",
-    "StripeSecretKey":      "sk_test_foo"
+    "IsLiveSite":           false,
+    "SignupURL":            "this-apps-signup-endpoint.com/signup",
+    "SignupServiceURL":     "another-apps-email-verifier/signup/sitecode",
+    "StripePublishableKey": "pk_live_foo",
+    "StripeSecretKey":      "sk_live_foo",
+    "StripeTestPK":         "pk_test_foo",
+    "StripeTestSK":         "sk_test_foo",
+    "TestEmailAddress":     "foo@example.com"
 }
