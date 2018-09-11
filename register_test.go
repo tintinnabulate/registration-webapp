@@ -45,6 +45,10 @@ func TestCreateSignupEndpoint(t *testing.T) {
 	ctx, inst := getContext()
 	defer inst.Close()
 
+	cnv := &Convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
+
+	CreateConvention(ctx, cnv)
+
 	c.Convey("When you submit a blank email address", t, func() {
 		r := CreateHandler(CreateContextHandlerToHTTPHandler(ctx))
 		record := httptest.NewRecorder()
@@ -62,8 +66,7 @@ func TestCreateSignupEndpoint(t *testing.T) {
 		c.Convey("The next page body should contain \"Please check your email...\"", func() {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, 200)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Please check your email inbox, and click the link we've sent you
-			`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Please check your email inbox, and click the link we've sent you`)
 		})
 	})
 }
