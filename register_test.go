@@ -112,3 +112,19 @@ func TestRegisterWithValidEmail(t *testing.T) {
 		})
 	})
 }
+
+//// TestPayOverStripeCreatesUser does just that
+//func TestPayOverStripeCreatesUser(t *testing.T) {
+//	ConfigInit()
+//
+//	ctx, inst := getContext()
+//	defer inst.Close()
+//
+//	cnv := &Convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
+//
+//	CreateConvention(ctx, cnv)
+//	c.Convey("When you make a payment over Stripe", t, func() {
+//		c.Convey("There should be an user in the User table", func() {
+//		})
+//	})
+//}
