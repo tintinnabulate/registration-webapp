@@ -31,6 +31,7 @@
 * Add Captcha on sign-up email entry (for rate-limiting, to stop abuse)
 * Add Rate-limiting AND OAuth2 on Email verifier microservice itself
 * Don't load external javascript: host it all internally.
+* Fix `go lint` warnings.
 
 ## Status bar for:
 * N users registered today, N users registered total 
