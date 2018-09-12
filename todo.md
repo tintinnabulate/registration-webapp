@@ -23,6 +23,7 @@
 * Create a test suite similar to Email verifier's
 	* At the very least, run a test version of the site
 	* Use mock Email verifier
+* Memcached
 * Since IRE and EUR use the same codebase, why not just have one app, and have `/eury/signup` and `/irey/signup` select which registration form to load?
 * Remove all instances of `CheckErr(err)` and replace with **PROPER ERROR HANDLING!!!**
 * Add pegistration pin map showing country/city where people have registered from (Google Maps?)
