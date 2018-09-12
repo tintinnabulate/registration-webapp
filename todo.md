@@ -34,7 +34,7 @@
 
 	* At the very least, run a test version of the site
 
-	* Use mock Email verifier
+	* Use mock Email verifier - https://medium.com/@tech_phil/how-to-stub-external-services-in-go-8885704e8c53
 
 * Memcached
 
