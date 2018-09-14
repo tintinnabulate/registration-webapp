@@ -46,7 +46,7 @@
 * Remove all instances of `CheckErr(err)` and replace with **PROPER ERROR
   HANDLING!!!**
 
-* Add pegistration pin map showing country/city where people have registered
+* Add registration pin map showing country/city where people have registered
 from (Google Maps?)
 
 * Load Customer ID based on email address (if seen before).
