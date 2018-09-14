@@ -16,6 +16,8 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/aetest"
+
+	"github.com/tintinnabulate/register/mockverifier"
 )
 
 func createContextHandlerToHTTPHandler(ctx context.Context) contextHandlerToHandlerHOF {
@@ -48,7 +50,9 @@ func TestMain(m *testing.M) {
 
 func testSetup() {
 	viper.Set("IsLiveSite", false)
+	viper.Set("SignupServiceURL", "http://localhost:10000/signup/eury2019")
 	stripeInit()
+	go mockverifier.Start(viper.GetString("TestEmailAddress"))
 }
 
 // TestGetSignupPage does just that
