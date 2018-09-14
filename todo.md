@@ -2,7 +2,6 @@
 
 ## HIGH
 
-* Use mock Email verifier instead of hitting real API - <https://medium.com/@tech_phil/how-to-stub-external-services-in-go-8885704e8c53>
 * Remove all instances of `checkErr(err)` and replace with **PROPER ERROR HANDLING!!!**
 * Add Captcha on sign-up email entry (for rate-limiting, to stop abuse)
 * Does `/register` have a consent drop down yes/no for GDPR Compliance? We are collecting/storing email/data.
