@@ -4,10 +4,10 @@ import (
 	"html/template"
 )
 
-var FuncMap = template.FuncMap{
-	"inc": Inc,
+var funcMap = template.FuncMap{
+	"inc": inc,
 }
 
-func Inc(i int) int {
+func inc(i int) int {
 	return i + 1
 }

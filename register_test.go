@@ -51,12 +51,60 @@ func testSetup() {
 	stripeInit()
 }
 
+// TestGetSignupPage does just that
+func TestGetSignupPage(t *testing.T) {
+	ctx, inst := getContext()
+	defer inst.Close()
+	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
+	createConvention(ctx, cnv)
+
+	c.Convey("When visit the signup page", t, func() {
+		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		record := httptest.NewRecorder()
+
+		req, err := http.NewRequest("GET", "/signup", nil) // URL-encoded payload
+
+		c.So(err, c.ShouldBeNil)
+
+		c.Convey("The next page body should contain \"Please enter your email address\"", func() {
+			r.ServeHTTP(record, req)
+			c.So(record.Code, c.ShouldEqual, http.StatusOK)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Please enter your email address`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
+		})
+	})
+}
+
+// TestGetRegisterPage does just that
+func TestGetRegisterPage(t *testing.T) {
+	ctx, inst := getContext()
+	defer inst.Close()
+	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
+	createConvention(ctx, cnv)
+
+	c.Convey("When you visit the register page", t, func() {
+		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		record := httptest.NewRecorder()
+
+		req, err := http.NewRequest("GET", "/register", nil) // URL-encoded payload
+
+		c.So(err, c.ShouldBeNil)
+
+		c.Convey("The next page body should contain \"Continue to checkout\"", func() {
+			r.ServeHTTP(record, req)
+			c.So(record.Code, c.ShouldEqual, http.StatusOK)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Continue to checkout`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
+		})
+	})
+}
+
 // TestSubmitEmptyEmailAddress does just that
 func TestSubmitEmptyEmailAddress(t *testing.T) {
 	ctx, inst := getContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
-	CreateConvention(ctx, cnv)
+	createConvention(ctx, cnv)
 
 	c.Convey("When you submit a blank email address", t, func() {
 		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
@@ -86,7 +134,7 @@ func TestRegisterWithValidEmail(t *testing.T) {
 	ctx, inst := getContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
-	CreateConvention(ctx, cnv)
+	createConvention(ctx, cnv)
 
 	c.Convey("When you register with a valid email address", t, func() {
 		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
@@ -110,10 +158,41 @@ func TestRegisterWithValidEmail(t *testing.T) {
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `stripe-button`)
 			c.Convey("There should be a registration entry in the Registration table", func() {
-				reg, err := GetRegistrationForm(ctx, viper.GetString("TestEmailAddress"))
+				reg, err := getRegistrationForm(ctx, viper.GetString("TestEmailAddress"))
 				checkErr(err)
 				c.So(reg.City, c.ShouldEqual, "Foo")
 			})
+		})
+	})
+}
+
+// TestRegisterWithInvalidEmail does just that
+func TestRegisterWithInvalidEmail(t *testing.T) {
+	ctx, inst := getContext()
+	defer inst.Close()
+	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
+	createConvention(ctx, cnv)
+
+	c.Convey("When you register with a valid email address", t, func() {
+		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		record := httptest.NewRecorder()
+
+		formData := url.Values{}
+		formData.Set("Email_Address", "thewrongemailaddress@notsignedup.glom")
+		formData.Set("Country", "1")
+		formData.Set("City", "Foo")
+		formData.Set("First_Name", "Bar")
+
+		req, err := http.NewRequest("POST", "/register", strings.NewReader(formData.Encode())) // URL-encoded payload
+		//req.Header.Add("Authorization", "auth_token=\"XXXXXXX\"")
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
+
+		c.So(err, c.ShouldBeNil)
+
+		c.Convey("It should return http.StatusFound", func() {
+			r.ServeHTTP(record, req)
+			c.So(record.Code, c.ShouldEqual, http.StatusFound)
 		})
 	})
 }

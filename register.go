@@ -28,9 +28,6 @@ func createHTTPRouter(f contextHandlerToHandlerHOF) *mux.Router {
 	appRouter.HandleFunc("/register", f(getRegistrationFormHandler)).Methods("GET")
 	appRouter.HandleFunc("/register", f(postRegistrationFormHandler)).Methods("POST")
 	appRouter.HandleFunc("/charge", f(postRegistrationFormPaymentHandler)).Methods("POST")
-	//appRouter.HandleFunc("/new_convention", f(GetNewConventionHandlerForm)).Methods("GET")
-	//appRouter.HandleFunc("/new_convention", f(PostNewConventionHandlerForm)).Methods("POST")
-
 	return appRouter
 }
 
@@ -109,7 +106,7 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req
 	checkErr(err)
 	json.NewDecoder(resp.Body).Decode(&s)
 	if s.Success {
-		_, err := StashRegistrationForm(ctx, &regform)
+		_, err := stashRegistrationForm(ctx, &regform)
 		checkErr(err)
 		showPaymentForm(ctx, w, req, &regform)
 	} else {
@@ -169,7 +166,7 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		fmt.Fprintf(w, "Could not process payment: %v", err)
 		return
 	}
-	regform, err := GetRegistrationForm(ctx, emailAddress)
+	regform, err := getRegistrationForm(ctx, emailAddress)
 	checkErr(err)
 	user := &user{
 		First_Name:         regform.First_Name,
@@ -181,7 +178,7 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		Sobriety_Date:      regform.Sobriety_Date,
 		Member_Of:          regform.Member_Of,
 		Stripe_Customer_ID: charge.Customer.ID}
-	_, err = AddUser(ctx, user)
+	_, err = addUser(ctx, user)
 	checkErr(err)
 	tmpl := templates.Lookup("registration_successful.tmpl")
 	tmpl.Execute(w,
@@ -194,28 +191,6 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 			"Fellowships":    Fellowships,
 			csrf.TemplateTag: csrf.TemplateField(req),
 		})
-}
-
-// getNewConventionHandlerForm : show New Convention form
-func getNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	tmpl := templates.Lookup("new_convention.tmpl")
-	tmpl.Execute(w,
-		map[string]interface{}{
-			"Countries":      EURYPAA_Countries,
-			csrf.TemplateTag: csrf.TemplateField(req),
-		})
-}
-
-// postNewConventionHandlerForm : create new convention
-func postNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	var c convention
-	err := req.ParseForm()
-	checkErr(err)
-	err = schemaDecoder.Decode(&c, req.PostForm)
-	checkErr(err)
-	_, err = CreateConvention(ctx, &c)
-	checkErr(err)
-	fmt.Fprint(w, "Convention created")
 }
 
 var (
@@ -265,7 +240,7 @@ func stripeInit() {
 
 // templatesInit : parse the HTML templates, including any predefined functions (FuncMap)
 func templatesInit() {
-	templates = template.Must(template.New("").Funcs(FuncMap).ParseGlob("templates/*.tmpl"))
+	templates = template.Must(template.New("").Funcs(funcMap).ParseGlob("templates/*.tmpl"))
 }
 
 func init() {
