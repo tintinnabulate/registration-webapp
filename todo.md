@@ -18,6 +18,7 @@
 
 * Don't load external javascript: host it all internally.
 
+
 ## MEDIUM
 
 * Add form fields to `/register` to match <https://eurypaa2018.com> ?
@@ -32,6 +33,7 @@
 * Is there a payment option other than Credit/Debit card?
 	* Can we connect both Stripe and PayPal to the app?
 	* Can we add the Host's Account Number, IBAN, etc. for direct deposit?
+
 
 ## LOW
 
