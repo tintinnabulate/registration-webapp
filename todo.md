@@ -36,6 +36,8 @@
 
 	* Use mock Email verifier - https://medium.com/@tech_phil/how-to-stub-external-services-in-go-8885704e8c53
 
+* Use Gorilla SecureCookie instead of having RegistrationForm table? https://www.calhoun.io/securing-cookies-in-go/
+
 * Memcached
 
 * Since IRE and EUR use the same codebase, why not just have one app, and have
