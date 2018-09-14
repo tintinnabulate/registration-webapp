@@ -1,34 +1,6 @@
 # TODO
 
-## I.
-
-* Does `/register` have a consent drop down yes/no for GDPR Compliance? We are
-  collecting/storing email/data.
-
-* Is there a payment option other than Credit/Debit card?
-
-* Can the databse be wiped and reused fresh again the next year? Or is the data
-  backed up as required and the process is then restarted?
-
-* Can one person do multiple registrations e.g.: {1 x AA, 2 x ALANON, 2 x
-  Alateen} with a combined bill?
-
-* Can we connect both Stripe and PayPal to the app?
-
-* Can we add the Host's Account Number, IBAN, etc. for direct deposit?
-
-## P.
-
-* Does the form have validation ? E.g. needed fields?
-
-* Is the user journey very likely to see the person has already signed up
-  before getting to Registration? If not, having an auto redirect on initial
-  submit might be good.
-
-* What is the initial form field?
-
-
-## S.
+## HIGH
 
 * Create a test suite similar to Email verifier's
 
@@ -36,41 +8,56 @@
 
 	* Use mock Email verifier - https://medium.com/@tech_phil/how-to-stub-external-services-in-go-8885704e8c53
 
-* Use Gorilla SecureCookie instead of having RegistrationForm table? https://www.calhoun.io/securing-cookies-in-go/
-
-* Memcached
-
-* Since IRE and EUR use the same codebase, why not just have one app, and have
-  `/eury/signup` and `/irey/signup` select which registration form to load?
-
 * Remove all instances of `CheckErr(err)` and replace with **PROPER ERROR
   HANDLING!!!**
 
-* Add registration pin map showing country/city where people have registered
-from (Google Maps?)
+* Add Captcha on sign-up email entry (for rate-limiting, to stop abuse)
+
+* Does `/register` have a consent drop down yes/no for GDPR Compliance? We are
+  collecting/storing email/data.
+
+* Don't load external javascript: host it all internally.
+
+## MEDIUM
+
+* Add form fields to `/register` to match <https://eurypaa2018.com> ?
 
 * Load Customer ID based on email address (if seen before).
 
-* Add Captcha on sign-up email entry (for rate-limiting, to stop abuse)
+* Use Gorilla SecureCookie instead of having RegistrationForm table? https://www.calhoun.io/securing-cookies-in-go/
 
-* Add Rate-limiting AND OAuth2 on Email verifier microservice itself
+* Can one person do multiple registrations e.g.: {1 x AA, 2 x ALANON, 2 x
+  Alateen} with a combined bill?
 
-* Don't load external javascript: host it all internally.
+* Is there a payment option other than Credit/Debit card?
+	* Can we connect both Stripe and PayPal to the app?
+	* Can we add the Host's Account Number, IBAN, etc. for direct deposit?
+
+## LOW
+
+* Does the form have validation ? E.g. needed fields?
+
+* Can the databse be wiped and reused fresh again the next year? Or is the data
+  backed up as required and the process is then restarted?
+
+* What is the initial form field?
+
+* Since IRE and EUR use the same codebase, why not just have one app, and have
+  `/eury/signup` and `/irey/signup` select which registration form to load?
 
 * Fix `go lint` warnings.
 
 * Use eury email provider to send out verification email
 
-* Add form fields to `/register` to match <https://eurypaa2018.com> ?
-
 * Use Braintree? Stripe can only receive payments in 26 countries, whereas
   Braintree can receive payments in 45 countries!
 
-### Status bar for:
+* Add registration pin map showing country/city where people have registered
+from (Google Maps?)
 
-* N users registered today, N users registered total 
+* Status Bar: N users registered today, N users registered total 
 
-* N users registered from your country
+* Status Bar: N users registered from your country
 
-* Today’s daily reflections reading using
+* Status Bar: Today’s daily reflections reading using
   <https://github.com/tintinnabulate/daily_readings>
