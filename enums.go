@@ -1,5 +1,6 @@
 package main
 
+// CountryType : ...
 //go:generate stringer -type=Country
 type CountryType int
 
@@ -487,6 +488,7 @@ var Countries = []CountryType{
 	Zimbabwe,
 }
 
+// EURYPAA_Country : all the countries a EURYPAA can happen in
 //go:generate stringer -type=EURYPAA_Country
 type EURYPAA_Country int
 
@@ -588,15 +590,18 @@ var EURYPAA_Countries = []EURYPAA_Country{
 	United_Kingdom_,
 }
 
+// Fellowship : which fellowship someone belongs to
 //go:generate stringer -type=Fellowship
 type Fellowship int
 
+// AA : start of fellowship enumeration
 const (
 	AA Fellowship = iota + 1
 	AlAnon
 	Alateen
 )
 
+// Fellowships : all the fellowships
 var Fellowships = []Fellowship{
 	AA,
 	AlAnon,

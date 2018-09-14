@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/csrf"
@@ -17,24 +16,28 @@ import (
 	"golang.org/x/net/context"
 
 	"google.golang.org/appengine/urlfetch"
+
+	"github.com/spf13/viper"
 )
 
-func CreateHandler(f ContextHandlerToHandlerHOF) *mux.Router {
+// createHTTPRouter : create a HTTP router where each handler is wrapped by a given context
+func createHTTPRouter(f contextHandlerToHandlerHOF) *mux.Router {
 	appRouter := mux.NewRouter()
-	appRouter.HandleFunc("/signup", f(GetSignupHandler)).Methods("GET")
-	appRouter.HandleFunc("/signup", f(PostSignupHandler)).Methods("POST")
-	appRouter.HandleFunc("/register", f(GetRegistrationFormHandler)).Methods("GET")
-	appRouter.HandleFunc("/register", f(PostRegistrationFormHandler)).Methods("POST")
-	appRouter.HandleFunc("/charge", f(PostRegistrationFormPaymentHandler)).Methods("POST")
+	appRouter.HandleFunc("/signup", f(getSignupHandler)).Methods("GET")
+	appRouter.HandleFunc("/signup", f(postSignupHandler)).Methods("POST")
+	appRouter.HandleFunc("/register", f(getRegistrationFormHandler)).Methods("GET")
+	appRouter.HandleFunc("/register", f(postRegistrationFormHandler)).Methods("POST")
+	appRouter.HandleFunc("/charge", f(postRegistrationFormPaymentHandler)).Methods("POST")
 	//appRouter.HandleFunc("/new_convention", f(GetNewConventionHandlerForm)).Methods("GET")
 	//appRouter.HandleFunc("/new_convention", f(PostNewConventionHandlerForm)).Methods("POST")
 
 	return appRouter
 }
 
-func GetSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	convention, err := GetLatestConvention(ctx)
-	CheckErr(err)
+// getSignupHandler : show the signup form (SignupURL)
+func getSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	convention, err := getLatestConvention(ctx)
+	checkErr(err)
 	tmpl := templates.Lookup("signup_form.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
@@ -48,15 +51,17 @@ func GetSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Requ
 		})
 }
 
-func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	convention, err := GetLatestConvention(ctx)
-	CheckErr(err)
+// postSignupHandler : use the signup service to send the person a verification URL
+func postSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	convention, err := getLatestConvention(ctx)
+	checkErr(err)
 	err = req.ParseForm()
-	CheckErr(err)
-	var signup Signup
-	err = schemaDecoder.Decode(&signup, req.PostForm)
+	checkErr(err)
+	var s signup
+	err = schemaDecoder.Decode(&s, req.PostForm)
 	client := urlfetch.Client(ctx)
-	_, err = client.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, signup.Email_Address), "", nil)
+	_, err = client.Post(fmt.Sprintf("%s/%s", viper.GetString("SignupServiceURL"),
+		s.Email_Address), "", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -74,9 +79,10 @@ func PostSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 		})
 }
 
-func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	convention, err := GetLatestConvention(ctx)
-	CheckErr(err)
+// getRegistrationFormHandler : show the registration form
+func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	convention, err := getLatestConvention(ctx)
+	checkErr(err)
 	tmpl := templates.Lookup("registration_form.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
@@ -90,29 +96,30 @@ func GetRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req 
 		})
 }
 
-func PostRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	var regform RegistrationForm
-	var signup Signup
+// postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
+func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	var regform registrationForm
+	var s signup
 	err := req.ParseForm()
-	CheckErr(err)
+	checkErr(err)
 	err = schemaDecoder.Decode(&regform, req.PostForm)
-	CheckErr(err)
+	checkErr(err)
 	client := urlfetch.Client(ctx)
-	resp, err := client.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
-	CheckErr(err)
-	json.NewDecoder(resp.Body).Decode(&signup)
-	if signup.Success {
+	resp, err := client.Get(fmt.Sprintf("%s/%s", viper.GetString("SignupServiceURL"), regform.Email_Address))
+	checkErr(err)
+	json.NewDecoder(resp.Body).Decode(&s)
+	if s.Success {
 		_, err := StashRegistrationForm(ctx, &regform)
-		CheckErr(err)
+		checkErr(err)
 		showPaymentForm(ctx, w, req, &regform)
 	} else {
-		http.Redirect(w, req, config.SignupURL, 301)
+		http.Redirect(w, req, "/signup", http.StatusFound)
 	}
 }
 
-func showPaymentForm(ctx context.Context, w http.ResponseWriter, req *http.Request, regform *RegistrationForm) {
-	convention, err := GetLatestConvention(ctx)
-	CheckErr(err)
+func showPaymentForm(ctx context.Context, w http.ResponseWriter, req *http.Request, regform *registrationForm) {
+	convention, err := getLatestConvention(ctx)
+	checkErr(err)
 	tmpl := templates.Lookup("stripe.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
@@ -131,9 +138,10 @@ func showPaymentForm(ctx context.Context, w http.ResponseWriter, req *http.Reque
 		})
 }
 
-func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	convention, err := GetLatestConvention(ctx)
-	CheckErr(err)
+// postRegistrationFormPaymentHandler : charge the customer, and create a User in the User table
+func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	convention, err := getLatestConvention(ctx)
+	checkErr(err)
 	req.ParseForm()
 
 	emailAddress := req.Form.Get("stripeEmail")
@@ -162,8 +170,8 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		return
 	}
 	regform, err := GetRegistrationForm(ctx, emailAddress)
-	CheckErr(err)
-	user := &User{
+	checkErr(err)
+	user := &user{
 		First_Name:         regform.First_Name,
 		Last_Name:          regform.Last_Name,
 		Email_Address:      regform.Email_Address,
@@ -174,7 +182,7 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		Member_Of:          regform.Member_Of,
 		Stripe_Customer_ID: charge.Customer.ID}
 	_, err = AddUser(ctx, user)
-	CheckErr(err)
+	checkErr(err)
 	tmpl := templates.Lookup("registration_successful.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
@@ -188,7 +196,8 @@ func PostRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		})
 }
 
-func GetNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+// getNewConventionHandlerForm : show New Convention form
+func getNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
 	tmpl := templates.Lookup("new_convention.tmpl")
 	tmpl.Execute(w,
 		map[string]interface{}{
@@ -197,80 +206,72 @@ func GetNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req
 		})
 }
 
-func PostNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	var convention Convention
+// postNewConventionHandlerForm : create new convention
+func postNewConventionHandlerForm(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+	var c convention
 	err := req.ParseForm()
-	CheckErr(err)
-	err = schemaDecoder.Decode(&convention, req.PostForm)
-	CheckErr(err)
-	_, err = CreateConvention(ctx, &convention)
-	CheckErr(err)
+	checkErr(err)
+	err = schemaDecoder.Decode(&c, req.PostForm)
+	checkErr(err)
+	_, err = CreateConvention(ctx, &c)
+	checkErr(err)
 	fmt.Fprint(w, "Convention created")
 }
 
-type configuration struct {
-	SiteName             string
-	SiteDomain           string
-	SMTPServer           string
-	SMTPUsername         string
-	SMTPPassword         string
-	ProjectID            string
-	CSRF_Key             string
-	IsLiveSite           bool
-	SignupURL            string
-	SignupServiceURL     string
-	StripePublishableKey string
-	StripeSecretKey      string
-	StripeTestPK         string
-	StripeTestSK         string
-	TestEmailAddress     string
-}
-
 var (
-	config         configuration
 	schemaDecoder  *schema.Decoder
 	publishableKey string
 	templates      *template.Template
 )
 
-func ConfigInit() {
-	file, _ := os.Open("config.json")
-	defer file.Close()
-	decoder := json.NewDecoder(file)
-	config = configuration{}
-	err := decoder.Decode(&config)
-	CheckErr(err)
+// configInit : load in config file using spf13/viper
+func configInit() {
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {             // Handle errors reading the config file
+		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
 }
 
-func SchemaDecoderInit() {
+// schemaDecoderInit : create the schema decoder for decoding req.PostForm
+func schemaDecoderInit() {
 	schemaDecoder = schema.NewDecoder()
-	schemaDecoder.RegisterConverter(time.Time{}, TimeConverter)
+	schemaDecoder.RegisterConverter(time.Time{}, timeConverter)
 	schemaDecoder.IgnoreUnknownKeys(true)
 }
 
-func RouterInit() {
+// routerInit : initialise our CSRF protected HTTPRouter
+func routerInit() {
 	// TODO: https://youtu.be/xyDkyFjzFVc?t=1308
-	router := CreateHandler(ContextHandlerToHttpHandler)
+	router := createHTTPRouter(contextHandlerToHTTPHandler)
 	csrfProtector := csrf.Protect(
-		[]byte(config.CSRF_Key),
-		csrf.Secure(config.IsLiveSite))
+		[]byte(viper.GetString("CSRF_Key")),
+		csrf.Secure(viper.GetBool("IsLiveSite")))
 	csrfProtectedRouter := csrfProtector(router)
 	http.Handle("/", csrfProtectedRouter)
 }
 
-func StripeInit() {
-	publishableKey = config.StripePublishableKey
-	stripe.Key = config.StripeSecretKey
+// stripeInit : set up important Stripe variables
+func stripeInit() {
+	if viper.GetBool("IsLiveSite") {
+		publishableKey = viper.GetString("StripePublishableKey")
+		stripe.Key = viper.GetString("StripeSecretKey")
+	} else {
+		publishableKey = viper.GetString("StripeTestPK")
+		stripe.Key = viper.GetString("StripeTestSK")
+	}
 }
 
-func TemplatesInit() {
+// templatesInit : parse the HTML templates, including any predefined functions (FuncMap)
+func templatesInit() {
 	templates = template.Must(template.New("").Funcs(FuncMap).ParseGlob("templates/*.tmpl"))
 }
 
 func init() {
-	ConfigInit()
-	TemplatesInit()
-	SchemaDecoderInit()
-	RouterInit()
-	StripeInit()
+	configInit()
+	templatesInit()
+	schemaDecoderInit()
+	routerInit()
+	stripeInit()
 }

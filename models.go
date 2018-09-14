@@ -5,7 +5,7 @@ import (
 )
 
 // Email_Address is primary key
-type User struct {
+type user struct {
 	Email_Address      string
 	Creation_Date      time.Time
 	First_Name         string
@@ -19,7 +19,7 @@ type User struct {
 	Stripe_Customer_ID string
 }
 
-type Registration struct {
+type registration struct {
 	ID                 int64  // pk
 	User_Email_Address string // fk
 	Convention_ID      int64  // fk
@@ -27,7 +27,7 @@ type Registration struct {
 	Stripe_Charge_ID   string
 }
 
-type Convention struct {
+type convention struct {
 	ID                int64 // pk
 	Name              string
 	Creation_Date     time.Time
@@ -45,7 +45,7 @@ type Convention struct {
 }
 
 // Email_Address is primary key
-type RegistrationForm struct {
+type registrationForm struct {
 	Email_Address string
 	Creation_Date time.Time
 	First_Name    string
@@ -59,7 +59,7 @@ type RegistrationForm struct {
 }
 
 // Signup is used to parse JSON response from the signup microservice
-type Signup struct {
+type signup struct {
 	Email_Address string `json:"address"`
 	Success       bool   `json:"success"`
 	Note          string `json:"note"`

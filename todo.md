@@ -18,9 +18,9 @@
 
 * Don't load external javascript: host it all internally.
 
-* Somehow expose User table to Host Registration Chairperson
+* Somehow expose User table to Host Registration Chairperson.
 
-## MEDIUM
+## MEDIUM
 
 * Add form fields to `/register` to match <https://eurypaa2018.com> ?
 

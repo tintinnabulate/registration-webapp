@@ -19,7 +19,7 @@ import (
 
 // StashRegistrationForm adds a signup with the given verification code to the datastore,
 // returning the key of the newly created entity.
-func StashRegistrationForm(ctx context.Context, regform *RegistrationForm) (*datastore.Key, error) {
+func StashRegistrationForm(ctx context.Context, regform *registrationForm) (*datastore.Key, error) {
 	regform.Creation_Date = time.Now()
 	key := datastore.NewKey(ctx, "RegistrationForm", regform.Email_Address, 0, nil)
 	k, err := datastore.Put(ctx, key, regform)
@@ -28,35 +28,37 @@ func StashRegistrationForm(ctx context.Context, regform *RegistrationForm) (*dat
 
 // GetRegistrationForm gets the signup code matching the given email address.
 // This should only be called during testing.
-func GetRegistrationForm(ctx context.Context, email string) (RegistrationForm, error) {
+func GetRegistrationForm(ctx context.Context, email string) (registrationForm, error) {
 	key := datastore.NewKey(ctx, "RegistrationForm", email, 0, nil)
-	var regform RegistrationForm
+	var regform registrationForm
 	err := datastore.Get(ctx, key, &regform)
 	return regform, err
 }
 
 // AddUser does a thing
-func AddUser(ctx context.Context, user *User) (*datastore.Key, error) {
-	user.Creation_Date = time.Now()
-	key := datastore.NewKey(ctx, "User", user.Email_Address, 0, nil)
-	k, err := datastore.Put(ctx, key, user)
+func AddUser(ctx context.Context, u *user) (*datastore.Key, error) {
+	u.Creation_Date = time.Now()
+	key := datastore.NewKey(ctx, "User", u.Email_Address, 0, nil)
+	k, err := datastore.Put(ctx, key, u)
 	return k, err
 }
 
-func CreateConvention(ctx context.Context, convention *Convention) (*datastore.Key, error) {
-	convention.Creation_Date = time.Now()
+// CreateConvention : creates a convention in the Convention table
+func CreateConvention(ctx context.Context, c *convention) (*datastore.Key, error) {
+	c.Creation_Date = time.Now()
 	key := datastore.NewKey(ctx, "Convention", "", 0, nil) // TODO: get it to use ID as the unique ID
-	k, err := datastore.Put(ctx, key, convention)
+	k, err := datastore.Put(ctx, key, c)
 	return k, err
 }
 
-func GetLatestConvention(ctx context.Context) (Convention, error) {
-	var conventions []Convention
+// getLatestConvention : gets the latest convention
+func getLatestConvention(ctx context.Context) (convention, error) {
+	var conventions []convention
 	q := datastore.NewQuery("Convention").Order("-Creation_Date")
 	_, err := q.GetAll(ctx, &conventions)
-	CheckErr(err)
+	checkErr(err)
 	if len(conventions) < 1 {
-		return Convention{}, errors.New("No conventions in DB")
+		return convention{}, errors.New("No conventions in DB")
 	}
 	return conventions[0], nil
 }
