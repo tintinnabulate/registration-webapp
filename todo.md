@@ -18,12 +18,13 @@
 
 * Don't load external javascript: host it all internally.
 
+* Somehow expose User table to Host Registration Chairperson
 
 ## MEDIUM
 
 * Add form fields to `/register` to match <https://eurypaa2018.com> ?
 
-* Load Customer ID based on email address (if seen before).
+* Load Customer ID based on email address (if seen before). ?
 
 * Use Gorilla SecureCookie instead of having RegistrationForm table? https://www.calhoun.io/securing-cookies-in-go/
 
