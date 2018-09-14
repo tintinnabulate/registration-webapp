@@ -10,14 +10,13 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
+	"github.com/spf13/viper"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
 
 	"golang.org/x/net/context"
 
 	"google.golang.org/appengine/urlfetch"
-
-	"github.com/spf13/viper"
 )
 
 // createHTTPRouter : create a HTTP router where each handler is wrapped by a given context
@@ -56,8 +55,8 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 	checkErr(err)
 	var s signup
 	err = schemaDecoder.Decode(&s, req.PostForm)
-	client := urlfetch.Client(ctx)
-	_, err = client.Post(fmt.Sprintf("%s/%s", viper.GetString("SignupServiceURL"),
+	httpClient := urlfetch.Client(ctx)
+	_, err = httpClient.Post(fmt.Sprintf("%s/%s", viper.GetString("SignupServiceURL"),
 		s.Email_Address), "", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -101,8 +100,8 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req
 	checkErr(err)
 	err = schemaDecoder.Decode(&regform, req.PostForm)
 	checkErr(err)
-	client := urlfetch.Client(ctx)
-	resp, err := client.Get(fmt.Sprintf("%s/%s", viper.GetString("SignupServiceURL"), regform.Email_Address))
+	httpClient := urlfetch.Client(ctx)
+	resp, err := httpClient.Get(fmt.Sprintf("%s/%s", viper.GetString("SignupServiceURL"), regform.Email_Address))
 	checkErr(err)
 	json.NewDecoder(resp.Body).Decode(&s)
 	if s.Success {

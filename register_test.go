@@ -173,7 +173,7 @@ func TestRegisterWithInvalidEmail(t *testing.T) {
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
 
-	c.Convey("When you register with a valid email address", t, func() {
+	c.Convey("When you register with an invalid email address", t, func() {
 		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
 		record := httptest.NewRecorder()
 
@@ -197,37 +197,52 @@ func TestRegisterWithInvalidEmail(t *testing.T) {
 	})
 }
 
-/* func TestPayOverStripeCreatesUser(t *testing.T) {
+func TestPayOverStripeCreatesUser(t *testing.T) {
 	ctx, inst := getContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
-	CreateConvention(ctx, cnv)
+	createConvention(ctx, cnv)
 
 	c.Convey("When you register with a valid email address", t, func() {
 		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
 		record := httptest.NewRecorder()
+		record1 := httptest.NewRecorder()
 
-		formData := url.Values{}
-		formData.Set("Email_Address", viper.GetString("TestEmailAddress"))
-		formData.Set("Country", "1")
-		formData.Set("City", "Foo")
-		formData.Set("First_Name", "Bar")
+		formData1 := url.Values{}
+		formData1.Set("Email_Address", viper.GetString("TestEmailAddress"))
+		formData1.Set("Country", "1")
+		formData1.Set("City", "Foo")
+		formData1.Set("First_Name", "Bar")
 
-		req, err := http.NewRequest("POST", "/register", strings.NewReader(formData.Encode())) // URL-encoded payload
+		req1, err := http.NewRequest("POST", "/register", strings.NewReader(formData1.Encode())) // URL-encoded payload
 		//req.Header.Add("Authorization", "auth_token=\"XXXXXXX\"")
-		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-		req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
+		req1.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+		req1.Header.Add("Content-Length", strconv.Itoa(len(formData1.Encode())))
 
 		c.So(err, c.ShouldBeNil)
 
 		c.Convey("The next page body should contain \"stripe-button\"", func() {
-			r.ServeHTTP(record, req)
-			c.So(record.Code, c.ShouldEqual, http.StatusOK)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `stripe-button`)
-			c.Convey("There should be a registration entry in the Registration table", func() {
-				c.So(stripe.Key, c.ShouldEqual, viper.GetString("StripeTestSK"))
+			r.ServeHTTP(record1, req1)
+			c.So(record1.Code, c.ShouldEqual, http.StatusOK)
+			c.So(fmt.Sprint(record1.Body), c.ShouldContainSubstring, `stripe-button`)
+			formData := url.Values{}
+			formData.Set("stripeEmail", viper.GetString("TestEmailAddress"))
+			formData.Set("stripeToken", "tok_visa")
+
+			req, err := http.NewRequest("POST", "/charge", strings.NewReader(formData.Encode())) // URL-encoded payload
+			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+			req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
+
+			c.So(err, c.ShouldBeNil)
+
+			c.Convey("The next page body should contain \"You are now registered!\"", func() {
+				r.ServeHTTP(record, req)
+				c.So(record.Code, c.ShouldEqual, http.StatusOK)
+				c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `You are now registered!`)
+				c.Convey("There should be a user entry in the User table", func() {
+					c.So(1, c.ShouldEqual, 1)
+				})
 			})
 		})
 	})
 }
-*/
