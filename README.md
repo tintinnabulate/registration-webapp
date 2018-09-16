@@ -1,24 +1,25 @@
-# Register
+# registration-webapp
 
-## Signup
+How it works...
 
-Use signup microservice!
+## User Signup
 
-1. `POST signup_microservice/signup/{email_address}`
-2. `GET signup_microservice/verify/{code}`
+Uses vmail microservice! <https://github.com/tintinnabulate/vmail>
 
-## Registration
+1. `POST vmail_microservice_url/signup/{email_address}`
+2. `GET vmail_microservice_url/verify/{code}`
 
-Again, use signup microservice!
+## User Registration & Payment
 
-1. When they click "Register", if `GET signup_microservice/signup/{email_address}` response JSON = `{"Address": "email_address", "Success": true, "Note": ""}` GOTO (2), else GOTO (3)
+Also uses vmail microservice!
+
+1. When user clicks "Register", if `GET vmail_microservice_url/signup/{email_address}` response JSON = `{"Address": "email_address", "Success": true, "Note": ""}` GOTO (2), else GOTO (3)
 2. Take payment. If successful payment, GOTO (4), else GOTO (1).
 3. Redirect to signup page
-4. Store user in Registrations database.
+4. Store user object in Registrations database.
 
 ## Notes
 
-* See [https://tutorialedge.net/golang/consuming-restful-api-with-go/]()
-* See [https://stackoverflow.com/questions/26035816/testing-post-method-with-csrf]()
-* See [https://gowebexamples.com/password-hashing/]()
-* See [https://www.youtube.com/watch?v=j4Jyev7iTlE]()
+* See <https://tutorialedge.net/golang/consuming-restful-api-with-go/>
+* See <https://stackoverflow.com/questions/26035816/testing-post-method-with-csrf>
+* See <https://gowebexamples.com/password-hashing/>
