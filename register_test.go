@@ -12,9 +12,7 @@ import (
 
 	c "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/viper"
-
-	handlers "github.com/tintinnabulate/aecontext-handlers"
-
+	"github.com/tintinnabulate/aecontext-handlers/handlers"
 	"github.com/tintinnabulate/registration-webapp/mockverifier"
 )
 

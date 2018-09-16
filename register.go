@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
-	handlers "github.com/tintinnabulate/aecontext-handlers"
+	"github.com/tintinnabulate/aecontext-handlers/handlers"
 
 	"golang.org/x/net/context"
 
