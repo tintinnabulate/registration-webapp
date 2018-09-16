@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
+	handlers "github.com/tintinnabulate/aecontext-handlers"
 
 	"golang.org/x/net/context"
 
@@ -20,7 +21,7 @@ import (
 )
 
 // createHTTPRouter : create a HTTP router where each handler is wrapped by a given context
-func createHTTPRouter(f contextHandlerToHandlerHOF) *mux.Router {
+func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 	appRouter := mux.NewRouter()
 	appRouter.HandleFunc("/signup", f(getSignupHandler)).Methods("GET")
 	appRouter.HandleFunc("/signup", f(postSignupHandler)).Methods("POST")
@@ -218,7 +219,7 @@ func schemaDecoderInit() {
 // routerInit : initialise our CSRF protected HTTPRouter
 func routerInit() {
 	// TODO: https://youtu.be/xyDkyFjzFVc?t=1308
-	router := createHTTPRouter(contextHandlerToHTTPHandler)
+	router := createHTTPRouter(handlers.ToHTTPHandler)
 	csrfProtector := csrf.Protect(
 		[]byte(viper.GetString("CSRF_Key")),
 		csrf.Secure(viper.GetBool("IsLiveSite")))

@@ -13,34 +13,10 @@ import (
 	c "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/viper"
 
-	"golang.org/x/net/context"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/aetest"
+	handlers "github.com/tintinnabulate/aecontext-handlers"
 
-	"github.com/tintinnabulate/register/mockverifier"
+	"github.com/tintinnabulate/registration-webapp/mockverifier"
 )
-
-func createContextHandlerToHTTPHandler(ctx context.Context) contextHandlerToHandlerHOF {
-	return func(f contextHandlerFunc) handlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			f(ctx, w, r)
-		}
-	}
-}
-
-func getContext() (context.Context, aetest.Instance) {
-	inst, _ := aetest.NewInstance(
-		&aetest.Options{
-			StronglyConsistentDatastore: true,
-			// SuppressDevAppServerLog:     true,
-		})
-	req, err := inst.NewRequest("GET", "/", nil)
-	if err != nil {
-		inst.Close()
-	}
-	ctx := appengine.NewContext(req)
-	return ctx, inst
-}
 
 func TestMain(m *testing.M) {
 	testSetup()
@@ -57,13 +33,13 @@ func testSetup() {
 
 // TestGetSignupPage does just that
 func TestGetSignupPage(t *testing.T) {
-	ctx, inst := getContext()
+	ctx, inst := handlers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
 
 	c.Convey("When visit the signup page", t, func() {
-		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 
 		req, err := http.NewRequest("GET", "/signup", nil) // URL-encoded payload
@@ -81,13 +57,13 @@ func TestGetSignupPage(t *testing.T) {
 
 // TestGetRegisterPage does just that
 func TestGetRegisterPage(t *testing.T) {
-	ctx, inst := getContext()
+	ctx, inst := handlers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
 
 	c.Convey("When you visit the register page", t, func() {
-		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 
 		req, err := http.NewRequest("GET", "/register", nil) // URL-encoded payload
@@ -105,13 +81,13 @@ func TestGetRegisterPage(t *testing.T) {
 
 // TestSubmitEmptyEmailAddress does just that
 func TestSubmitEmptyEmailAddress(t *testing.T) {
-	ctx, inst := getContext()
+	ctx, inst := handlers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
 
 	c.Convey("When you submit a blank email address", t, func() {
-		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 
 		formData := url.Values{}
@@ -135,13 +111,13 @@ func TestSubmitEmptyEmailAddress(t *testing.T) {
 
 // TestRegisterWithValidEmail does just that
 func TestRegisterWithValidEmail(t *testing.T) {
-	ctx, inst := getContext()
+	ctx, inst := handlers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
 
 	c.Convey("When you register with a valid email address", t, func() {
-		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 
 		formData := url.Values{}
@@ -172,13 +148,13 @@ func TestRegisterWithValidEmail(t *testing.T) {
 
 // TestRegisterWithInvalidEmail does just that
 func TestRegisterWithInvalidEmail(t *testing.T) {
-	ctx, inst := getContext()
+	ctx, inst := handlers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
 
 	c.Convey("When you register with an invalid email address", t, func() {
-		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 
 		formData := url.Values{}
@@ -202,13 +178,13 @@ func TestRegisterWithInvalidEmail(t *testing.T) {
 }
 
 func TestPayOverStripeCreatesUser(t *testing.T) {
-	ctx, inst := getContext()
+	ctx, inst := handlers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
 
 	c.Convey("When you register with a valid email address", t, func() {
-		r := createHTTPRouter(createContextHandlerToHTTPHandler(ctx))
+		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 		record1 := httptest.NewRecorder()
 
