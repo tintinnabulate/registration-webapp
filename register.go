@@ -201,7 +201,7 @@ var (
 
 // configInit : load in config file using spf13/viper
 func configInit() {
-	viper.SetConfigName("config")
+	viper.SetConfigName("config.example")
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig() // Find and read the config file
 	if err != nil {             // Handle errors reading the config file
