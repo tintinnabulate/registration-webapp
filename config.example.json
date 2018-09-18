@@ -8,10 +8,10 @@
     "CSRF_Key":             "my-random-32-bytes",
     "IsLiveSite":           false,
     "SignupURL":            "this-apps-signup-endpoint.com/signup",
-    "SignupServiceURL":     "another-apps-email-verifier/signup/sitecode",
+    "SignupServiceURL":     "http://localhost:10000/signup/eury2019",
     "StripePublishableKey": "pk_live_foo",
     "StripeSecretKey":      "sk_live_foo",
-    "StripeTestPK":         "pk_test_foo",
-    "StripeTestSK":         "sk_test_foo",
+    "StripeTestPK":         "pk_test_UdWbULsYzTqKOob0SHEsTNN2",
+    "StripeTestSK":         "rk_test_xR1MFQcmds6aXvoDRKDD3HdR",
     "TestEmailAddress":     "foo@example.com"
 }

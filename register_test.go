@@ -23,8 +23,7 @@ func TestMain(m *testing.M) {
 }
 
 func testSetup() {
-	viper.Set("IsLiveSite", false)
-	viper.Set("SignupServiceURL", "http://localhost:10000/signup/eury2019")
+	configInit("config.example")
 	stripeInit()
 	go mockverifier.Start(viper.GetString("TestEmailAddress"))
 }
@@ -183,8 +182,8 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 
 	c.Convey("When you register with a valid email address", t, func() {
 		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
-		record := httptest.NewRecorder()
 		record1 := httptest.NewRecorder()
+		record2 := httptest.NewRecorder()
 
 		formData1 := url.Values{}
 		formData1.Set("Email_Address", viper.GetString("TestEmailAddress"))
@@ -203,20 +202,21 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 			r.ServeHTTP(record1, req1)
 			c.So(record1.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record1.Body), c.ShouldContainSubstring, `stripe-button`)
-			formData := url.Values{}
-			formData.Set("stripeEmail", viper.GetString("TestEmailAddress"))
-			formData.Set("stripeToken", "tok_visa")
 
-			req, err := http.NewRequest("POST", "/charge", strings.NewReader(formData.Encode())) // URL-encoded payload
-			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-			req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
+			formData2 := url.Values{}
+			formData2.Set("stripeEmail", viper.GetString("TestEmailAddress"))
+			formData2.Set("stripeToken", "tok_visa")
+
+			req2, err := http.NewRequest("POST", "/charge", strings.NewReader(formData2.Encode())) // URL-encoded payload
+			req2.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+			req2.Header.Add("Content-Length", strconv.Itoa(len(formData2.Encode())))
 
 			c.So(err, c.ShouldBeNil)
 
 			c.Convey("The next page body should contain \"You are now registered!\"", func() {
-				r.ServeHTTP(record, req)
-				c.So(record.Code, c.ShouldEqual, http.StatusOK)
-				c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `You are now registered!`)
+				r.ServeHTTP(record2, req2)
+				c.So(record2.Code, c.ShouldEqual, http.StatusOK)
+				c.So(fmt.Sprint(record2.Body), c.ShouldContainSubstring, `You are now registered!`)
 				c.Convey("There should be a user entry in the User table", func() {
 					c.So(1, c.ShouldEqual, 1)
 				})
