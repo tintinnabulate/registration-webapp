@@ -203,10 +203,7 @@ var (
 func configInit(configName string) {
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
-	err := viper.ReadInConfig() // Find and read the config file
-	if err != nil {             // Handle errors reading the config file
-		panic(fmt.Errorf("fatal error config file: %s", err))
-	}
+	viper.ReadInConfig()
 }
 
 // schemaDecoderInit : create the schema decoder for decoding req.PostForm
