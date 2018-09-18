@@ -12,7 +12,4 @@ install:
   - export APPENGINE_DEV_APPSERVER=/tmp/sdk/go_appengine/dev_appserver.py
 
 script:
-  - goapp version
-  - go version
-  - go test -v
   - go test -v -race
