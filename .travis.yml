@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - 1.9.x
+  - 1.11.x
 
 install:
   - go get -u -v $(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' ./... | sort | uniq )
@@ -12,4 +12,4 @@ install:
   - export APPENGINE_DEV_APPSERVER=/tmp/sdk/go_appengine/dev_appserver.py
 
 script:
-  - go test -v -race -cover
+  - go test -v -race -cover ./...
