@@ -13,7 +13,7 @@ import (
 	c "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/viper"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
-	"github.com/tintinnabulate/registration-webapp/mockverifier"
+	"github.com/tintinnabulate/vmail/mockverifier"
 )
 
 func TestMain(m *testing.M) {
