@@ -10,10 +10,10 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
-	"github.com/stevenroose/gonfig"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
+	"github.com/tintinnabulate/gonfig"
 
 	"golang.org/x/net/context"
 
