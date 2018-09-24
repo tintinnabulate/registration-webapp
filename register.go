@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
-	"github.com/spf13/viper"
+	"github.com/stevenroose/gonfig"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
@@ -57,8 +57,7 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 	var s signup
 	err = schemaDecoder.Decode(&s, req.PostForm)
 	httpClient := urlfetch.Client(ctx)
-	_, err = httpClient.Post(fmt.Sprintf("%s/%s", viper.GetString("SignupServiceURL"),
-		s.Email_Address), "", nil)
+	_, err = httpClient.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -102,7 +101,7 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req
 	err = schemaDecoder.Decode(&regform, req.PostForm)
 	checkErr(err)
 	httpClient := urlfetch.Client(ctx)
-	resp, err := httpClient.Get(fmt.Sprintf("%s/%s", viper.GetString("SignupServiceURL"), regform.Email_Address))
+	resp, err := httpClient.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
 	checkErr(err)
 	json.NewDecoder(resp.Body).Decode(&s)
 	if s.Success {
@@ -193,17 +192,37 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		})
 }
 
+type Config struct {
+	SMTPUsername         string `default:"sender@mydomain.com"`
+	SMTPPassword         string `default:"mypassword"`
+	SMTPServer           string `default:"smtp.mydomain.com"`
+	SiteDomain           string `default:"mydomain.com"`
+	SiteName             string `default:"MyDomain"`
+	ProjectID            string `default:"my-appspot-project-id"`
+	CSRF_Key             string `default:"my-random-32-bytes"`
+	IsLiveSite           bool   `default:false`
+	SignupURL            string `default:"this-apps-signup-endpoint.com/signup"`
+	SignupServiceURL     string `default:"SPAJ"`
+	StripePublishableKey string `default:"pk_live_foo"`
+	StripeSecretKey      string `default:"sk_live_foo"`
+	StripeTestPK         string `default:"pk_test_UdWbULsYzTqKOob0SHEsTNN2"`
+	StripeTestSK         string `default:"rk_test_xR1MFQcmds6aXvoDRKDD3HdR"`
+	TestEmailAddress     string `default:"foo@example.com"`
+}
+
 var (
 	schemaDecoder  *schema.Decoder
 	publishableKey string
 	templates      *template.Template
+	config         Config
 )
 
-// configInit : load in config file using spf13/viper
 func configInit(configName string) {
-	viper.SetConfigName(configName)
-	viper.AddConfigPath(".")
-	viper.ReadInConfig()
+	err := gonfig.Load(&config, gonfig.Conf{
+		//FileDefaultFilename: "config.json",
+		FileDecoder: gonfig.DecoderJSON,
+	})
+	checkErr(err)
 }
 
 // schemaDecoderInit : create the schema decoder for decoding req.PostForm
@@ -218,20 +237,20 @@ func routerInit() {
 	// TODO: https://youtu.be/xyDkyFjzFVc?t=1308
 	router := createHTTPRouter(handlers.ToHTTPHandler)
 	csrfProtector := csrf.Protect(
-		[]byte(viper.GetString("CSRF_Key")),
-		csrf.Secure(viper.GetBool("IsLiveSite")))
+		[]byte(config.CSRF_Key),
+		csrf.Secure(config.IsLiveSite))
 	csrfProtectedRouter := csrfProtector(router)
 	http.Handle("/", csrfProtectedRouter)
 }
 
 // stripeInit : set up important Stripe variables
 func stripeInit() {
-	if viper.GetBool("IsLiveSite") {
-		publishableKey = viper.GetString("StripePublishableKey")
-		stripe.Key = viper.GetString("StripeSecretKey")
+	if config.IsLiveSite {
+		publishableKey = config.StripePublishableKey
+		stripe.Key = config.StripeSecretKey
 	} else {
-		publishableKey = viper.GetString("StripeTestPK")
-		stripe.Key = viper.GetString("StripeTestSK")
+		publishableKey = config.StripeTestPK
+		stripe.Key = config.StripeTestSK
 	}
 }
 

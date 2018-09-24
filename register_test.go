@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	c "github.com/smartystreets/goconvey/convey"
-	"github.com/spf13/viper"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
 	"github.com/tintinnabulate/vmail/mockverifier"
 )
@@ -23,9 +22,7 @@ func TestMain(m *testing.M) {
 }
 
 func testSetup() {
-	configInit("config.example")
-	stripeInit()
-	go mockverifier.Start(viper.GetString("TestEmailAddress"))
+	go mockverifier.Start(config.TestEmailAddress)
 }
 
 // TestGetSignupPage does just that
@@ -118,7 +115,7 @@ func TestRegisterWithValidEmail(t *testing.T) {
 		record := httptest.NewRecorder()
 
 		formData := url.Values{}
-		formData.Set("Email_Address", viper.GetString("TestEmailAddress"))
+		formData.Set("Email_Address", config.TestEmailAddress)
 		formData.Set("Country", "1")
 		formData.Set("City", "Foo")
 		formData.Set("First_Name", "Bar")
@@ -135,7 +132,7 @@ func TestRegisterWithValidEmail(t *testing.T) {
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `stripe-button`)
 			c.Convey("There should be a registration entry in the Registration table", func() {
-				reg, err := getRegistrationForm(ctx, viper.GetString("TestEmailAddress"))
+				reg, err := getRegistrationForm(ctx, config.TestEmailAddress)
 				checkErr(err)
 				c.So(reg.City, c.ShouldEqual, "Foo")
 			})
@@ -186,7 +183,7 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 		record2 := httptest.NewRecorder()
 
 		formData1 := url.Values{}
-		formData1.Set("Email_Address", viper.GetString("TestEmailAddress"))
+		formData1.Set("Email_Address", config.TestEmailAddress)
 		formData1.Set("Country", "1")
 		formData1.Set("City", "Foo")
 		formData1.Set("First_Name", "Bar")
@@ -204,7 +201,7 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 			c.So(fmt.Sprint(record1.Body), c.ShouldContainSubstring, `stripe-button`)
 
 			formData2 := url.Values{}
-			formData2.Set("stripeEmail", viper.GetString("TestEmailAddress"))
+			formData2.Set("stripeEmail", config.TestEmailAddress)
 			formData2.Set("stripeToken", "tok_visa")
 
 			req2, err := http.NewRequest("POST", "/charge", strings.NewReader(formData2.Encode())) // URL-encoded payload
