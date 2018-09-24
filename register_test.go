@@ -22,6 +22,8 @@ func TestMain(m *testing.M) {
 }
 
 func testSetup() {
+	configInit("config.example.json")
+	stripeInit()
 	go mockverifier.Start(config.TestEmailAddress)
 }
 

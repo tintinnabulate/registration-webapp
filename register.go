@@ -219,8 +219,9 @@ var (
 
 func configInit(configName string) {
 	err := gonfig.Load(&config, gonfig.Conf{
-		//FileDefaultFilename: "config.json",
-		FileDecoder: gonfig.DecoderJSON,
+		FileDefaultFilename: configName,
+		FileDecoder:         gonfig.DecoderJSON,
+		FlagDisable:         true,
 	})
 	checkErr(err)
 }
@@ -260,7 +261,7 @@ func templatesInit() {
 }
 
 func init() {
-	configInit("config")
+	configInit("config.json")
 	templatesInit()
 	schemaDecoderInit()
 	routerInit()
