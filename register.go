@@ -193,21 +193,21 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 }
 
 type Config struct {
-	SMTPUsername         string `default:"sender@mydomain.com"`
-	SMTPPassword         string `default:"mypassword"`
-	SMTPServer           string `default:"smtp.mydomain.com"`
-	SiteDomain           string `default:"mydomain.com"`
-	SiteName             string `default:"MyDomain"`
-	ProjectID            string `default:"my-appspot-project-id"`
-	CSRF_Key             string `default:"my-random-32-bytes"`
-	IsLiveSite           bool   `default:false`
-	SignupURL            string `default:"this-apps-signup-endpoint.com/signup"`
-	SignupServiceURL     string `default:"http://localhost:10000/signup/eury2019"`
-	StripePublishableKey string `default:"pk_live_foo"`
-	StripeSecretKey      string `default:"sk_live_foo"`
-	StripeTestPK         string `default:"pk_test_UdWbULsYzTqKOob0SHEsTNN2"`
-	StripeTestSK         string `default:"rk_test_xR1MFQcmds6aXvoDRKDD3HdR"`
-	TestEmailAddress     string `default:"foo@example.com"`
+	SMTPUsername         string `id:"SMTPUsername"         default:"sender@mydomain.com"`
+	SMTPPassword         string `id:"SMTPPassword"         default:"mypassword"`
+	SMTPServer           string `id:"SMTPServer"           default:"smtp.mydomain.com"`
+	SiteDomain           string `id:"SiteDomain"           default:"mydomain.com"`
+	SiteName             string `id:"SiteName"             default:"MyDomain"`
+	ProjectID            string `id:"ProjectID"            default:"my-appspot-project-id"`
+	CSRF_Key             string `id:"CSRF_Key"             default:"my-random-32-bytes"`
+	IsLiveSite           bool   `id:"IsLiveSite"           default:false`
+	SignupURL            string `id:"SignupURL"            default:"this-apps-signup-endpoint.com/signup"`
+	SignupServiceURL     string `id:"SignupServiceURL"     default:"http://localhost:10000/signup/eury2019"`
+	StripePublishableKey string `id:"StripePublishableKey" default:"pk_live_foo"`
+	StripeSecretKey      string `id:"StripeSecretKey"      default:"sk_live_foo"`
+	StripeTestPK         string `id:"StripeTestPK"         default:"pk_test_UdWbULsYzTqKOob0SHEsTNN2"`
+	StripeTestSK         string `id:"StripeTestSK"         default:"rk_test_xR1MFQcmds6aXvoDRKDD3HdR"`
+	TestEmailAddress     string `id:"TestEmailAddress"     default:"foo@example.com"`
 }
 
 var (
