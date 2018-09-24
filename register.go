@@ -202,7 +202,7 @@ type Config struct {
 	CSRF_Key             string `default:"my-random-32-bytes"`
 	IsLiveSite           bool   `default:false`
 	SignupURL            string `default:"this-apps-signup-endpoint.com/signup"`
-	SignupServiceURL     string `default:"SPAJ"`
+	SignupServiceURL     string `default:"http://localhost:10000/signup/eury2019"`
 	StripePublishableKey string `default:"pk_live_foo"`
 	StripeSecretKey      string `default:"sk_live_foo"`
 	StripeTestPK         string `default:"pk_test_UdWbULsYzTqKOob0SHEsTNN2"`
