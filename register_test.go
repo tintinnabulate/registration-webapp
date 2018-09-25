@@ -12,6 +12,7 @@ import (
 
 	c "github.com/smartystreets/goconvey/convey"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
+	"github.com/tintinnabulate/aecontext-handlers/testers"
 	"github.com/tintinnabulate/vmail/mockverifier"
 )
 
@@ -29,7 +30,7 @@ func testSetup() {
 
 // TestGetSignupPage does just that
 func TestGetSignupPage(t *testing.T) {
-	ctx, inst := handlers.GetTestingContext()
+	ctx, inst := testers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
@@ -53,7 +54,7 @@ func TestGetSignupPage(t *testing.T) {
 
 // TestGetRegisterPage does just that
 func TestGetRegisterPage(t *testing.T) {
-	ctx, inst := handlers.GetTestingContext()
+	ctx, inst := testers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
@@ -77,7 +78,7 @@ func TestGetRegisterPage(t *testing.T) {
 
 // TestSubmitEmptyEmailAddress does just that
 func TestSubmitEmptyEmailAddress(t *testing.T) {
-	ctx, inst := handlers.GetTestingContext()
+	ctx, inst := testers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
@@ -107,7 +108,7 @@ func TestSubmitEmptyEmailAddress(t *testing.T) {
 
 // TestRegisterWithValidEmail does just that
 func TestRegisterWithValidEmail(t *testing.T) {
-	ctx, inst := handlers.GetTestingContext()
+	ctx, inst := testers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
@@ -144,7 +145,7 @@ func TestRegisterWithValidEmail(t *testing.T) {
 
 // TestRegisterWithInvalidEmail does just that
 func TestRegisterWithInvalidEmail(t *testing.T) {
-	ctx, inst := handlers.GetTestingContext()
+	ctx, inst := testers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
@@ -174,7 +175,7 @@ func TestRegisterWithInvalidEmail(t *testing.T) {
 }
 
 func TestPayOverStripeCreatesUser(t *testing.T) {
-	ctx, inst := handlers.GetTestingContext()
+	ctx, inst := testers.GetTestingContext()
 	defer inst.Close()
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
