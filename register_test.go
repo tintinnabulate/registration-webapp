@@ -39,7 +39,7 @@ func TestGetSignupPage(t *testing.T) {
 		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 
-		req, err := http.NewRequest("GET", "/signup", nil) // URL-encoded payload
+		req, err := http.NewRequest("GET", "/signup", nil)
 
 		c.So(err, c.ShouldBeNil)
 
@@ -63,7 +63,7 @@ func TestGetRegisterPage(t *testing.T) {
 		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 
-		req, err := http.NewRequest("GET", "/register", nil) // URL-encoded payload
+		req, err := http.NewRequest("GET", "/register", nil)
 
 		c.So(err, c.ShouldBeNil)
 
@@ -90,8 +90,7 @@ func TestSubmitEmptyEmailAddress(t *testing.T) {
 		formData := url.Values{}
 		formData.Set("Email_Address", "")
 
-		req, err := http.NewRequest("POST", "/signup", strings.NewReader(formData.Encode())) // URL-encoded payload
-		//req.Header.Add("Authorization", "auth_token=\"XXXXXXX\"")
+		req, err := http.NewRequest("POST", "/signup", strings.NewReader(formData.Encode()))
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
 
@@ -123,8 +122,7 @@ func TestRegisterWithValidEmail(t *testing.T) {
 		formData.Set("City", "Foo")
 		formData.Set("First_Name", "Bar")
 
-		req, err := http.NewRequest("POST", "/register", strings.NewReader(formData.Encode())) // URL-encoded payload
-		//req.Header.Add("Authorization", "auth_token=\"XXXXXXX\"")
+		req, err := http.NewRequest("POST", "/register", strings.NewReader(formData.Encode()))
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
 
@@ -160,8 +158,7 @@ func TestRegisterWithInvalidEmail(t *testing.T) {
 		formData.Set("City", "Foo")
 		formData.Set("First_Name", "Bar")
 
-		req, err := http.NewRequest("POST", "/register", strings.NewReader(formData.Encode())) // URL-encoded payload
-		//req.Header.Add("Authorization", "auth_token=\"XXXXXXX\"")
+		req, err := http.NewRequest("POST", "/register", strings.NewReader(formData.Encode()))
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
 
@@ -191,8 +188,7 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 		formData1.Set("City", "Foo")
 		formData1.Set("First_Name", "Bar")
 
-		req1, err := http.NewRequest("POST", "/register", strings.NewReader(formData1.Encode())) // URL-encoded payload
-		//req.Header.Add("Authorization", "auth_token=\"XXXXXXX\"")
+		req1, err := http.NewRequest("POST", "/register", strings.NewReader(formData1.Encode()))
 		req1.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req1.Header.Add("Content-Length", strconv.Itoa(len(formData1.Encode())))
 
@@ -207,7 +203,7 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 			formData2.Set("stripeEmail", config.TestEmailAddress)
 			formData2.Set("stripeToken", "tok_visa")
 
-			req2, err := http.NewRequest("POST", "/charge", strings.NewReader(formData2.Encode())) // URL-encoded payload
+			req2, err := http.NewRequest("POST", "/charge", strings.NewReader(formData2.Encode()))
 			req2.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 			req2.Header.Add("Content-Length", strconv.Itoa(len(formData2.Encode())))
 
@@ -218,7 +214,15 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 				c.So(record2.Code, c.ShouldEqual, http.StatusOK)
 				c.So(fmt.Sprint(record2.Body), c.ShouldContainSubstring, `You are now registered!`)
 				c.Convey("There should be a user entry in the User table", func() {
-					c.So(1, c.ShouldEqual, 1)
+					uActual, err := getUser(ctx, config.TestEmailAddress)
+					c.So(err, c.ShouldBeNil)
+					uExpected := &user{
+						Email_Address: config.TestEmailAddress,
+						City:          "Foo",
+						Country:       Afghanistan,
+						First_Name:    "Bar",
+					}
+					c.So(uActual.Email_Address, c.ShouldEqual, uExpected.Email_Address)
 				})
 			})
 		})

@@ -192,6 +192,7 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		})
 }
 
+// Config is our configuration file format
 type Config struct {
 	SMTPUsername         string `id:"SMTPUsername"         default:"sender@mydomain.com"`
 	SMTPPassword         string `id:"SMTPPassword"         default:"mypassword"`
@@ -199,8 +200,8 @@ type Config struct {
 	SiteDomain           string `id:"SiteDomain"           default:"mydomain.com"`
 	SiteName             string `id:"SiteName"             default:"MyDomain"`
 	ProjectID            string `id:"ProjectID"            default:"my-appspot-project-id"`
-	CSRF_Key             string `id:"CSRF_Key"             default:"my-random-32-bytes"`
-	IsLiveSite           bool   `id:"IsLiveSite"           default:false`
+	CSRFKey              string `id:"CSRF_Key"             default:"my-random-32-bytes"`
+	IsLiveSite           bool   `id:"IsLiveSite"           default:"false"`
 	SignupURL            string `id:"SignupURL"            default:"this-apps-signup-endpoint.com/signup"`
 	SignupServiceURL     string `id:"SignupServiceURL"     default:"http://localhost:10000/signup/eury2019"`
 	StripePublishableKey string `id:"StripePublishableKey" default:"pk_live_foo"`
@@ -238,7 +239,7 @@ func routerInit() {
 	// TODO: https://youtu.be/xyDkyFjzFVc?t=1308
 	router := createHTTPRouter(handlers.ToHTTPHandler)
 	csrfProtector := csrf.Protect(
-		[]byte(config.CSRF_Key),
+		[]byte(config.CSRFKey),
 		csrf.Secure(config.IsLiveSite))
 	csrfProtectedRouter := csrfProtector(router)
 	http.Handle("/", csrfProtectedRouter)
