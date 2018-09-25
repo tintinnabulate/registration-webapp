@@ -11,6 +11,11 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# AppEngine index
+index.yaml
+
+# App config file
 config.json
-Makefile
+
+# Vim swap files
 .*.swp
