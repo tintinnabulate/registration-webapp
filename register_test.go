@@ -96,7 +96,7 @@ func TestSubmitEmptyEmailAddress(t *testing.T) {
 
 		c.So(err, c.ShouldBeNil)
 
-		c.Convey("The next page body should contain \"Please check your email...\"", func() {
+		c.Convey("The next page body should contain \"could not send verification email\"", func() {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusNotFound)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `could not send verification email`)
