@@ -48,9 +48,13 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 	var s signup
 	err = schemaDecoder.Decode(&s, r.PostForm)
 	httpClient := urlfetch.Client(ctx)
-	_, err = httpClient.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
+	resp, err := httpClient.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		http.Error(w, "could not send verification email", resp.StatusCode)
 		return
 	}
 	tmpl := templates.Lookup("check_email.tmpl")
@@ -76,13 +80,17 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
 	checkErr(err)
+	if resp.StatusCode != http.StatusOK {
+		http.Error(w, "could not verify email address", resp.StatusCode)
+	}
 	json.NewDecoder(resp.Body).Decode(&s)
 	if s.Success {
 		_, err := stashRegistrationForm(ctx, &regform)
 		checkErr(err)
 		showPaymentForm(ctx, w, r, &regform)
 	} else {
-		http.Redirect(w, r, "/signup", http.StatusFound)
+		http.Redirect(w, r, "/signup", http.StatusNotFound)
+		return
 	}
 }
 

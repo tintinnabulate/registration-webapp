@@ -98,9 +98,8 @@ func TestSubmitEmptyEmailAddress(t *testing.T) {
 
 		c.Convey("The next page body should contain \"Please check your email...\"", func() {
 			r.ServeHTTP(record, req)
-			c.So(record.Code, c.ShouldEqual, http.StatusOK)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Please check your email inbox, and click the link we've sent you`)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
+			c.So(record.Code, c.ShouldEqual, http.StatusNotFound)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `could not send verification email`)
 		})
 	})
 }
@@ -164,9 +163,10 @@ func TestRegisterWithInvalidEmail(t *testing.T) {
 
 		c.So(err, c.ShouldBeNil)
 
-		c.Convey("It should return http.StatusFound", func() {
+		c.Convey("It should return http.StatusNotFound", func() {
 			r.ServeHTTP(record, req)
-			c.So(record.Code, c.ShouldEqual, http.StatusFound)
+			c.So(record.Code, c.ShouldEqual, http.StatusNotFound)
+			//c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Please enter your email address`)
 		})
 	})
 }
