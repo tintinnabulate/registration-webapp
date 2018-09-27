@@ -32,30 +32,21 @@ func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 }
 
 // getSignupHandler : show the signup form (SignupURL)
-func getSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
 	tmpl := templates.Lookup("signup_form.tmpl")
-	tmpl.Execute(w,
-		map[string]interface{}{
-			"Name":           convention.Name,
-			"Year":           convention.Year,
-			"City":           convention.City,
-			"Country":        convention.Country,
-			"Countries":      Countries,
-			"Fellowships":    Fellowships,
-			csrf.TemplateTag: csrf.TemplateField(req),
-		})
+	tmpl.Execute(w, getVars(convention, "", r))
 }
 
 // postSignupHandler : use the signup service to send the person a verification URL
-func postSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
-	err = req.ParseForm()
+	err = r.ParseForm()
 	checkErr(err)
 	var s signup
-	err = schemaDecoder.Decode(&s, req.PostForm)
+	err = schemaDecoder.Decode(&s, r.PostForm)
 	httpClient := urlfetch.Client(ctx)
 	_, err = httpClient.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
 	if err != nil {
@@ -63,42 +54,24 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, req *http.Req
 		return
 	}
 	tmpl := templates.Lookup("check_email.tmpl")
-	tmpl.Execute(w,
-		map[string]interface{}{
-			"Name":           convention.Name,
-			"Year":           convention.Year,
-			"City":           convention.City,
-			"Country":        convention.Country,
-			"Countries":      Countries,
-			"Fellowships":    Fellowships,
-			csrf.TemplateTag: csrf.TemplateField(req),
-		})
+	tmpl.Execute(w, getVars(convention, "", r))
 }
 
 // getRegistrationFormHandler : show the registration form
-func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
 	tmpl := templates.Lookup("registration_form.tmpl")
-	tmpl.Execute(w,
-		map[string]interface{}{
-			"Name":           convention.Name,
-			"Year":           convention.Year,
-			"City":           convention.City,
-			"Country":        convention.Country,
-			"Countries":      Countries,
-			"Fellowships":    Fellowships,
-			csrf.TemplateTag: csrf.TemplateField(req),
-		})
+	tmpl.Execute(w, getVars(convention, "", r))
 }
 
 // postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
-func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	var regform registrationForm
 	var s signup
-	err := req.ParseForm()
+	err := r.ParseForm()
 	checkErr(err)
-	err = schemaDecoder.Decode(&regform, req.PostForm)
+	err = schemaDecoder.Decode(&regform, r.PostForm)
 	checkErr(err)
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
@@ -107,43 +80,29 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, req
 	if s.Success {
 		_, err := stashRegistrationForm(ctx, &regform)
 		checkErr(err)
-		showPaymentForm(ctx, w, req, &regform)
+		showPaymentForm(ctx, w, r, &regform)
 	} else {
-		http.Redirect(w, req, "/signup", http.StatusFound)
+		http.Redirect(w, r, "/signup", http.StatusFound)
 	}
 }
 
-func showPaymentForm(ctx context.Context, w http.ResponseWriter, req *http.Request, regform *registrationForm) {
+func showPaymentForm(ctx context.Context, w http.ResponseWriter, r *http.Request, regform *registrationForm) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
 	tmpl := templates.Lookup("stripe.tmpl")
-	tmpl.Execute(w,
-		map[string]interface{}{
-			"Name":           convention.Name,
-			"Cost":           convention.Cost,
-			"CostPrint":      convention.Cost / 100,
-			"Currency":       convention.Currency_Code,
-			"Year":           convention.Year,
-			"City":           convention.City,
-			"Country":        convention.Country,
-			"Countries":      Countries,
-			"Fellowships":    Fellowships,
-			"Key":            publishableKey,
-			csrf.TemplateTag: csrf.TemplateField(req),
-			"Email":          regform.Email_Address,
-		})
+	tmpl.Execute(w, getVars(convention, regform.Email_Address, r))
 }
 
 // postRegistrationFormPaymentHandler : charge the customer, and create a User in the User table
-func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWriter, req *http.Request) {
+func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
-	req.ParseForm()
+	r.ParseForm()
 
-	emailAddress := req.Form.Get("stripeEmail")
+	emailAddress := r.Form.Get("stripeEmail")
 
 	customerParams := &stripe.CustomerParams{Email: stripe.String(emailAddress)}
-	customerParams.SetSource(req.Form.Get("stripeToken"))
+	customerParams.SetSource(r.Form.Get("stripeToken"))
 
 	httpClient := urlfetch.Client(ctx)
 	sc := stripeClient.New(stripe.Key, stripe.NewBackends(httpClient))
@@ -180,16 +139,7 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 	_, err = addUser(ctx, user)
 	checkErr(err)
 	tmpl := templates.Lookup("registration_successful.tmpl")
-	tmpl.Execute(w,
-		map[string]interface{}{
-			"Name":           convention.Name,
-			"Year":           convention.Year,
-			"City":           convention.City,
-			"Country":        convention.Country,
-			"Countries":      Countries,
-			"Fellowships":    Fellowships,
-			csrf.TemplateTag: csrf.TemplateField(req),
-		})
+	tmpl.Execute(w, getVars(convention, "", r))
 }
 
 // Config is our configuration file format
@@ -258,7 +208,9 @@ func stripeInit() {
 
 // templatesInit : parse the HTML templates, including any predefined functions (FuncMap)
 func templatesInit() {
-	templates = template.Must(template.New("").Funcs(funcMap).ParseGlob("templates/*.tmpl"))
+	templates = template.Must(template.New("").
+		Funcs(funcMap).
+		ParseGlob("templates/*.tmpl"))
 }
 
 func init() {
