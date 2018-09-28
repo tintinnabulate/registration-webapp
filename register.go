@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
+	"github.com/gorilla/sessions"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
@@ -35,6 +36,15 @@ func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
+	session, err := store.Get(req, "session-name")
+	if err != nil {
+		http.Error(w, "could not create session", err)
+	}
+	session.Values["foo"] = "bar"
+	err := session.Save(req, w)
+	if err != nil {
+		http.Error(w, "could not save session", err)
+	}
 	tmpl := templates.Lookup("signup_form.tmpl")
 	tmpl.Execute(w, getVars(convention, "", r))
 }
@@ -65,8 +75,12 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
+	session, err := store.Get(req, "session-name")
+	if err != nil {
+		http.Error(w, "could not create session", err)
+	}
 	tmpl := templates.Lookup("registration_form.tmpl")
-	tmpl.Execute(w, getVars(convention, "", r))
+	tmpl.Execute(w, getVars(convention, session.Values["foo"], r))
 }
 
 // postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
@@ -174,6 +188,7 @@ var (
 	publishableKey string
 	templates      *template.Template
 	config         Config
+	store          *sessions.CookieStore
 )
 
 func configInit(configName string) {
@@ -225,6 +240,9 @@ func init() {
 	configInit("config.json")
 	templatesInit()
 	schemaDecoderInit()
+	key := []byte("d4fc666440a2350e53fa10185d9953ab")
+	enc := []byte("8c6acbc393d7f9408d29957daa460e74")
+	store = sessions.NewCookieStore(key, enc)
 	routerInit()
 	stripeInit()
 }
