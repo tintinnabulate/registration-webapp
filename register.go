@@ -36,14 +36,14 @@ func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
-	session, err := store.Get(req, "session-name")
+	session, err := store.Get(r, "session-name")
 	if err != nil {
-		http.Error(w, "could not create session", err)
+		http.Error(w, "could not create session", http.StatusInternalServerError)
 	}
 	session.Values["foo"] = "bar"
-	err := session.Save(req, w)
+	err = session.Save(r, w)
 	if err != nil {
-		http.Error(w, "could not save session", err)
+		http.Error(w, "could not save session", http.StatusInternalServerError)
 	}
 	tmpl := templates.Lookup("signup_form.tmpl")
 	tmpl.Execute(w, getVars(convention, "", r))
@@ -75,12 +75,12 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
-	session, err := store.Get(req, "session-name")
+	session, err := store.Get(r, "session-name")
 	if err != nil {
-		http.Error(w, "could not create session", err)
+		http.Error(w, "could not create session", http.StatusInternalServerError)
 	}
 	tmpl := templates.Lookup("registration_form.tmpl")
-	tmpl.Execute(w, getVars(convention, session.Values["foo"], r))
+	tmpl.Execute(w, getVars(convention, session.Values["foo"].(string), r))
 }
 
 // postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
