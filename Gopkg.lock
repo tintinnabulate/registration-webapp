@@ -58,6 +58,14 @@
   version = "v1.1.1"
 
 [[projects]]
+  digest = "1:0aa142ca3543fa3aca344c2fa2d52e01d706a3ce4e1fa893e0ef29b5349ddf7a"
+  name = "github.com/gorilla/sessions"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "81547393f870a35be888759a606ba7bf71dbe5c7"
+  version = "v1.1.2"
+
+[[projects]]
   digest = "1:1e15f4e455f94aeaedfcf9c75b3e1c449b5acba1551c58446b4b45be507c707b"
   name = "github.com/jtolds/gls"
   packages = ["."]
@@ -252,6 +260,7 @@
     "github.com/gorilla/csrf",
     "github.com/gorilla/mux",
     "github.com/gorilla/schema",
+    "github.com/gorilla/sessions",
     "github.com/smartystreets/goconvey/convey",
     "github.com/stripe/stripe-go",
     "github.com/stripe/stripe-go/client",
