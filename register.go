@@ -38,12 +38,14 @@ func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reques
 	checkErr(err)
 	session, err := store.Get(r, "session-name")
 	if err != nil {
-		http.Error(w, fmt.Sprintf("could not create session: %v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not create cookie session: %v", err), http.StatusInternalServerError)
+		return
 	}
 	session.Values["foo"] = "LAZERS"
 	err = session.Save(r, w)
 	if err != nil {
-		http.Error(w, "could not save session", http.StatusInternalServerError)
+		http.Error(w, "could not save cookie session", http.StatusInternalServerError)
+		return
 	}
 	tmpl := templates.Lookup("signup_form.tmpl")
 	tmpl.Execute(w, getVars(convention, "", r))
@@ -77,11 +79,13 @@ func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *h
 	checkErr(err)
 	session, err := store.Get(r, "session-name")
 	if err != nil {
-		http.Error(w, "could not create session", http.StatusInternalServerError)
+		http.Error(w, "could not create cookie session", http.StatusInternalServerError)
+		return
 	}
-	email := ""
+	var email string
 	if v, ok := session.Values["foo"].(string); !ok {
-		email = "could not get email"
+		http.Error(w, "could not type assert value from cookie", http.StatusInternalServerError)
+		return
 	} else {
 		email = v
 	}
@@ -102,6 +106,7 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 	checkErr(err)
 	if resp.StatusCode != http.StatusOK {
 		http.Error(w, "could not verify email address", resp.StatusCode)
+		return
 	}
 	json.NewDecoder(resp.Body).Decode(&s)
 	if s.Success {
