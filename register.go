@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -36,17 +37,6 @@ func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
-	session, err := store.Get(r, "session-name")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("could not create cookie session: %v", err), http.StatusInternalServerError)
-		return
-	}
-	session.Values["foo"] = "LAZERS"
-	err = session.Save(r, w)
-	if err != nil {
-		http.Error(w, "could not save cookie session", http.StatusInternalServerError)
-		return
-	}
 	tmpl := templates.Lookup("signup_form.tmpl")
 	tmpl.Execute(w, getVars(convention, "", r))
 }
@@ -77,20 +67,8 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
 	checkErr(err)
-	session, err := store.Get(r, "session-name")
-	if err != nil {
-		http.Error(w, "could not create cookie session", http.StatusInternalServerError)
-		return
-	}
-	var email string
-	if v, ok := session.Values["foo"].(string); !ok {
-		http.Error(w, "could not type assert value from cookie", http.StatusInternalServerError)
-		return
-	} else {
-		email = v
-	}
 	tmpl := templates.Lookup("registration_form.tmpl")
-	tmpl.Execute(w, getVars(convention, email, r))
+	tmpl.Execute(w, getVars(convention, "", r))
 }
 
 // postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
@@ -109,8 +87,14 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 		return
 	}
 	json.NewDecoder(resp.Body).Decode(&s)
+	session, err := store.Get(r, "regform")
+	if err != nil {
+		http.Error(w, "could not create cookie session", http.StatusInternalServerError)
+		return
+	}
 	if s.Success {
-		_, err := stashRegistrationForm(ctx, &regform)
+		session.Values["regform"] = regform
+		err := session.Save(r, w)
 		checkErr(err)
 		showPaymentForm(ctx, w, r, &regform)
 	} else {
@@ -157,8 +141,18 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		fmt.Fprintf(w, "Could not process payment: %v", err)
 		return
 	}
-	regform, err := getRegistrationForm(ctx, emailAddress)
-	checkErr(err)
+	session, err := store.Get(r, "regform")
+	if err != nil {
+		http.Error(w, "could not create cookie session", http.StatusInternalServerError)
+		return
+	}
+	var regform *registrationForm
+	if v, ok := session.Values["regform"].(*registrationForm); !ok {
+		http.Error(w, fmt.Sprintf("could not type assert value from cookie: %v", session.Values), http.StatusInternalServerError)
+		return
+	} else {
+		regform = v
+	}
 	user := &user{
 		First_Name:         regform.First_Name,
 		Last_Name:          regform.Last_Name,
@@ -211,6 +205,7 @@ func configInit(configName string) {
 		FlagDisable:         true,
 	})
 	checkErr(err)
+	gob.Register(&registrationForm{})
 	store = sessions.NewCookieStore(
 		[]byte(config.CookieStoreAuth),
 		[]byte(config.CookieStoreEnc))
