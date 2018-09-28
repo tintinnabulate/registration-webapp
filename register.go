@@ -38,9 +38,9 @@ func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reques
 	checkErr(err)
 	session, err := store.Get(r, "session-name")
 	if err != nil {
-		http.Error(w, "could not create session", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not create session: %v", err), http.StatusInternalServerError)
 	}
-	session.Values["foo"] = "bar"
+	session.Values["foo"] = "LAZERS"
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, "could not save session", http.StatusInternalServerError)
@@ -79,8 +79,14 @@ func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *h
 	if err != nil {
 		http.Error(w, "could not create session", http.StatusInternalServerError)
 	}
+	email := ""
+	if v, ok := session.Values["foo"].(string); !ok {
+		email = "could not get email"
+	} else {
+		email = v
+	}
 	tmpl := templates.Lookup("registration_form.tmpl")
-	tmpl.Execute(w, getVars(convention, session.Values["foo"].(string), r))
+	tmpl.Execute(w, getVars(convention, email, r))
 }
 
 // postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
@@ -181,6 +187,8 @@ type Config struct {
 	StripeTestPK         string `id:"StripeTestPK"         default:"pk_test_UdWbULsYzTqKOob0SHEsTNN2"`
 	StripeTestSK         string `id:"StripeTestSK"         default:"rk_test_xR1MFQcmds6aXvoDRKDD3HdR"`
 	TestEmailAddress     string `id:"TestEmailAddress"     default:"foo@example.com"`
+	CookieStoreAuth      string `id:"CookieStoreAuth"      default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
+	CookieStoreEnc       string `id:"CookieStoreEnc"       default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 }
 
 var (
@@ -198,6 +206,9 @@ func configInit(configName string) {
 		FlagDisable:         true,
 	})
 	checkErr(err)
+	store = sessions.NewCookieStore(
+		[]byte(config.CookieStoreAuth),
+		[]byte(config.CookieStoreEnc))
 }
 
 // schemaDecoderInit : create the schema decoder for decoding req.PostForm
@@ -240,9 +251,6 @@ func init() {
 	configInit("config.json")
 	templatesInit()
 	schemaDecoderInit()
-	key := []byte("d4fc666440a2350e53fa10185d9953ab")
-	enc := []byte("8c6acbc393d7f9408d29957daa460e74")
-	store = sessions.NewCookieStore(key, enc)
 	routerInit()
 	stripeInit()
 }
