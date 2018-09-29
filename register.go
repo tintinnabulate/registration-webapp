@@ -52,7 +52,7 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not connect to email verifier: %v", err), http.StatusInternalServerError)
 		return
 	}
 	if resp.StatusCode != http.StatusOK {
@@ -81,7 +81,10 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 	checkErr(err)
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not connect to email verifier: %v", err), http.StatusInternalServerError)
+		return
+	}
 	if resp.StatusCode != http.StatusOK {
 		http.Error(w, "could not verify email address", resp.StatusCode)
 		return
@@ -89,7 +92,7 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 	json.NewDecoder(resp.Body).Decode(&s)
 	session, err := store.Get(r, "regform")
 	if err != nil {
-		http.Error(w, "could not create cookie session", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not create cookie session: %v", err), http.StatusInternalServerError)
 		return
 	}
 	if s.Success {
@@ -126,7 +129,7 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 
 	newCustomer, err := sc.Customers.New(customerParams)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not create customer: %v", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -143,12 +146,12 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 	}
 	session, err := store.Get(r, "regform")
 	if err != nil {
-		http.Error(w, "could not create cookie session", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not create cookie session: %v", err), http.StatusInternalServerError)
 		return
 	}
 	var regform *registrationForm
 	if v, ok := session.Values["regform"].(*registrationForm); !ok {
-		http.Error(w, fmt.Sprintf("could not type assert value from cookie: %v", session.Values), http.StatusInternalServerError)
+		http.Error(w, "could not type assert value from cookie", http.StatusInternalServerError)
 		return
 	} else {
 		regform = v
