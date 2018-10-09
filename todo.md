@@ -13,7 +13,6 @@
 
 * Add form fields to `/register` to match <https://eurypaa2018.com> ?
 * Load Customer ID based on email address (if seen before). ?
-* Use Gorilla SecureCookie instead of having RegistrationForm table? <https://www.calhoun.io/securing-cookies-in-go/>
 * Can one person do multiple registrations e.g.: {1 x AA, 2 x ALANON, 2 x Alateen} with a combined bill?
 * Is there a payment option other than Credit/Debit card?
 	* Can we connect both Stripe and PayPal to the app?
