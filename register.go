@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -10,6 +11,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
+	"github.com/gorilla/sessions"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
@@ -50,7 +52,7 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not connect to email verifier: %v", err), http.StatusInternalServerError)
 		return
 	}
 	if resp.StatusCode != http.StatusOK {
@@ -79,13 +81,23 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 	checkErr(err)
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not connect to email verifier: %v", err), http.StatusInternalServerError)
+		return
+	}
 	if resp.StatusCode != http.StatusOK {
 		http.Error(w, "could not verify email address", resp.StatusCode)
+		return
 	}
 	json.NewDecoder(resp.Body).Decode(&s)
+	session, err := store.Get(r, "regform")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not create cookie session: %v", err), http.StatusInternalServerError)
+		return
+	}
 	if s.Success {
-		_, err := stashRegistrationForm(ctx, &regform)
+		session.Values["regform"] = regform
+		err := session.Save(r, w)
 		checkErr(err)
 		showPaymentForm(ctx, w, r, &regform)
 	} else {
@@ -117,7 +129,7 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 
 	newCustomer, err := sc.Customers.New(customerParams)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not create customer: %v", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -132,8 +144,18 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		fmt.Fprintf(w, "Could not process payment: %v", err)
 		return
 	}
-	regform, err := getRegistrationForm(ctx, emailAddress)
-	checkErr(err)
+	session, err := store.Get(r, "regform")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not create cookie session: %v", err), http.StatusInternalServerError)
+		return
+	}
+	var regform *registrationForm
+	if v, ok := session.Values["regform"].(*registrationForm); !ok {
+		http.Error(w, "could not type assert value from cookie", http.StatusInternalServerError)
+		return
+	} else {
+		regform = v
+	}
 	user := &user{
 		First_Name:         regform.First_Name,
 		Last_Name:          regform.Last_Name,
@@ -167,6 +189,8 @@ type Config struct {
 	StripeTestPK         string `id:"StripeTestPK"         default:"pk_test_UdWbULsYzTqKOob0SHEsTNN2"`
 	StripeTestSK         string `id:"StripeTestSK"         default:"rk_test_xR1MFQcmds6aXvoDRKDD3HdR"`
 	TestEmailAddress     string `id:"TestEmailAddress"     default:"foo@example.com"`
+	CookieStoreAuth      string `id:"CookieStoreAuth"      default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
+	CookieStoreEnc       string `id:"CookieStoreEnc"       default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 }
 
 var (
@@ -174,6 +198,7 @@ var (
 	publishableKey string
 	templates      *template.Template
 	config         Config
+	store          *sessions.CookieStore
 )
 
 func configInit(configName string) {
@@ -183,6 +208,10 @@ func configInit(configName string) {
 		FlagDisable:         true,
 	})
 	checkErr(err)
+	gob.Register(&registrationForm{})
+	store = sessions.NewCookieStore(
+		[]byte(config.CookieStoreAuth),
+		[]byte(config.CookieStoreEnc))
 }
 
 // schemaDecoderInit : create the schema decoder for decoding req.PostForm

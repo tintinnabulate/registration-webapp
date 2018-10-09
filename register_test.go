@@ -131,11 +131,7 @@ func TestRegisterWithValidEmail(t *testing.T) {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `stripe-button`)
-			c.Convey("There should be a registration entry in the Registration table", func() {
-				reg, err := getRegistrationForm(ctx, config.TestEmailAddress)
-				checkErr(err)
-				c.So(reg.City, c.ShouldEqual, "Foo")
-			})
+			c.So(fmt.Sprint(record.Result().Cookies()), c.ShouldContainSubstring, `regform`)
 		})
 	})
 }
@@ -204,6 +200,7 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 			formData2.Set("stripeToken", "tok_visa")
 
 			req2, err := http.NewRequest("POST", "/charge", strings.NewReader(formData2.Encode()))
+			req2.Header = http.Header{"Cookie": record1.HeaderMap["Set-Cookie"]}
 			req2.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 			req2.Header.Add("Content-Length", strconv.Itoa(len(formData2.Encode())))
 
@@ -211,8 +208,8 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 
 			c.Convey("The next page body should contain \"You are now registered!\"", func() {
 				r.ServeHTTP(record2, req2)
-				c.So(record2.Code, c.ShouldEqual, http.StatusOK)
 				c.So(fmt.Sprint(record2.Body), c.ShouldContainSubstring, `You are now registered!`)
+				c.So(record2.Code, c.ShouldEqual, http.StatusOK)
 				c.Convey("There should be a user entry in the User table", func() {
 					uActual, err := getUser(ctx, config.TestEmailAddress)
 					c.So(err, c.ShouldBeNil)
