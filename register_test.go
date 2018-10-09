@@ -200,7 +200,7 @@ func TestPayOverStripeCreatesUser(t *testing.T) {
 			formData2.Set("stripeToken", "tok_visa")
 
 			req2, err := http.NewRequest("POST", "/charge", strings.NewReader(formData2.Encode()))
-			req2.Header = http.Header{"Cookie": record1.HeaderMap["Set-Cookie"]}
+			req2.Header = http.Header{"Cookie": record1.Result().Header["Set-Cookie"]}
 			req2.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 			req2.Header.Add("Content-Length", strconv.Itoa(len(formData2.Encode())))
 

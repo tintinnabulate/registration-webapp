@@ -49,6 +49,7 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 	checkErr(err)
 	var s signup
 	err = schemaDecoder.Decode(&s, r.PostForm)
+	checkErr(err)
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
 	if err != nil {
