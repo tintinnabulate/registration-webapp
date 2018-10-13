@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"time"
 
@@ -36,7 +37,10 @@ func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 // getSignupHandler : show the signup form (SignupURL)
 func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
+	}
 	tmpl := templates.Lookup("signup_form.tmpl")
 	tmpl.Execute(w, getVars(convention, "", r))
 }
@@ -44,12 +48,21 @@ func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reques
 // postSignupHandler : use the signup service to send the person a verification URL
 func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
+	}
 	err = r.ParseForm()
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not parse email form: %v", err), http.StatusInternalServerError)
+		return
+	}
 	var s signup
 	err = schemaDecoder.Decode(&s, r.PostForm)
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not encode email address: %v", err), http.StatusInternalServerError)
+		return
+	}
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
 	if err != nil {
@@ -67,7 +80,10 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 // getRegistrationFormHandler : show the registration form
 func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
+	}
 	tmpl := templates.Lookup("registration_form.tmpl")
 	tmpl.Execute(w, getVars(convention, "", r))
 }
@@ -77,9 +93,15 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 	var regform registrationForm
 	var s signup
 	err := r.ParseForm()
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not parse registration form: %v", err), http.StatusInternalServerError)
+		return
+	}
 	err = schemaDecoder.Decode(&regform, r.PostForm)
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not encode registration form: %v", err), http.StatusInternalServerError)
+		return
+	}
 	httpClient := urlfetch.Client(ctx)
 	resp, err := httpClient.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
 	if err != nil {
@@ -99,7 +121,10 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 	if s.Success {
 		session.Values["regform"] = regform
 		err := session.Save(r, w)
-		checkErr(err)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("could not save cookie session: %v", err), http.StatusInternalServerError)
+			return
+		}
 		showPaymentForm(ctx, w, r, &regform)
 	} else {
 		http.Redirect(w, r, "/signup", http.StatusNotFound)
@@ -109,7 +134,10 @@ func postRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *
 
 func showPaymentForm(ctx context.Context, w http.ResponseWriter, r *http.Request, regform *registrationForm) {
 	convention, err := getLatestConvention(ctx)
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
+	}
 	tmpl := templates.Lookup("stripe.tmpl")
 	tmpl.Execute(w, getVars(convention, regform.Email_Address, r))
 }
@@ -117,7 +145,10 @@ func showPaymentForm(ctx context.Context, w http.ResponseWriter, r *http.Request
 // postRegistrationFormPaymentHandler : charge the customer, and create a User in the User table
 func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	convention, err := getLatestConvention(ctx)
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
+	}
 	r.ParseForm()
 
 	emailAddress := r.Form.Get("stripeEmail")
@@ -168,7 +199,10 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		Member_Of:          regform.Member_Of,
 		Stripe_Customer_ID: charge.Customer.ID}
 	_, err = addUser(ctx, user)
-	checkErr(err)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not add new user to user table: %v", err), http.StatusInternalServerError)
+		return
+	}
 	tmpl := templates.Lookup("registration_successful.tmpl")
 	tmpl.Execute(w, getVars(convention, "", r))
 }
@@ -208,7 +242,10 @@ func configInit(configName string) {
 		FileDecoder:         gonfig.DecoderJSON,
 		FlagDisable:         true,
 	})
-	checkErr(err)
+	if err != nil {
+		log.Fatalf("could not load configuration file: %v", err)
+		return
+	}
 	gob.Register(&registrationForm{})
 	store = sessions.NewCookieStore(
 		[]byte(config.CookieStoreAuth),
