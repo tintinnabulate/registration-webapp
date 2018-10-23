@@ -1,19 +1,19 @@
 error messages used in website:
 
-"could not get latest convention"
-"could not parse email form"
-"could not encode email address"
-"could not connect to email verifier"
-"could not send verification email"
-"could not parse registration form"
-"could not encode registration form"
-"could not connect to email verifier"
-"could not verify email address"
-"could not create cookie session"
-"could not save cookie session"
-"could not get latest convention"
-"could not create customer"
-"could not process payment"
+"could not get latest convention: %v"
+"could not parse email form: %v"
+"could not encode email address: %v"
+"could not connect to email verifier: %v"
+"could not send verification email: %v"
+"could not parse registration form: %v"
+"could not encode registration form: %v"
+"could not connect to email verifier: %v"
+"could not verify email address: %v"
+"could not create cookie session: %v"
+"could not save cookie session: %v"
+"could not get latest convention: %v"
+"could not create customer: %v"
+"could not process payment: %v"
 
 check_email.tmpl
 
@@ -29,6 +29,7 @@ signup_form.tmpl
 
 registration_form.tmpl
 
+"Register for {{ .Name }}"
 "First name"
 "Valid first name is required."
 "Email - use the same one you verified with"
