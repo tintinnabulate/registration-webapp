@@ -1,0 +1,51 @@
+error messages used in website:
+
+"could not get latest convention"
+"could not parse email form"
+"could not encode email address"
+"could not connect to email verifier"
+"could not send verification email"
+"could not parse registration form"
+"could not encode registration form"
+"could not connect to email verifier"
+"could not verify email address"
+"could not create cookie session"
+"could not save cookie session"
+"could not get latest convention"
+"could not create customer"
+"could not process payment"
+
+check_email.tmpl
+
+"Register for {{ .Name }}"
+"Please check your email inbox, and click the link we've sent you"
+
+signup_form.tmpl
+
+"Your Details"
+"Please enter your email address"
+"Please enter a valid email address so we can send you convention details."
+"Send verification email"
+
+registration_form.tmpl
+
+"First name"
+"Valid first name is required."
+"Email - use the same one you verified with"
+"Please enter a valid email address so we can send you convention details."
+"Country"
+"City"
+"I live in..."
+"Continue to checkout"
+
+registration_successful.tmpl
+
+"Registered for {{ .Name }}!"
+"You are now registered!"
+
+stripe.tmpl
+
+"Register for {{ .Name }}"
+"Complete payment to Register"
+"Payment Details"
+"Amount: {{ .CostPrint }} {{ .Currency }}"
