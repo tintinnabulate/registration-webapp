@@ -57,11 +57,6 @@
       "translation": ""
     },
     {
-      "id": "could not get latest convention: %v",
-      "message": "could not get latest convention: %v",
-      "translation": ""
-    },
-    {
       "id": "could not create customer: %v",
       "message": "could not create customer: %v",
       "translation": ""
@@ -99,11 +94,6 @@
     {
       "id": "Send verification email",
       "message": "Send verification email",
-      "translation": ""
-    },
-    {
-      "id": "Register for {{ .Name }}",
-      "message": "Register for {{ .Name }}",
       "translation": ""
     },
     {
