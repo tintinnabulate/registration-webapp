@@ -1,13 +1,20 @@
-{
-    "HelloPerson": "Hello {{.Name}}",
-    "MyUnreadEmails": {
-        "description": "The number of unread emails I have",
-        "one": "I have {{.PluralCount}} unread email.",
-        "other": "I have {{.PluralCount}} unread emails."
-    },
-    "PersonUnreadEmails": {
-        "description": "The number of unread emails a person has",
-        "one": "{{.Name}} has {{.UnreadEmailCount}} unread email.",
-        "other": "{{.Name}} has {{.UnreadEmailCount}} unread emails."
-    }
-}
+{"erProcessPayment": "Could not process payment",
+"pgRegisterFor": "Register for {{ .Name }}",
+"pgCheckEmail": "Please check your email inbox, and click the link we've sent you",
+"fmYourDetails": "Your Details",
+"fmEnterEmail": "Please enter your email address",
+"vlEnterEmail": "Please enter a valid email address so we can send you convention details.",
+"btSendVerifEmail": "Send verification email",
+"fmFirstName": "First name",
+"vlFirstName": "Valid first name is required.",
+"fmSameEmail": "Email - use the same one you verified with",
+"vlSameEmail": "Please enter a valid email address so we can send you convention details.",
+"fmCountry": "Country",
+"fmCity": "City",
+"fmILiveIn": "I live in...",
+"btContinueToCheckout": "Continue to checkout",
+"pgRegisteredFor": "Registered for {{ .Name }}",
+"pgNowRegistered": "You are now registered!",
+"btCompletePayment": "Complete payment to Register",
+"fmPaymentDetails": "Payment Details",
+"fmAmount": "Amount {{ .CostPrint }} {{ .Currency }}"}
