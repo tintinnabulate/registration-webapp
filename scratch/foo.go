@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/BurntSushi/toml"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -38,12 +37,139 @@ func main() {
 		accept := r.Header.Get("Accept-Language")
 		localizer := i18n.NewLocalizer(bundle, lang, accept)
 
-		name := r.FormValue("name")
-		if name == "" {
-			name = "Bob"
-		}
+		name := "Bob"
 
-		unreadEmailCount, _ := strconv.ParseInt(r.FormValue("unreadEmailCount"), 10, 64)
+		btnCompletePayment := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "btnCompletePayment",
+				Other: "Complete payment to Register",
+			},
+		})
+
+		btnSendVerifEmail := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "btnSendVerifEmail",
+				Other: "Send verification email",
+			},
+		})
+		btnContinueToCheckout := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "btnContinueToCheckout",
+				Other: "Continue to checkout",
+			},
+		})
+		errProcessPayment := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "errProcessPayment",
+				Other: "Could not process payment",
+			},
+		})
+		frmAmount := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmAmount",
+				Other: "Amount {{ .CostPrint }} {{ .Currency }}",
+			},
+			TemplateData: map[string]string{
+				"CostPrint": "20",
+				"Currency":  "EUR",
+			},
+		})
+		frmCity := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmCity",
+				Other: "City",
+			},
+		})
+		frmCountry := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmCountry",
+				Other: "Country",
+			},
+		})
+		frmEnterEmail := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmEnterEmail",
+				Other: "Please enter your email address",
+			},
+		})
+		frmFirstName := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmFirstName",
+				Other: "First name",
+			},
+		})
+		frmILiveIn := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmILiveIn",
+				Other: "I live in...",
+			},
+		})
+		frmPaymentDetails := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmPaymentDetails",
+				Other: "Payment Details",
+			},
+		})
+		frmSameEmail := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmSameEmail",
+				Other: "Email - use the same one you verified with",
+			},
+		})
+		frmYourDetails := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "frmYourDetails",
+				Other: "Your details",
+			},
+		})
+		pgCheckEmail := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "pgCheckEmail",
+				Other: "Please check your email inbox, and click the link we've sent you",
+			},
+		})
+		pgNowRegistered := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "pgNowRegistered",
+				Other: "You are now registered!",
+			},
+		})
+		pgRegisterFor := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "pgRegisterFor",
+				Other: "Register for {{ .Name }}",
+			},
+			TemplateData: map[string]string{
+				"Name": "EURYPAA",
+			},
+		})
+		pgRegisteredFor := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "pgRegisteredFor",
+				Other: "Registered for {{ .Name }}",
+			},
+			TemplateData: map[string]string{
+				"Name": "EURYPAA",
+			},
+		})
+		valEnterEmail := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "valEnterEmail",
+				Other: "Please enter a valid email address so we can send you convention details.",
+			},
+		})
+		valFirstName := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "valFirstName",
+				Other: "Valid first name is required.",
+			},
+		})
+		valSameEmail := localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "valSameEmail",
+				Other: "Please enter a valid email address so we can send you convention details.",
+			},
+		})
 
 		helloPerson := localizer.MustLocalize(&i18n.LocalizeConfig{
 			DefaultMessage: &i18n.Message{
@@ -55,35 +181,29 @@ func main() {
 			},
 		})
 
-		myUnreadEmails := localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID:          "MyUnreadEmails",
-				Description: "The number of unread emails I have",
-				One:         "I have {{.PluralCount}} unread email.",
-				Other:       "I have {{.PluralCount}} unread emails.",
-			},
-			PluralCount: unreadEmailCount,
-		})
-
-		personUnreadEmails := localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID:          "PersonUnreadEmails",
-				Description: "The number of unread emails a person has",
-				One:         "{{.Name}} has {{.UnreadEmailCount}} unread email.",
-				Other:       "{{.Name}} has {{.UnreadEmailCount}} unread emails.",
-			},
-			PluralCount: unreadEmailCount,
-			TemplateData: map[string]interface{}{
-				"Name":             name,
-				"UnreadEmailCount": unreadEmailCount,
-			},
-		})
-
 		err := page.Execute(w, map[string]interface{}{
 			"Title": helloPerson,
 			"Paragraphs": []string{
-				myUnreadEmails,
-				personUnreadEmails,
+				btnCompletePayment,
+				btnContinueToCheckout,
+				btnSendVerifEmail,
+				errProcessPayment,
+				frmAmount,
+				frmCity,
+				frmCountry,
+				frmEnterEmail,
+				frmFirstName,
+				frmILiveIn,
+				frmPaymentDetails,
+				frmSameEmail,
+				frmYourDetails,
+				pgCheckEmail,
+				pgNowRegistered,
+				pgRegisterFor,
+				pgRegisteredFor,
+				valEnterEmail,
+				valFirstName,
+				valSameEmail,
 			},
 		})
 		if err != nil {
