@@ -1,0 +1,13 @@
+{
+"HelloPerson": "Hola {{.Name}}",
+"MyUnreadEmails": {
+"description": "The number of unread emails I have",
+"one": "Tengo {{.PluralCount}} correo electrónico sin leer",
+"other": "Tengo {{.PluralCount}} correos electrónicos no leídos"
+},
+"PersonUnreadEmails": {
+"description": "The number of unread emails a person has",
+"one": "{{.Name}} tiene {{.UnreadEmailCount}} correo electrónico no leído",
+"other": "{{.Name}} tiene {{.UnreadEmailCount}} correos electrónicos no leídos"
+}
+}
