@@ -159,16 +159,6 @@ func getVars(convention convention, email string, localizer *i18n.Localizer, r *
 		},
 	})
 
-	helloPerson := localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "HelloPerson",
-			Other: "Hello {{.Name}}",
-		},
-		TemplateData: map[string]string{
-			"Name": "Bob",
-		},
-	})
-
 	return map[string]interface{}{
 		"btnCompletePayment":    btnCompletePayment,
 		"btnContinueToCheckout": btnContinueToCheckout,
