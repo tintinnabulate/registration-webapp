@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
+  name = "github.com/BurntSushi/toml"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
+  version = "v0.3.1"
+
+[[projects]]
   digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -72,6 +80,18 @@
   pruneopts = "UT"
   revision = "77f18212c9c7edc9bd6a33d383a7b545ce62f064"
   version = "v4.2.1"
+
+[[projects]]
+  digest = "1:2c34c77bf3ec848da26e48af58fc511ed52750961fa848399d122882b8890928"
+  name = "github.com/nicksnyder/go-i18n"
+  packages = [
+    "v2/i18n",
+    "v2/internal",
+    "v2/internal/plural",
+  ]
+  pruneopts = "UT"
+  revision = "a16b91a3ba80db3a2301c70d1d302d42251c9079"
+  version = "v2.0.0-beta.5"
 
 [[projects]]
   digest = "1:95741de3af260a92cc5c7f3f3061e85273f5a81b5db20d4bd68da74bd521675e"
@@ -223,6 +243,19 @@
   revision = "c2ed4eda69e7f62900806e4cd6e45f0429f859fa"
 
 [[projects]]
+  digest = "1:17ad89bd57485e11f306d41b703f53089fb0803682707b21fe9b3b29467d37a0"
+  name = "golang.org/x/text"
+  packages = [
+    "internal/gen",
+    "internal/tag",
+    "language",
+    "unicode/cldr",
+  ]
+  pruneopts = "UT"
+  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
+  version = "v0.3.0"
+
+[[projects]]
   digest = "1:294649dcaf9177f7f55b01834a450b337d870482496a3a294811e570efccca8f"
   name = "google.golang.org/appengine"
   packages = [
@@ -257,10 +290,12 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/BurntSushi/toml",
     "github.com/gorilla/csrf",
     "github.com/gorilla/mux",
     "github.com/gorilla/schema",
     "github.com/gorilla/sessions",
+    "github.com/nicksnyder/go-i18n/v2/i18n",
     "github.com/smartystreets/goconvey/convey",
     "github.com/stripe/stripe-go",
     "github.com/stripe/stripe-go/client",
@@ -269,6 +304,7 @@
     "github.com/tintinnabulate/gonfig",
     "github.com/tintinnabulate/vmail/mockverifier",
     "golang.org/x/net/context",
+    "golang.org/x/text/language",
     "google.golang.org/appengine/datastore",
     "google.golang.org/appengine/urlfetch",
   ]
