@@ -248,7 +248,7 @@ var (
 func translatorInit() {
 	translator = &i18n.Bundle{DefaultLanguage: language.English}
 	translator.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	translator.MustLoadMessageFile("active.es.toml")
+	translator.MustLoadMessageFile("locales/active.es.toml")
 }
 
 func getLocalizer(r *http.Request) *i18n.Localizer {
