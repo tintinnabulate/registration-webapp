@@ -195,17 +195,26 @@ func getVars(localizer *i18n.Localizer) map[string]interface{} {
 	}
 }
 
+var (
+	translator *i18n.Bundle
+)
+
+func init() {
+	translator = &i18n.Bundle{DefaultLanguage: language.English}
+	translator.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	translator.MustLoadMessageFile("active.es.toml")
+}
+
+func getLocalizer(r *http.Request) *i18n.Localizer {
+	lang := r.FormValue("lang")
+	accept := r.Header.Get("Accept-Language")
+	return i18n.NewLocalizer(translator, lang, accept)
+}
+
 func main() {
-	bundle := &i18n.Bundle{DefaultLanguage: language.English}
-	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	// No need to load active.en.toml since we are providing default translations.
-	// bundle.MustLoadMessageFile("active.en.toml")
-	bundle.MustLoadMessageFile("active.es.toml")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		lang := r.FormValue("lang")
-		accept := r.Header.Get("Accept-Language")
-		localizer := i18n.NewLocalizer(bundle, lang, accept)
+		localizer := getLocalizer(r)
 
 		err := page.Execute(w, getVars(localizer))
 		if err != nil {
