@@ -68,10 +68,10 @@ func TestGetSignupPageSpanish(t *testing.T) {
 
 		c.So(err, c.ShouldBeNil)
 
-		c.Convey("The next page body should contain \"Su addresso correo electronico por favor\"", func() {
+		c.Convey("The next page body should contain \"Por favor ingrese su dirección de correo electrónico\"", func() {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Su addresso correo electronico por favor`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Por favor ingrese su dirección de correo electrónico`)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
 		})
 	})

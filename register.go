@@ -45,8 +45,8 @@ func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reques
 		return
 	}
 	tmpl := templates.Lookup("signup_form.tmpl")
-	l := getLocalizer(r)
-	tmpl.Execute(w, getVars(convention, "", l, r))
+	page := &pageInfo{convention: convention, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // postSignupHandler : use the signup service to send the person a verification URL
@@ -78,8 +78,8 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 		return
 	}
 	tmpl := templates.Lookup("check_email.tmpl")
-	l := getLocalizer(r)
-	tmpl.Execute(w, getVars(convention, "", l, r))
+	page := &pageInfo{convention: convention, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // getRegistrationFormHandler : show the registration form
@@ -90,8 +90,8 @@ func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *h
 		return
 	}
 	tmpl := templates.Lookup("registration_form.tmpl")
-	l := getLocalizer(r)
-	tmpl.Execute(w, getVars(convention, "", l, r))
+	page := &pageInfo{convention: convention, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
@@ -145,8 +145,8 @@ func showPaymentForm(ctx context.Context, w http.ResponseWriter, r *http.Request
 		return
 	}
 	tmpl := templates.Lookup("stripe.tmpl")
-	l := getLocalizer(r)
-	tmpl.Execute(w, getVars(convention, regform.Email_Address, l, r))
+	page := &pageInfo{convention: convention, email: regform.Email_Address, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // postRegistrationFormPaymentHandler : charge the customer, and create a User in the User table
@@ -211,8 +211,8 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		return
 	}
 	tmpl := templates.Lookup("registration_successful.tmpl")
-	l := getLocalizer(r)
-	tmpl.Execute(w, getVars(convention, "", l, r))
+	page := &pageInfo{convention: convention, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // Config is our configuration file format
