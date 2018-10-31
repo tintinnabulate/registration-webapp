@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Register for {{ .Name }}</title>
+    <title>{{.pgRegisterFor}}</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body class="bg-light">
     <div class="container">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h2>Complete payment to Register</h2>
+        <h2>{{.frmPaymentDetails}}</h2>
         <p class="lead">{{ .Name }}</p>
       </div>
 
         <div class="col-md-8 mx-auto order-md-1">
-          <h4 class="mb-3">Payment Details</h4>
+          <h4 class="mb-3">{{.frmPaymentDetails}}</h4>
             <form action="/charge" method="post" class="payment">
 		    {{ .csrfField }}
             <div class="row">
@@ -25,7 +25,7 @@
 
   <article>
     <label class="amount">
-      <span>Amount: {{ .CostPrint }} {{ .Currency }}</span>
+      <span>{{.frmAmount}}</span>
     </label>
   </article>
 

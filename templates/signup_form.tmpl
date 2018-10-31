@@ -5,33 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Register for {{ .Name }}</title>
+    <title>{{.pgRegisterFor}}</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body class="bg-light">
     <div class="container">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h2>Register</h2>
+        <h2>{{.pgRegisterFor}}</h2>
         <p class="lead">{{ .Name }} {{ .Year }} - {{ .City }}, {{ .Country }}</p>
       </div>
 
         <div class="col-md-8 mx-auto order-md-1">
-          <h4 class="mb-3">Your Details</h4>
+          <h4 class="mb-3">{{.frmYourDetails}}</h4>
 		    <form class="needs-validation" id="register" action="/signup" method="post" novalidate>
 		    {{ .csrfField }}
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="email">Please enter your email address</label>
+                <label for="email">{{.frmEnterEmail}}</label>
                 <input type="email" class="form-control required" id="Email_Address" name="Email_Address" placeholder="you@example.com">
                 <div class="invalid-feedback">
-                  Please enter a valid email address so we can send you convention details.
+                  {{.valEnterEmail}}
                 </div>
               </div>
             </div>
 
             <hr class="mb-4">
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Send verification email</button>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">{{.btnSendVerifEmail}}</button>
           </form>
         </div>
       </div>

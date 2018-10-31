@@ -24,6 +24,7 @@ func TestMain(m *testing.M) {
 
 func testSetup() {
 	configInit("config.example.json")
+	translatorInit()
 	stripeInit()
 	go mockverifier.Start(config.TestEmailAddress)
 }
@@ -35,7 +36,7 @@ func TestGetSignupPage(t *testing.T) {
 	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
 	createConvention(ctx, cnv)
 
-	c.Convey("When visit the signup page", t, func() {
+	c.Convey("When you visit the signup page", t, func() {
 		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
 		record := httptest.NewRecorder()
 
@@ -47,6 +48,30 @@ func TestGetSignupPage(t *testing.T) {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Please enter your email address`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
+		})
+	})
+}
+
+// TestGetSignupPageSpanish does just that
+func TestGetSignupPageSpanish(t *testing.T) {
+	ctx, inst := testers.GetTestingContext()
+	defer inst.Close()
+	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
+	createConvention(ctx, cnv)
+
+	c.Convey("When you visit the signup page", t, func() {
+		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
+		record := httptest.NewRecorder()
+
+		req, err := http.NewRequest("GET", "/signup?lang=es", nil)
+
+		c.So(err, c.ShouldBeNil)
+
+		c.Convey("The next page body should contain \"Por favor ingrese su dirección de correo electrónico\"", func() {
+			r.ServeHTTP(record, req)
+			c.So(record.Code, c.ShouldEqual, http.StatusOK)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Por favor ingrese su dirección de correo electrónico`)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
 		})
 	})

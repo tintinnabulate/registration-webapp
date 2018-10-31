@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Register for {{ .Name }}</title>
+    <title>{{.pgRegisterFor}}</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body class="bg-light">
     <div class="container">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h2>Register</h2>
+        <h2>{{.pgRegisterFor}}</h2>
         <p class="lead">{{ .Name }} {{ .Year }} - {{ .City }}, {{ .Country }}</p>
       </div>
 
-          <h4>Please check your email inbox, and click the link we've sent you</h4>
+          <h4>{{.pgCheckEmail}}</h4>
 		    <form class="needs-validation" id="register" action="/signup" method="post" novalidate>
 		    {{ .csrfField }}
           </form>

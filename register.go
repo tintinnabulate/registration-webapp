@@ -9,16 +9,19 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/BurntSushi/toml"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
 	"github.com/tintinnabulate/gonfig"
 
 	"golang.org/x/net/context"
+	"golang.org/x/text/language"
 
 	"google.golang.org/appengine/urlfetch"
 )
@@ -42,7 +45,8 @@ func getSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reques
 		return
 	}
 	tmpl := templates.Lookup("signup_form.tmpl")
-	tmpl.Execute(w, getVars(convention, "", r))
+	page := &pageInfo{convention: convention, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // postSignupHandler : use the signup service to send the person a verification URL
@@ -74,7 +78,8 @@ func postSignupHandler(ctx context.Context, w http.ResponseWriter, r *http.Reque
 		return
 	}
 	tmpl := templates.Lookup("check_email.tmpl")
-	tmpl.Execute(w, getVars(convention, "", r))
+	page := &pageInfo{convention: convention, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // getRegistrationFormHandler : show the registration form
@@ -85,7 +90,8 @@ func getRegistrationFormHandler(ctx context.Context, w http.ResponseWriter, r *h
 		return
 	}
 	tmpl := templates.Lookup("registration_form.tmpl")
-	tmpl.Execute(w, getVars(convention, "", r))
+	page := &pageInfo{convention: convention, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
@@ -139,7 +145,8 @@ func showPaymentForm(ctx context.Context, w http.ResponseWriter, r *http.Request
 		return
 	}
 	tmpl := templates.Lookup("stripe.tmpl")
-	tmpl.Execute(w, getVars(convention, regform.Email_Address, r))
+	page := &pageInfo{convention: convention, email: regform.Email_Address, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // postRegistrationFormPaymentHandler : charge the customer, and create a User in the User table
@@ -204,7 +211,8 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 		return
 	}
 	tmpl := templates.Lookup("registration_successful.tmpl")
-	tmpl.Execute(w, getVars(convention, "", r))
+	page := &pageInfo{convention: convention, localizer: getLocalizer(r), r: r}
+	tmpl.Execute(w, getVars(page))
 }
 
 // Config is our configuration file format
@@ -234,7 +242,20 @@ var (
 	templates      *template.Template
 	config         Config
 	store          *sessions.CookieStore
+	translator     *i18n.Bundle
 )
+
+func translatorInit() {
+	translator = &i18n.Bundle{DefaultLanguage: language.English}
+	translator.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	translator.MustLoadMessageFile("locales/active.es.toml")
+}
+
+func getLocalizer(r *http.Request) *i18n.Localizer {
+	lang := r.FormValue("lang")
+	accept := r.Header.Get("Accept-Language")
+	return i18n.NewLocalizer(translator, lang, accept)
+}
 
 func configInit(configName string) {
 	err := gonfig.Load(&config, gonfig.Conf{
@@ -292,6 +313,7 @@ func init() {
 	configInit("config.json")
 	templatesInit()
 	schemaDecoderInit()
+	translatorInit()
 	routerInit()
 	stripeInit()
 }
