@@ -598,12 +598,12 @@ type Fellowship int
 const (
 	AA Fellowship = iota + 1
 	AlAnon
-	Alateen
+    Guest
 )
 
 // Fellowships : all the fellowships
 var Fellowships = []Fellowship{
 	AA,
 	AlAnon,
-	Alateen,
+    Guest,
 }
