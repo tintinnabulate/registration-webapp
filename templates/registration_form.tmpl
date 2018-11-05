@@ -54,6 +54,48 @@
               </div>
             </div>
 
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="WhoAreYou">{{.frmWhoAreYou}}</label>
+                <select name="WhoAreYou" id="WhoAreYou" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $fellowship := .Fellowships }}
+                  <option value="{{ inc $i }}">{{ $fellowship }}</option>{{ end }}
+                </select>
+                <div class="invalid-feedback">
+                  Please select a valid fellowship.
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="WillingService">{{ .frmWillingService }}</label>
+                <select name="WillingService" id="WillingService" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $willing := .Willings }}
+                  <option value="{{ inc $i }}">{{ $willing }}</option>{{ end }}
+                </select>
+                <div class="invalid-feedback">
+                  Please select a valid option.
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="HelpOutreach">{{ .frmHelpOutreach }}</label>
+                <select name="HelpOutreach" id="HelpOutreach" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $help := .HelpOutreaches }}
+                  <option value="{{ inc $i }}">{{ $help }}</option>{{ end }}
+                </select>
+                <div class="invalid-feedback">
+                  Please select a valid option.
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="GetTshirt">{{ .frmGetTshirt }}</label>
+                <select name="GetTshirt" id="GetTshirt" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $tshirt := .Tshirts }}
+                  <option value="{{ inc $i }}">{{ $tshirt }}</option>{{ end }}
+                </select>
+                <div class="invalid-feedback">
+                  Please select a valid option.
+                </div>
+              </div>
+            </div>
+
             <hr class="mb-4">
             <button class="btn btn-primary btn-lg btn-block" type="submit">{{.btnContinueToCheckout}}</button>
           </form>

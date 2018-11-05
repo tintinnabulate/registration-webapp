@@ -598,12 +598,60 @@ type Fellowship int
 const (
 	AA Fellowship = iota + 1
 	AlAnon
-    Guest
+	Guest
 )
 
 // Fellowships : all the fellowships
 var Fellowships = []Fellowship{
 	AA,
 	AlAnon,
-    Guest,
+	Guest,
+}
+
+// Willing : whether or not someone is willing to do service
+//go:generate stringer -type=Willing
+type Willing int
+
+// Yes : start of willing enumeration
+const (
+	Yes Willing = iota + 1
+	No
+)
+
+// Willings : all the willings
+var Willings = []Willing{
+	Yes,
+	No,
+}
+
+// HelpOutreach : whether or not someone is willing to do service
+//go:generate stringer -type=Willing
+type HelpOutreach int
+
+// Yes_Help : start of willing enumeration
+const (
+	Yes_Help HelpOutreach = iota + 1
+	No_Thanks
+)
+
+// HelpOutreaches : all the willings
+var HelpOutreaches = []HelpOutreach{
+	Yes_Help,
+	No_Thanks,
+}
+
+// Tshirt : whether or not someone is willing to do service
+//go:generate stringer -type=Willing
+type Tshirt int
+
+// T_Shirt_Please : start of willing enumeration
+const (
+	T_Shirt_Please Tshirt = iota + 1
+	No_T_Shirt
+)
+
+// Tshirts : all the willings
+var Tshirts = []Tshirt{
+	T_Shirt_Please,
+	No_T_Shirt,
 }
