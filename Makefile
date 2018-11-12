@@ -1,5 +1,6 @@
 all:
 	# launch dev version of app on localhost
+	go generate
 	dev_appserver.py .
 test:
 	# verbose mode, get code coverage, check for race conditions, on all *_test.go files in this package
