@@ -646,7 +646,7 @@ type Tshirt int
 
 // T_Shirt_Please : start of willing enumeration
 const (
-	T_Shirt_Please Tshirt = iota + 1
+	Yes_T_Shirt_Please Tshirt = iota + 1
 	No_T_Shirt
 )
 

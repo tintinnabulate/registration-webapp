@@ -15,7 +15,7 @@ type user struct {
 	Country            CountryType
 	City               string
 	Sobriety_Date      time.Time
-	Member_Of          []Fellowship
+	Member_Of          Fellowship
     IsServant          bool
     IsOutreacher       bool
     IsTshirtBuyer      bool
