@@ -101,6 +101,30 @@ func getVars(i *pageInfo) templateVars {
 			Other: "Your details",
 		},
 	})
+	frmWhoAreYou := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmWhoAreYou",
+			Other: "Who are you? Member of AA, Al-Anon or Guest?",
+		},
+	})
+	frmWillingService := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmWillingService",
+			Other: "Are you willing to be of service at the convention?",
+		},
+	})
+	frmHelpOutreach := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmHelpOutreach",
+			Other: "Do you want to help outreach the convention?",
+		},
+	})
+	frmGetTshirt := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmGetTshirt",
+			Other: "Would you be interested to get EURYPAA 2019 T-shirts?",
+		},
+	})
 	pgCheckEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "pgCheckEmail",
@@ -164,6 +188,10 @@ func getVars(i *pageInfo) templateVars {
 		"frmPaymentDetails":     frmPaymentDetails,
 		"frmSameEmail":          frmSameEmail,
 		"frmYourDetails":        frmYourDetails,
+        "frmWhoAreYou":          frmWhoAreYou,
+        "frmWillingService":     frmWillingService,
+        "frmHelpOutreach":       frmHelpOutreach,
+        "frmGetTshirt":          frmGetTshirt,
 		"pgCheckEmail":          pgCheckEmail,
 		"pgNowRegistered":       pgNowRegistered,
 		"pgRegisterFor":         pgRegisterFor,
@@ -180,6 +208,9 @@ func getVars(i *pageInfo) templateVars {
 		"Country":               i.convention.Country,
 		"Countries":             Countries,
 		"Fellowships":           Fellowships,
+		"Willings":              Willings,
+		"HelpOutreaches":        HelpOutreaches,
+		"Tshirts":               Tshirts,
 		"Key":                   publishableKey,
 		csrf.TemplateTag:        csrf.TemplateField(i.r),
 		"Email":                 i.email,

@@ -1,7 +1,7 @@
 package main
 
 // CountryType : ...
-//go:generate stringer -type=Country
+//go:generate stringer -type=CountryType
 type CountryType int
 
 const (
@@ -598,12 +598,60 @@ type Fellowship int
 const (
 	AA Fellowship = iota + 1
 	AlAnon
-	Alateen
+	Guest
 )
 
 // Fellowships : all the fellowships
 var Fellowships = []Fellowship{
 	AA,
 	AlAnon,
-	Alateen,
+	Guest,
+}
+
+// Willing : whether or not someone is willing to do service
+//go:generate stringer -type=Willing
+type Willing int
+
+// Yes : start of willing enumeration
+const (
+	Yes_Willing Willing = iota + 1
+	No
+)
+
+// Willings : all the willings
+var Willings = []Willing{
+	Yes_Willing,
+	No,
+}
+
+// HelpOutreach : whether or not someone is willing to do outreach
+//go:generate stringer -type=HelpOutreach
+type HelpOutreach int
+
+// Yes_Help : start of help outreach enumeration
+const (
+	Yes_Help_Outreach HelpOutreach = iota + 1
+	No_Thanks
+)
+
+// HelpOutreaches : all the willings
+var HelpOutreaches = []HelpOutreach{
+	Yes_Help_Outreach,
+	No_Thanks,
+}
+
+// Tshirt : whether or not someone is willing to do service
+//go:generate stringer -type=Tshirt
+type Tshirt int
+
+// T_Shirt_Please : start of tshirt enumeration
+const (
+	Yes_T_Shirt_Please Tshirt = iota + 1
+	No_T_Shirt
+)
+
+// Tshirts : all the tshirts
+var Tshirts = []Tshirt{
+	Yes_T_Shirt_Please,
+	No_T_Shirt,
 }

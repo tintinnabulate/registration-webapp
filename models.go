@@ -15,7 +15,10 @@ type user struct {
 	Country            CountryType
 	City               string
 	Sobriety_Date      time.Time
-	Member_Of          []Fellowship
+	Member_Of          Fellowship
+    IsServant          bool
+    IsOutreacher       bool
+    IsTshirtBuyer      bool
 	Stripe_Customer_ID string
 }
 
@@ -46,16 +49,19 @@ type convention struct {
 
 // Email_Address is primary key
 type registrationForm struct {
-	Email_Address string
-	Creation_Date time.Time
-	First_Name    string
-	Last_Name     string
-	Password      string
-	Conf_Password string
-	Country       CountryType
-	City          string
-	Sobriety_Date time.Time
-	Member_Of     []Fellowship
+	Email_Address  string
+	Creation_Date  time.Time
+	First_Name     string
+	Last_Name      string
+	Password       string
+	Conf_Password  string
+	Country        CountryType
+	City           string
+	Sobriety_Date  time.Time
+	Member_Of      Fellowship
+    IsServant      Willing
+    IsOutreacher   HelpOutreach
+    IsTshirtBuyer  Tshirt
 }
 
 // Signup is used to parse JSON response from the signup microservice

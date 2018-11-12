@@ -53,30 +53,6 @@ func TestGetSignupPage(t *testing.T) {
 	})
 }
 
-// TestGetSignupPageSpanish does just that
-func TestGetSignupPageSpanish(t *testing.T) {
-	ctx, inst := testers.GetTestingContext()
-	defer inst.Close()
-	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
-	createConvention(ctx, cnv)
-
-	c.Convey("When you visit the signup page", t, func() {
-		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
-		record := httptest.NewRecorder()
-
-		req, err := http.NewRequest("GET", "/signup?lang=es", nil)
-
-		c.So(err, c.ShouldBeNil)
-
-		c.Convey("The next page body should contain \"Por favor ingrese su dirección de correo electrónico\"", func() {
-			r.ServeHTTP(record, req)
-			c.So(record.Code, c.ShouldEqual, http.StatusOK)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Por favor ingrese su dirección de correo electrónico`)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
-		})
-	})
-}
-
 // TestGetRegisterPage does just that
 func TestGetRegisterPage(t *testing.T) {
 	ctx, inst := testers.GetTestingContext()
@@ -96,6 +72,30 @@ func TestGetRegisterPage(t *testing.T) {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Continue to checkout`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
+		})
+	})
+}
+
+// TestGetRegisterPageSpanish does just that
+func TestGetRegisterPageSpanish(t *testing.T) {
+	ctx, inst := testers.GetTestingContext()
+	defer inst.Close()
+	cnv := &convention{Country: 1, Year: 2018, City: "Foo", Cost: 2000, Currency_Code: "EUR", Name: "EURYPAA"}
+	createConvention(ctx, cnv)
+
+	c.Convey("When you visit the register page", t, func() {
+		r := createHTTPRouter(handlers.ToHTTPHandlerConverter(ctx))
+		record := httptest.NewRecorder()
+
+		req, err := http.NewRequest("GET", "/register?lang=es", nil)
+
+		c.So(err, c.ShouldBeNil)
+
+		c.Convey("The next page body should contain \"¿Te interesaría recibir una camiseta de EURYPAA 2019?\"", func() {
+			r.ServeHTTP(record, req)
+			c.So(record.Code, c.ShouldEqual, http.StatusOK)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `¿Te interesaría recibir una camiseta de EURYPAA 2019?`)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
 		})
 	})
