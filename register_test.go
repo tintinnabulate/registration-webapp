@@ -92,7 +92,7 @@ func TestGetRegisterPageSpanish(t *testing.T) {
 
 		c.So(err, c.ShouldBeNil)
 
-		c.Convey("The next page body should contain \"¿Te interesaría recibir una camiseta de EURYPAA 2019?\", func() {
+		c.Convey("The next page body should contain \"¿Te interesaría recibir una camiseta de EURYPAA 2019?\"", func() {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `¿Te interesaría recibir una camiseta de EURYPAA 2019?`)
