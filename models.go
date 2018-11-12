@@ -58,10 +58,10 @@ type registrationForm struct {
 	Country        CountryType
 	City           string
 	Sobriety_Date  time.Time
-	Member_Of      []Fellowship
-    IsServant      bool
-    IsOutreacher   bool
-    IsTshirtBuyer  bool
+	Member_Of      Fellowship
+    IsServant      Willing
+    IsOutreacher   HelpOutreach
+    IsTshirtBuyer  Tshirt
 }
 
 // Signup is used to parse JSON response from the signup microservice

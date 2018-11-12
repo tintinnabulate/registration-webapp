@@ -614,13 +614,13 @@ type Willing int
 
 // Yes : start of willing enumeration
 const (
-	Yes Willing = iota + 1
+	Yes_Willing Willing = iota + 1
 	No
 )
 
 // Willings : all the willings
 var Willings = []Willing{
-	Yes,
+	Yes_Willing,
 	No,
 }
 
@@ -630,13 +630,13 @@ type HelpOutreach int
 
 // Yes_Help : start of willing enumeration
 const (
-	Yes_Help HelpOutreach = iota + 1
+	Yes_Help_Outreach HelpOutreach = iota + 1
 	No_Thanks
 )
 
 // HelpOutreaches : all the willings
 var HelpOutreaches = []HelpOutreach{
-	Yes_Help,
+	Yes_Help_Outreach,
 	No_Thanks,
 }
 
@@ -652,6 +652,6 @@ const (
 
 // Tshirts : all the willings
 var Tshirts = []Tshirt{
-	T_Shirt_Please,
+	Yes_T_Shirt_Please,
 	No_T_Shirt,
 }

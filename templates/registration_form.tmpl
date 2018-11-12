@@ -56,8 +56,8 @@
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="WhoAreYou">{{.frmWhoAreYou}}</label>
-                <select name="WhoAreYou" id="WhoAreYou" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $fellowship := .Fellowships }}
+                <label for="Member_Of">{{.frmWhoAreYou}}</label>
+                <select name="Member_Of" id="Member_Of" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $fellowship := .Fellowships }}
                   <option value="{{ inc $i }}">{{ $fellowship }}</option>{{ end }}
                 </select>
                 <div class="invalid-feedback">
@@ -65,8 +65,8 @@
                 </div>
               </div>
               <div class="col-md-6 mb-3">
-                <label for="WillingService">{{ .frmWillingService }}</label>
-                <select name="WillingService" id="WillingService" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $willing := .Willings }}
+                <label for="IsServant">{{ .frmWillingService }}</label>
+                <select name="IsServant" id="IsServant" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $willing := .Willings }}
                   <option value="{{ inc $i }}">{{ $willing }}</option>{{ end }}
                 </select>
                 <div class="invalid-feedback">
@@ -77,8 +77,8 @@
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="HelpOutreach">{{ .frmHelpOutreach }}</label>
-                <select name="HelpOutreach" id="HelpOutreach" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $help := .HelpOutreaches }}
+                <label for="IsOutreacher">{{ .frmHelpOutreach }}</label>
+                <select name="IsOutreacher" id="IsOutreacher" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $help := .HelpOutreaches }}
                   <option value="{{ inc $i }}">{{ $help }}</option>{{ end }}
                 </select>
                 <div class="invalid-feedback">
@@ -86,8 +86,8 @@
                 </div>
               </div>
               <div class="col-md-6 mb-3">
-                <label for="GetTshirt">{{ .frmGetTshirt }}</label>
-                <select name="GetTshirt" id="GetTshirt" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $tshirt := .Tshirts }}
+                <label for="IsTshirtBuyer">{{ .frmGetTshirt }}</label>
+                <select name="IsTshirtBuyer" id="IsTshirtBuyer" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $tshirt := .Tshirts }}
                   <option value="{{ inc $i }}">{{ $tshirt }}</option>{{ end }}
                 </select>
                 <div class="invalid-feedback">
