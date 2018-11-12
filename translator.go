@@ -101,6 +101,30 @@ func getVars(i *pageInfo) templateVars {
 			Other: "Your details",
 		},
 	})
+	frmWhoAreYou := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmWhoAreYou",
+			Other: "Who are you? Member of AA, Al-Anon or Guest?",
+		},
+	})
+	frmWillingService := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmWillingService",
+			Other: "Are you willing to be of service at the convention?",
+		},
+	})
+	frmHelpOutreach := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmHelpOutreach",
+			Other: "Do you want to help outreach the convention?",
+		},
+	})
+	frmGetTshirt := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmGetTshirt",
+			Other: "Would you be interested to get EURYPAA 2019 T-shirts?",
+		},
+	})
 	pgCheckEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "pgCheckEmail",

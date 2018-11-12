@@ -18,7 +18,6 @@ pgRegisteredFor = "Registered for {{ .Name }}"
 valEnterEmail = "Please enter a valid email address so we can send you convention details."
 valFirstName = "Valid first name is required."
 valSameEmail = "Please enter a valid email address so we can send you convention details."
-
 frmWhoAreYou = "Who are you? Member of AA, Al-Anon or Guest?"
 frmWillingService = "Are you willing to be of service at the convention?"
 frmHelpOutreach = "Do you want to help outreach the convention?"

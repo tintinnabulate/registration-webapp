@@ -18,7 +18,6 @@ pgRegisteredFor = "Registrado para {{ .Name }}"
 valEnterEmail = "Ingresa una dirección de correo electrónico válida para que podamos enviarte detalles de la convención"
 valFirstName = "Se requiere un nombre válido."
 valSameEmail = "Ingresa una dirección de correo electrónico válida para que podamos enviarte detalles de la convención"
-
 frmWhoAreYou = "¿Quién eres? ¿Miembro de AA, Al-Anon o invitado?" 
 frmWillingService = "¿Quieres hacer servicio en la convención?" 
 frmHelpOutreach = "¿Quieres ayudar a promocionar el evento?"
