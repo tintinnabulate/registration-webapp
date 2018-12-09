@@ -20,6 +20,7 @@ import (
 
 // addUser : adds user to User table
 func addUser(ctx context.Context, u *user) (*datastore.Key, error) {
+	u.Creation_Date = time.Now()
 	key := datastore.NewKey(ctx, "User", u.Email_Address, 0, nil)
 	k, err := datastore.Put(ctx, key, u)
 	if err != nil {
