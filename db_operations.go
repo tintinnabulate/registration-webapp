@@ -21,7 +21,7 @@ import (
 // addUser : adds user to User table
 func addUser(ctx context.Context, u *user) (*datastore.Key, error) {
 	u.Creation_Date = time.Now()
-	key := datastore.NewKey(ctx, "User", u.Email_Address, 0, nil)
+	key := datastore.NewIncompleteKey(ctx, "User", nil)
 	k, err := datastore.Put(ctx, key, u)
 	if err != nil {
 		return nil, fmt.Errorf("could not add user to user table: %v", err)
@@ -32,12 +32,18 @@ func addUser(ctx context.Context, u *user) (*datastore.Key, error) {
 // getUser : gets the user matching the given email address.
 // This should only be called during testing.
 func getUser(ctx context.Context, email string) (user, error) {
-	key := datastore.NewKey(ctx, "User", email, 0, nil)
+	q := datastore.NewQuery("User").Filter("Email_Address =", email)
+	it := q.Run(ctx)
 	var u user
-	err := datastore.Get(ctx, key, &u)
-	if err != nil {
-		return user{},
-			fmt.Errorf("could not get user: %v", err)
+	for {
+		_, err := it.Next(&u)
+		if err == datastore.Done {
+			break // No further entities match the query.
+		}
+		if err != nil {
+			return user{},
+				fmt.Errorf("error fetching next user: %v", err)
+		}
 	}
 	return u, nil
 }
