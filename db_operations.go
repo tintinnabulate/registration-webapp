@@ -72,3 +72,16 @@ func getLatestConvention(ctx context.Context) (convention, error) {
 	}
 	return conventions[0], nil
 }
+
+func getAllUsers(ctx context.Context) ([]user, error) {
+	var users []user
+	q := datastore.NewQuery("User").Order("-Creation_Date")
+	_, err := q.GetAll(ctx, &users)
+	if err != nil {
+		return []user{}, fmt.Errorf("could not get users: %v", err)
+	}
+	if len(users) < 1 {
+		return []user{}, errors.New("No users in DB")
+	}
+	return users, nil
+}

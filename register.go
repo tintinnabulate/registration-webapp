@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
+	"encoding/csv"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -24,6 +27,7 @@ import (
 	"golang.org/x/text/language"
 
 	"google.golang.org/appengine/urlfetch"
+	guser "google.golang.org/appengine/user"
 )
 
 // createHTTPRouter : create a HTTP router where each handler is wrapped by a given context
@@ -34,7 +38,73 @@ func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 	appRouter.HandleFunc("/register", f(getRegistrationFormHandler)).Methods("GET")
 	appRouter.HandleFunc("/register", f(postRegistrationFormHandler)).Methods("POST")
 	appRouter.HandleFunc("/charge", f(postRegistrationFormPaymentHandler)).Methods("POST")
+	appRouter.HandleFunc("/registrations.csv", f(getCSVHandler)).Methods("GET")
 	return appRouter
+}
+
+// getCSVHandler : get CSV
+func getCSVHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	u := guser.Current(ctx)
+	if u.Email != config.CSVUser {
+		http.Error(w, "Invalid User", http.StatusNotFound)
+		return
+	} else {
+		b := &bytes.Buffer{}
+		c := csv.NewWriter(b)
+
+		if err := c.Write([]string{
+			"creation_date",
+			"first_name",
+			"email_address",
+			"country",
+			"city",
+			"is_servant",
+			"is_outreacher",
+			"wants_tshirt",
+			"fellowship",
+			"stripe_charge_id",
+			"stripe_customer_id",
+		}); err != nil {
+			log.Fatalln("error writing record to csv:", err)
+			return
+		}
+
+		users, err := getAllUsers(ctx)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("could not get users: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		for _, u := range users {
+			var record []string
+			record = append(record, fmt.Sprint(u.Creation_Date))
+			record = append(record, u.First_Name)
+			record = append(record, u.Email_Address)
+			record = append(record, fmt.Sprint(u.Country))
+			record = append(record, u.City)
+			record = append(record, fmt.Sprint(u.IsServant))
+			record = append(record, fmt.Sprint(u.IsOutreacher))
+			record = append(record, fmt.Sprint(u.IsTshirtBuyer))
+			record = append(record, fmt.Sprint(u.Member_Of))
+			record = append(record, u.Stripe_Charge_ID)
+			record = append(record, u.Stripe_Customer_ID)
+			if err := c.Write(record); err != nil {
+				log.Fatalln("error writing record to csv:", err)
+			}
+		}
+
+		c.Flush()
+
+		if err := c.Error(); err != nil {
+			log.Fatal(err)
+			return
+		}
+		w.Header().Set("Content-Disposition", "attachment; filename=registrations.csv")
+		w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+		w.Header().Set("Content-Description", "File Transfer")
+		io.Copy(w, b)
+		return
+	}
 }
 
 // getSignupHandler : show the signup form (SignupURL)
@@ -221,10 +291,6 @@ func postRegistrationFormPaymentHandler(ctx context.Context, w http.ResponseWrit
 
 // Config is our configuration file format
 type Config struct {
-	SMTPUsername         string `id:"SMTPUsername"         default:"sender@mydomain.com"`
-	SMTPPassword         string `id:"SMTPPassword"         default:"mypassword"`
-	SMTPServer           string `id:"SMTPServer"           default:"smtp.mydomain.com"`
-	SiteDomain           string `id:"SiteDomain"           default:"mydomain.com"`
 	SiteName             string `id:"SiteName"             default:"MyDomain"`
 	ProjectID            string `id:"ProjectID"            default:"my-appspot-project-id"`
 	CSRFKey              string `id:"CSRF_Key"             default:"my-random-32-bytes"`
@@ -238,6 +304,7 @@ type Config struct {
 	TestEmailAddress     string `id:"TestEmailAddress"     default:"foo@example.com"`
 	CookieStoreAuth      string `id:"CookieStoreAuth"      default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	CookieStoreEnc       string `id:"CookieStoreEnc"       default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
+	CSVUser              string `id:"CSVUser"              default:"CSVUser"`
 }
 
 var (
