@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -352,14 +353,14 @@ func schemaDecoderInit() {
 }
 
 // routerInit : initialise our CSRF protected HTTPRouter
-func routerInit() {
+func routerInit() http.Handler {
 	// TODO: https://youtu.be/xyDkyFjzFVc?t=1308
 	router := createHTTPRouter(handlers.ToHTTPHandler)
 	csrfProtector := csrf.Protect(
 		[]byte(config.CSRFKey),
 		csrf.Secure(config.IsLiveSite))
 	csrfProtectedRouter := csrfProtector(router)
-	http.Handle("/", csrfProtectedRouter)
+	return csrfProtectedRouter
 }
 
 // stripeInit : set up important Stripe variables
@@ -385,6 +386,21 @@ func init() {
 	templatesInit()
 	schemaDecoderInit()
 	translatorInit()
-	routerInit()
+	//routerInit()
 	stripeInit()
+}
+
+func main() {
+	csrfProtectedRouter := routerInit()
+	http.Handle("/", csrfProtectedRouter)
+	// [START setting_port]
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("Defaulting to port %s", port)
+	}
+
+	log.Printf("Listening on port %s", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+	// [END setting_port]
 }

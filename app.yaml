@@ -1,12 +1,11 @@
-runtime: go
-api_version: go1.9
+runtime: go111
 
 handlers:
 - url: /registrations.csv
-  script: _go_app
+  script: auto
   secure: always
   login: required
 
 - url: /.*
-  script: _go_app
+  script: auto
   secure: always
