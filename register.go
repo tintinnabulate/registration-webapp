@@ -317,7 +317,7 @@ var (
 )
 
 func translatorInit() {
-	translator = &i18n.Bundle{DefaultLanguage: language.English}
+	translator = i18n.NewBundle(language.English)
 	translator.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	translator.MustLoadMessageFile("locales/active.es.toml")
 }
