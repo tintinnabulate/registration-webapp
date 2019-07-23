@@ -3,11 +3,13 @@ language: go
 go:
   - 1.12.x
 
+env:
+  - GO111MODULES=on
+
 install:
-  - go get -u -v $(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' ./... | sort | uniq )
   - mkdir /tmp/sdk
   - curl -o /tmp/sdk.tar.gz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-255.0.0-linux-x86_64.tar.gz"
-  - tar xzf /tmp/sdk.zip -C /tmp/sdk
+  - tar xzf /tmp/sdk.tar.gz -C /tmp/sdk
   - export PATH="$PATH:/tmp/sdk/bin"
   - export APPENGINE_DEV_APPSERVER=/tmp/sdk/bin/dev_appserver.py
 
