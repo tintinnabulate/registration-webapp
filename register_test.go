@@ -48,7 +48,7 @@ func TestGetSignupPage(t *testing.T) {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Please enter your email address`)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania`)
 		})
 	})
 }
@@ -72,7 +72,7 @@ func TestGetRegisterPage(t *testing.T) {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `Continue to checkout`)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania`)
 		})
 	})
 }
@@ -96,7 +96,7 @@ func TestGetRegisterPageSpanish(t *testing.T) {
 			r.ServeHTTP(record, req)
 			c.So(record.Code, c.ShouldEqual, http.StatusOK)
 			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `¿Te interesaría recibir una camiseta de la convención?`)
-			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania_`)
+			c.So(fmt.Sprint(record.Body), c.ShouldContainSubstring, `EURYPAA 2018 - Foo, Albania`)
 		})
 	})
 }
