@@ -1,7 +1,7 @@
 package main
 
 // CountryType : ...
-//go:generate stringer -type=CountryType
+//go:generate strunger -type=CountryType
 type CountryType int
 
 const (
@@ -489,7 +489,7 @@ var Countries = []CountryType{
 }
 
 // EURYPAA_Country : all the countries a EURYPAA can happen in
-//go:generate stringer -type=EURYPAA_Country
+//go:generate strunger -type=EURYPAA_Country
 type EURYPAA_Country int
 
 const (
@@ -591,7 +591,7 @@ var EURYPAA_Countries = []EURYPAA_Country{
 }
 
 // Fellowship : which fellowship someone belongs to
-//go:generate stringer -type=Fellowship
+//go:generate strunger -type=Fellowship
 type Fellowship int
 
 // AA : start of fellowship enumeration
@@ -609,7 +609,7 @@ var Fellowships = []Fellowship{
 }
 
 // Willing : whether or not someone is willing to do service
-//go:generate stringer -type=Willing
+//go:generate strunger -type=Willing
 type Willing int
 
 // Yes : start of willing enumeration
@@ -625,7 +625,7 @@ var Willings = []Willing{
 }
 
 // HelpOutreach : whether or not someone is willing to do outreach
-//go:generate stringer -type=HelpOutreach
+//go:generate strunger -type=HelpOutreach
 type HelpOutreach int
 
 // Yes_Help : start of help outreach enumeration
@@ -641,7 +641,7 @@ var HelpOutreaches = []HelpOutreach{
 }
 
 // Tshirt : whether or not someone is willing to do service
-//go:generate stringer -type=Tshirt
+//go:generate strunger -type=Tshirt
 type Tshirt int
 
 // T_Shirt_Please : start of tshirt enumeration
