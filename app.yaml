@@ -2,6 +2,11 @@ runtime: go
 api_version: go1.9
 
 handlers:
+- url: /email_qrcodes
+  script: _go_app
+  secure: always
+  login: required
+
 - url: /registrations.csv
   script: _go_app
   secure: always

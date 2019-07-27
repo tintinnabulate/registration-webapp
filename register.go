@@ -39,7 +39,33 @@ func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 	appRouter.HandleFunc("/register", f(postRegistrationFormHandler)).Methods("POST")
 	appRouter.HandleFunc("/charge", f(postRegistrationFormPaymentHandler)).Methods("POST")
 	appRouter.HandleFunc("/registrations.csv", f(getCSVHandler)).Methods("GET")
+	appRouter.HandleFunc("/email_qrcodes", f(emailQRCodes)).Methods("GET")
 	return appRouter
+}
+
+func emailQRCodes(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	u := guser.Current(ctx)
+	if u.Email != config.QREmailer {
+		http.Error(w, "Invalid User", http.StatusNotFound)
+		return
+	} else {
+		users, err := getAllUsers(ctx)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("could not get users: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		email_customers := make(map[string][]string)
+
+		for _, u := range users {
+			email_customers[u.Email_Address] = append(email_customers[u.Email_Address], u.Stripe_Customer_ID)
+		}
+
+		// just print them for now
+		fmt.Fprint(w, email_customers)
+		return
+	}
+
 }
 
 // getCSVHandler : get CSV
@@ -305,6 +331,7 @@ type Config struct {
 	CookieStoreAuth      string `id:"CookieStoreAuth"      default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	CookieStoreEnc       string `id:"CookieStoreEnc"       default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	CSVUser              string `id:"CSVUser"              default:"CSVUser"`
+	QREmailer            string `id:"QREmailer"            default:"QREmailer"`
 }
 
 var (
