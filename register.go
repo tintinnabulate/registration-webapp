@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/csv"
 	"encoding/gob"
 	"encoding/json"
@@ -18,6 +19,9 @@ import (
 	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	sendgrid "github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	qrcode "github.com/skip2/go-qrcode"
 	"github.com/stripe/stripe-go"
 	stripeClient "github.com/stripe/stripe-go/client"
 	"github.com/tintinnabulate/aecontext-handlers/handlers"
@@ -43,7 +47,95 @@ func createHTTPRouter(f handlers.ToHandlerHOF) *mux.Router {
 	return appRouter
 }
 
+// Fully populated Mail object
+func kitchenSink(recipient qrUser, theQRimages [][]byte) []byte {
+	m := mail.NewV3Mail()
+	sender_address := "test@example.com"
+	sender_name := "Example User"
+	e := mail.NewEmail(sender_name, sender_address)
+	m.SetFrom(e)
+
+	// Customer Subject line
+	// if there's only one QR code
+	m.Subject = "[EURYPAA 2019] Your EURYPAA QR code!"
+	if len(theQRimages) > 1 {
+		// if theres more than one
+		m.Subject = "[EURYPAA 2019] Your EURYPAA QR codes!"
+	}
+
+	p := mail.NewPersonalization()
+	tos := []*mail.Email{
+		mail.NewEmail(recipient.theUser.First_Name, recipient.theUser.Email_Address),
+	}
+	p.AddTos(tos...)
+
+	m.AddPersonalizations(p)
+
+	c := mail.NewContent("text/plain", "some text here")
+	m.AddContent(c)
+
+	c = mail.NewContent("text/html", "some html here")
+	m.AddContent(c)
+
+	// encode and attach all QR images.
+	for i, img := range theQRimages {
+		a := mail.NewAttachment()
+		a.SetContent(base64.StdEncoding.EncodeToString(img))
+		a.SetType("image/png")
+		a.SetFilename(fmt.Sprintf("QRCODE_%v-EURYPAA_2019.png", i+1))
+		a.SetDisposition("inline")
+		a.SetContentID(fmt.Sprintf("QR_CODE_%v", i+1))
+		m.AddAttachment(a)
+	}
+
+	m.AddCategories("EURYPAA 2019")
+	m.AddCategories("QR Codes")
+
+	mailSettings := mail.NewMailSettings()
+	bypassListManagement := mail.NewSetting(true)
+	mailSettings.SetBypassListManagement(bypassListManagement)
+	footerSetting := mail.NewFooterSetting()
+	footerSetting.SetText("Footer Text")
+	footerSetting.SetEnable(true)
+	footerSetting.SetHTML("<html><body>Footer Text</body></html>")
+	mailSettings.SetFooter(footerSetting)
+	spamCheckSetting := mail.NewSpamCheckSetting()
+	spamCheckSetting.SetEnable(true)
+	spamCheckSetting.SetSpamThreshold(1)
+	spamCheckSetting.SetPostToURL("https://spamcatcher.sendgrid.com")
+	mailSettings.SetSpamCheckSettings(spamCheckSetting)
+	m.SetMailSettings(mailSettings)
+
+	trackingSettings := mail.NewTrackingSettings()
+	clickTrackingSettings := mail.NewClickTrackingSetting()
+	clickTrackingSettings.SetEnable(true)
+	clickTrackingSettings.SetEnableText(true)
+	trackingSettings.SetClickTracking(clickTrackingSettings)
+	openTrackingSetting := mail.NewOpenTrackingSetting()
+	openTrackingSetting.SetEnable(true)
+	openTrackingSetting.SetSubstitutionTag("Optional tag to replace with the open image in the body of the message")
+	trackingSettings.SetOpenTracking(openTrackingSetting)
+	subscriptionTrackingSetting := mail.NewSubscriptionTrackingSetting()
+	subscriptionTrackingSetting.SetEnable(true)
+	subscriptionTrackingSetting.SetText("text to insert into the text/plain portion of the message")
+	subscriptionTrackingSetting.SetHTML("<html><body>html to insert into the text/html portion of the message</body></html>")
+	subscriptionTrackingSetting.SetSubstitutionTag("Optional tag to replace with the open image in the body of the message")
+	trackingSettings.SetSubscriptionTracking(subscriptionTrackingSetting)
+	m.SetTrackingSettings(trackingSettings)
+
+	replyToEmail := mail.NewEmail("Example User", "test@example.com")
+	m.SetReplyTo(replyToEmail)
+
+	return mail.GetRequestBody(m)
+}
+
+type qrUser struct {
+	theUser     user
+	customerIDs []string
+}
+
 func emailQRCodes(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	// make sure the person accessing this page is authorised
 	u := guser.Current(ctx)
 	if u.Email != config.QREmailer {
 		http.Error(w, "Invalid User", http.StatusNotFound)
@@ -55,14 +147,39 @@ func emailQRCodes(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		email_customers := make(map[string][]string)
+		// make a map of email address -> user, because there are multiple payments made by the same email
+		email_user := make(map[string]qrUser)
 
 		for _, u := range users {
-			email_customers[u.Email_Address] = append(email_customers[u.Email_Address], u.Stripe_Customer_ID)
+			email_user[u.Email_Address] = qrUser{
+				theUser: u,
+				// append customer IDs inside this array
+				customerIDs: append(email_user[u.Email_Address].
+					customerIDs, u.Stripe_Customer_ID)}
 		}
 
-		// just print them for now
-		fmt.Fprint(w, email_customers)
+		// make 1 QR image per customer ID
+		var pngs [][]byte
+		for _, cus := range email_user[config.QREmailer].customerIDs {
+			png, _ := qrcode.Encode(cus, qrcode.Medium, 256)
+			pngs = append(pngs, png)
+		}
+
+		sendgrid.DefaultClient.HTTPClient = urlfetch.Client(ctx)
+
+		request := sendgrid.GetRequest(config.SendGridKey, "/v3/mail/send", "https://api.sendgrid.com")
+		request.Method = "POST"
+		// attach all the QR codes into a message bound for that email address
+		request.Body = kitchenSink(email_user[config.QREmailer], pngs)
+		// send the email
+		response, err := sendgrid.API(request)
+		if err != nil {
+			fmt.Fprintf(w, "%v", err)
+		} else {
+			fmt.Fprintf(w, "%v", response.StatusCode)
+			fmt.Fprintf(w, "%v", response.Body)
+			fmt.Fprintf(w, "%v", response.Headers)
+		}
 		return
 	}
 
@@ -332,6 +449,7 @@ type Config struct {
 	CookieStoreEnc       string `id:"CookieStoreEnc"       default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	CSVUser              string `id:"CSVUser"              default:"CSVUser"`
 	QREmailer            string `id:"QREmailer"            default:"QREmailer"`
+	SendGridKey          string `id:"SendGridKey"          default:"SendGridKey"`
 }
 
 var (

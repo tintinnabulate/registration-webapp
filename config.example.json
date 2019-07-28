@@ -11,5 +11,6 @@
     "StripeTestSK":         "rk_test_xR1MFQcmds6aXvoDRKDD3HdR",
     "TestEmailAddress":     "foo@example.com",
     "CSVUser":              "user_accessing_csv@gmail.com",
-	"QREmailer":            "user_triggering_qr_emails@gmail.com"
+	"QREmailer":            "user_triggering_qr_emails@gmail.com",
+	"SendGridKey":          "xxxxxx"
 }
