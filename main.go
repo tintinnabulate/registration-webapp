@@ -39,6 +39,13 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
+func createHTTPRouter() *mux.Router {
+	appRouter := mux.NewRouter()
+	appRouter.HandleFunc("/signup", signupHandler).Methods("GET")
+	appRouter.HandleFunc("/signup", postSignupHandler).Methods("POST")
+	return appRouter
+}
+
 // signupHandler : show the signup form (SignupURL)
 func signupHandler(w http.ResponseWriter, r *http.Request) {
 	c := convention{
@@ -64,16 +71,56 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, getVars(page))
 }
 
+// postSignupHandler : use the signup service to send the person a verification URL
+func postSignupHandler(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not parse email form: %v", err), http.StatusInternalServerError)
+		return
+	}
+	var s signup
+	err = schemaDecoder.Decode(&s, r.PostForm)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not encode email address: %v", err), http.StatusInternalServerError)
+		return
+	}
+	resp, err := http.Post(fmt.Sprintf("%s/%s", config.SignupServiceURL, s.Email_Address), "", nil)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not connect to email verifier: %v", err), http.StatusInternalServerError)
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		http.Error(w, "could not send verification email", resp.StatusCode)
+		return
+	}
+	c := convention{
+		Name:              "Name",
+		Creation_Date:     time.Now(),
+		Year:              2019,
+		Country:           Albania_,
+		City:              "City",
+		Cost:              2000,
+		Currency_Code:     "EUR",
+		Start_Date:        time.Now(),
+		End_Date:          time.Now(),
+		Hotel:             "Hotel",
+		Hotel_Is_Venue:    false,
+		Venue:             "Venue",
+		Stripe_Product_ID: "Stripe_Product_ID",
+	}
+	tmpl := templates.Lookup("check_email.tmpl")
+	page := &pageInfo{
+		convention: c,
+		localizer:  getLocalizer(r),
+		r:          r,
+	}
+	tmpl.Execute(w, getVars(page))
+}
+
 func getLocalizer(r *http.Request) *i18n.Localizer {
 	lang := r.FormValue("lang")
 	accept := r.Header.Get("Accept-Language")
 	return i18n.NewLocalizer(translator, lang, accept)
-}
-
-func createHTTPRouter() *mux.Router {
-	appRouter := mux.NewRouter()
-	appRouter.HandleFunc("/signup", signupHandler).Methods("GET")
-	return appRouter
 }
 
 func configInit(configName string) {

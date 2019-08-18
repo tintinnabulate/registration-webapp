@@ -12,6 +12,7 @@ require (
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/stripe/stripe-go v62.1.1+incompatible
 	github.com/tintinnabulate/gonfig v0.1.1
+	github.com/tintinnabulate/vmail v0.0.0-20190305224030-c507d8c0b29b
 	golang.org/x/text v0.3.2
 	rsc.io/quote v1.5.2
 )

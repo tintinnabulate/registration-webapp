@@ -34,3 +34,10 @@ type convention struct {
 	Venue             string
 	Stripe_Product_ID string
 }
+
+// signup is used to parse JSON response from the signup microservice
+type signup struct {
+	Email_Address string `json:"address"`
+	Success       bool   `json:"success"`
+	Note          string `json:"note"`
+}
