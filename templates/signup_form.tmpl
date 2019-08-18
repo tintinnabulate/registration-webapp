@@ -5,44 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Test</title>
+    <title>{{.pgRegisterFor}}</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body class="bg-light">
     <div class="container">
       <div class="py-5 text-center">
-        <h2>Test</h2>
+        <h2>{{.pgRegisterFor}}</h2>
         <p class="lead">{{ .Name }} {{ .Year }} - {{ .City }}, {{ .Country }}</p>
       </div>
 
         <div class="col-md-8 mx-auto order-md-1">
-          <h4 class="mb-3">Test</h4>
-		    <form class="needs-validation" id="signup" action="/signup" method="post" novalidate>
+          <h4 class="mb-3">{{.frmYourDetails}}</h4>
+		    <form class="needs-validation" id="register" action="/signup" method="post" novalidate>
 		    {{ .csrfField }}
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="email">Test</label>
+                <label for="email">{{.frmEnterEmail}}</label>
                 <input type="email" class="form-control required" id="Email_Address" name="Email_Address" placeholder="you@example.com">
                 <div class="invalid-feedback">
-                  Test
+                  {{.valEnterEmail}}
                 </div>
               </div>
             </div>
 
             <hr class="mb-4">
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Test</button>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">{{.btnSendVerifEmail}}</button>
           </form>
         </div>
       </div>
-
-	  <div class="container">
-      <div class="py-5">
-      <div class="col-md-8 mx-auto order-md-1">
-	  <p>We know many love EURYPAA, but some can’t make it (which sucks). If you would like to support the convention, please feel free to donate 1 or more registrations for newcomers and help support the event.</p>
-	  <p>Each €20 donated will go towards one registration. <a href="https://www.paypal.me/eurypaa2019">Click here to Donate</a></p>
-	  </div>
-	  </div>
-	  </div>
 
       <footer class="my-5 pt-5 text-muted text-center text-small">
         <p class="mb-1">&copy; 2020</p>
