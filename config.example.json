@@ -1,0 +1,14 @@
+{
+    "SiteName":             "MyDomain",
+    "ProjectID":            "my-appspot-project-id",
+    "CSRF_Key":             "my-random-32-bytes",
+    "IsLiveSite":           false,
+    "SignupURL":            "this-apps-signup-endpoint.com/signup",
+    "SignupServiceURL":     "http://localhost:10000/signup/eury2019",
+    "StripePublishableKey": "pk_live_foo",
+    "StripeSecretKey":      "sk_live_foo",
+    "StripeTestPK":         "pk_test_UdWbULsYzTqKOob0SHEsTNN2",
+    "StripeTestSK":         "rk_test_xR1MFQcmds6aXvoDRKDD3HdR",
+    "TestEmailAddress":     "foo@example.com",
+    "CSVUser":              "user_accessing_csv@gmail.com"
+}
