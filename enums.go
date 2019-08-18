@@ -1,0 +1,657 @@
+package main
+
+// CountryType : ...
+//go:generate strunger -type=CountryType
+type CountryType int
+
+const (
+	Afghanistan CountryType = iota + 1
+	Albania
+	Algeria
+	American_Samoa
+	Andorra
+	Angola
+	Anguilla
+	Antarctica
+	Antigua_and_or_Barbuda
+	Argentina
+	Armenia
+	Aruba
+	Australia
+	Austria
+	Azerbaijan
+	Bahamas
+	Bahrain
+	Bangladesh
+	Barbados
+	Belarus
+	Belgium
+	Belize
+	Benin
+	Bermuda
+	Bhutan
+	Bolivia
+	Bosnia_and_Herzegovina
+	Botswana
+	Bouvet_Island
+	Brazil
+	British_lndian_Ocean_Territory
+	Brunei_Darussalam
+	Bulgaria
+	Burkina_Faso
+	Burundi
+	Cambodia
+	Cameroon
+	Canada
+	Cape_Verde
+	Cayman_Islands
+	Central_African_Republic
+	Chad
+	Chile
+	China
+	Christmas_Island
+	Cocos_Keeling_Islands
+	Colombia
+	Comoros
+	Congo
+	Cook_Islands
+	Costa_Rica
+	Croatia
+	Cuba
+	Cyprus
+	Czech_Republic
+	Denmark
+	Djibouti
+	Dominica
+	Dominican_Republic
+	East_Timor
+	Ecudaor
+	Egypt
+	El_Salvador
+	Equatorial_Guinea
+	Eritrea
+	Estonia
+	Ethiopia
+	Falkland_Islands_Malvinas
+	Faroe_Islands
+	Fiji
+	Finland
+	France
+	France_Metropolitan
+	French_Guiana
+	French_Polynesia
+	French_Southern_Territories
+	Gabon
+	Gambia
+	Georgia
+	Germany
+	Ghana
+	Gibraltar
+	Greece
+	Greenland
+	Grenada
+	Guadeloupe
+	Guam
+	Guatemala
+	Guinea
+	Guinea_Bissau
+	Guyana
+	Haiti
+	Heard_and_Mc_Donald_Islands
+	Honduras
+	Hong_Kong
+	Hungary
+	Iceland
+	India
+	Indonesia
+	Iran_Islamic_Republic_of
+	Iraq
+	Ireland
+	Israel
+	Italy
+	Ivory_Coast
+	Jamaica
+	Japan
+	Jordan
+	Kazakhstan
+	Kenya
+	Kiribati
+	Korea_Democratic_Peoples_Republic_of
+	Korea_Republic_of
+	Kuwait
+	Kyrgyzstan
+	Lao_Peoples_Democratic_Republic
+	Latvia
+	Lebanon
+	Lesotho
+	Liberia
+	Libyan_Arab_Jamahiriya
+	Liechtenstein
+	Lithuania
+	Luxembourg
+	Macau
+	Madagascar
+	Malawi
+	Malaysia
+	Maldives
+	Mali
+	Malta
+	Marshall_Islands
+	Martinique
+	Mauritania
+	Mauritius
+	Mayotte
+	Mexico
+	Micronesia_Federated_States_of
+	Moldova_Republic_of
+	Monaco
+	Mongolia
+	Montenegro
+	Montserrat
+	Morocco
+	Mozambique
+	Myanmar
+	Namibia
+	Nauru
+	Nepal
+	Netherlands
+	Netherlands_Antilles
+	New_Caledonia
+	New_Zealand
+	Nicaragua
+	Niger
+	Nigeria
+	Niue
+	Norfork_Island
+	North_Macedonia_Republic_of
+	Northern_Mariana_Islands
+	Norway
+	Oman
+	Pakistan
+	Palau
+	Panama
+	Papua_New_Guinea
+	Paraguay
+	Peru
+	Philippines
+	Pitcairn
+	Poland
+	Portugal
+	Puerto_Rico
+	Qatar
+	Reunion
+	Romania
+	Russia
+	Rwanda
+	Saint_Kitts_and_Nevis
+	Saint_Lucia
+	Saint_Vincent_and_the_Grenadines
+	Samoa
+	San_Marino
+	Sao_Tome_and_Principe
+	Saudi_Arabia
+	Serbia
+	Senegal
+	Seychelles
+	Sierra_Leone
+	Singapore
+	Slovakia
+	Slovenia
+	Solomon_Islands
+	Somalia
+	South_Africa
+	South_Georgia_South_Sandwich_Islands
+	Spain
+	Sri_Lanka
+	St__Helena
+	St__Pierre_and_Miquelon
+	Sudan
+	Suriname
+	Svalbarn_and_Jan_Mayen_Islands
+	Swaziland
+	Sweden
+	Switzerland
+	Syrian_Arab_Republic
+	Taiwan
+	Tajikistan
+	Tanzania_United_Republic_of
+	Thailand
+	Togo
+	Tokelau
+	Tonga
+	Trinidad_and_Tobago
+	Tunisia
+	Turkey
+	Turkmenistan
+	Turks_and_Caicos_Islands
+	Tuvalu
+	Uganda
+	Ukraine
+	United_Arab_Emirates
+	United_Kingdom
+	United_States
+	United_States_minor_outlying_islands
+	Uruguay
+	Uzbekistan
+	Vanuatu
+	Vatican_City_State
+	Venezuela
+	Vietnam
+	Virigan_Islands_British
+	Virgin_Islands_U_S_
+	Wallis_and_Futuna_Islands
+	Western_Sahara
+	Yemen
+	Zaire
+	Zambia
+	Zimbabwe
+)
+
+var Countries = []CountryType{
+	Afghanistan,
+	Albania,
+	Algeria,
+	American_Samoa,
+	Andorra,
+	Angola,
+	Anguilla,
+	Antarctica,
+	Antigua_and_or_Barbuda,
+	Argentina,
+	Armenia,
+	Aruba,
+	Australia,
+	Austria,
+	Azerbaijan,
+	Bahamas,
+	Bahrain,
+	Bangladesh,
+	Barbados,
+	Belarus,
+	Belgium,
+	Belize,
+	Benin,
+	Bermuda,
+	Bhutan,
+	Bolivia,
+	Bosnia_and_Herzegovina,
+	Botswana,
+	Bouvet_Island,
+	Brazil,
+	British_lndian_Ocean_Territory,
+	Brunei_Darussalam,
+	Bulgaria,
+	Burkina_Faso,
+	Burundi,
+	Cambodia,
+	Cameroon,
+	Canada,
+	Cape_Verde,
+	Cayman_Islands,
+	Central_African_Republic,
+	Chad,
+	Chile,
+	China,
+	Christmas_Island,
+	Cocos_Keeling_Islands,
+	Colombia,
+	Comoros,
+	Congo,
+	Cook_Islands,
+	Costa_Rica,
+	Croatia,
+	Cuba,
+	Cyprus,
+	Czech_Republic,
+	Denmark,
+	Djibouti,
+	Dominica,
+	Dominican_Republic,
+	East_Timor,
+	Ecudaor,
+	Egypt,
+	El_Salvador,
+	Equatorial_Guinea,
+	Eritrea,
+	Estonia,
+	Ethiopia,
+	Falkland_Islands_Malvinas,
+	Faroe_Islands,
+	Fiji,
+	Finland,
+	France,
+	France_Metropolitan,
+	French_Guiana,
+	French_Polynesia,
+	French_Southern_Territories,
+	Gabon,
+	Gambia,
+	Georgia,
+	Germany,
+	Ghana,
+	Gibraltar,
+	Greece,
+	Greenland,
+	Grenada,
+	Guadeloupe,
+	Guam,
+	Guatemala,
+	Guinea,
+	Guinea_Bissau,
+	Guyana,
+	Haiti,
+	Heard_and_Mc_Donald_Islands,
+	Honduras,
+	Hong_Kong,
+	Hungary,
+	Iceland,
+	India,
+	Indonesia,
+	Iran_Islamic_Republic_of,
+	Iraq,
+	Ireland,
+	Israel,
+	Italy,
+	Ivory_Coast,
+	Jamaica,
+	Japan,
+	Jordan,
+	Kazakhstan,
+	Kenya,
+	Kiribati,
+	Korea_Democratic_Peoples_Republic_of,
+	Korea_Republic_of,
+	Kuwait,
+	Kyrgyzstan,
+	Lao_Peoples_Democratic_Republic,
+	Latvia,
+	Lebanon,
+	Lesotho,
+	Liberia,
+	Libyan_Arab_Jamahiriya,
+	Liechtenstein,
+	Lithuania,
+	Luxembourg,
+	Macau,
+	Madagascar,
+	Malawi,
+	Malaysia,
+	Maldives,
+	Mali,
+	Malta,
+	Marshall_Islands,
+	Martinique,
+	Mauritania,
+	Mauritius,
+	Mayotte,
+	Mexico,
+	Micronesia_Federated_States_of,
+	Moldova_Republic_of,
+	Monaco,
+	Mongolia,
+	Montserrat,
+	Morocco,
+	Mozambique,
+	Myanmar,
+	Namibia,
+	Nauru,
+	Nepal,
+	Netherlands,
+	Netherlands_Antilles,
+	New_Caledonia,
+	New_Zealand,
+	Nicaragua,
+	Niger,
+	Nigeria,
+	Niue,
+	Norfork_Island,
+	North_Macedonia_Republic_of,
+	Northern_Mariana_Islands,
+	Norway,
+	Oman,
+	Pakistan,
+	Palau,
+	Panama,
+	Papua_New_Guinea,
+	Paraguay,
+	Peru,
+	Philippines,
+	Pitcairn,
+	Poland,
+	Portugal,
+	Puerto_Rico,
+	Qatar,
+	Reunion,
+	Romania,
+	Russia,
+	Rwanda,
+	Saint_Kitts_and_Nevis,
+	Saint_Lucia,
+	Saint_Vincent_and_the_Grenadines,
+	Samoa,
+	San_Marino,
+	Sao_Tome_and_Principe,
+	Saudi_Arabia,
+	Senegal,
+	Seychelles,
+	Sierra_Leone,
+	Singapore,
+	Slovakia,
+	Slovenia,
+	Solomon_Islands,
+	Somalia,
+	South_Africa,
+	South_Georgia_South_Sandwich_Islands,
+	Spain,
+	Sri_Lanka,
+	St__Helena,
+	St__Pierre_and_Miquelon,
+	Sudan,
+	Suriname,
+	Svalbarn_and_Jan_Mayen_Islands,
+	Swaziland,
+	Sweden,
+	Switzerland,
+	Syrian_Arab_Republic,
+	Taiwan,
+	Tajikistan,
+	Tanzania_United_Republic_of,
+	Thailand,
+	Togo,
+	Tokelau,
+	Tonga,
+	Trinidad_and_Tobago,
+	Tunisia,
+	Turkey,
+	Turkmenistan,
+	Turks_and_Caicos_Islands,
+	Tuvalu,
+	Uganda,
+	Ukraine,
+	United_Arab_Emirates,
+	United_Kingdom,
+	United_States,
+	United_States_minor_outlying_islands,
+	Uruguay,
+	Uzbekistan,
+	Vanuatu,
+	Vatican_City_State,
+	Venezuela,
+	Vietnam,
+	Virigan_Islands_British,
+	Virgin_Islands_U_S_,
+	Wallis_and_Futuna_Islands,
+	Western_Sahara,
+	Yemen,
+	Zaire,
+	Zambia,
+	Zimbabwe,
+}
+
+// EURYPAA_Country : all the countries a EURYPAA can happen in
+//go:generate strunger -type=EURYPAA_Country
+type EURYPAA_Country int
+
+const (
+	Albania_ EURYPAA_Country = iota + 1
+	Andorra_
+	Armenia_
+	Austria_
+	Azerbaijan_
+	Belgium_
+	Belarus_
+	Bosnia_and_Herzegovina_
+	Bulgaria_
+	Croatia_
+	Cyprus_
+	Czech_Republic_
+	Denmark_
+	Estonia_
+	Finland_
+	France_
+	Georgia_
+	Germany_
+	Greece_
+	Hungary_
+	Iceland_
+	Ireland_
+	Israel_
+	Italy_
+	Latvia_
+	Liechtenstein_
+	Lithuania_
+	Luxembourg_
+	Malta_
+	Moldova_Republic_of_
+	Monaco_
+	Montenegro_
+	Netherlands_
+	North_Macedonia_Republic_of_
+	Norway_
+	Poland_
+	Portugal_
+	Russia_
+	San_Marino_
+	Serbia_
+	Slovakia_
+	Slovenia_
+	Spain_
+	Sweden_
+	Turkey_
+	United_Kingdom_
+)
+
+var EURYPAA_Countries = []EURYPAA_Country{
+	Albania_,
+	Andorra_,
+	Armenia_,
+	Austria_,
+	Azerbaijan_,
+	Belgium_,
+	Belarus_,
+	Bosnia_and_Herzegovina_,
+	Bulgaria_,
+	Croatia_,
+	Cyprus_,
+	Czech_Republic_,
+	Denmark_,
+	Estonia_,
+	Finland_,
+	France_,
+	Georgia_,
+	Germany_,
+	Greece_,
+	Hungary_,
+	Iceland_,
+	Ireland_,
+	Israel_,
+	Italy_,
+	Latvia_,
+	Liechtenstein_,
+	Lithuania_,
+	Luxembourg_,
+	Malta_,
+	Moldova_Republic_of_,
+	Monaco_,
+	Montenegro_,
+	Netherlands_,
+	North_Macedonia_Republic_of_,
+	Norway_,
+	Poland_,
+	Portugal_,
+	Russia_,
+	San_Marino_,
+	Serbia_,
+	Slovakia_,
+	Slovenia_,
+	Spain_,
+	Sweden_,
+	Turkey_,
+	United_Kingdom_,
+}
+
+// Fellowship : which fellowship someone belongs to
+//go:generate strunger -type=Fellowship
+type Fellowship int
+
+// AA : start of fellowship enumeration
+const (
+	AA Fellowship = iota + 1
+	AlAnon
+	Guest
+)
+
+// Fellowships : all the fellowships
+var Fellowships = []Fellowship{
+	AA,
+	AlAnon,
+	Guest,
+}
+
+// Willing : whether or not someone is willing to do service
+//go:generate strunger -type=Willing
+type Willing int
+
+// Yes : start of willing enumeration
+const (
+	Yes_Willing Willing = iota + 1
+	No
+)
+
+// Willings : all the willings
+var Willings = []Willing{
+	Yes_Willing,
+	No,
+}
+
+// HelpOutreach : whether or not someone is willing to do outreach
+//go:generate strunger -type=HelpOutreach
+type HelpOutreach int
+
+// Yes_Help : start of help outreach enumeration
+const (
+	Yes_Help_Outreach HelpOutreach = iota + 1
+	No_Thanks
+)
+
+// HelpOutreaches : all the willings
+var HelpOutreaches = []HelpOutreach{
+	Yes_Help_Outreach,
+	No_Thanks,
+}
+
+// Tshirt : whether or not someone is willing to do service
+//go:generate strunger -type=Tshirt
+type Tshirt int
+
+// T_Shirt_Please : start of tshirt enumeration
+const (
+	Yes_T_Shirt_Please Tshirt = iota + 1
+	No_T_Shirt
+)
+
+// Tshirts : all the tshirts
+var Tshirts = []Tshirt{
+	Yes_T_Shirt_Please,
+	No_T_Shirt,
+}
