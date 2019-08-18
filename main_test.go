@@ -24,7 +24,7 @@ func TestIndexHandler(t *testing.T) {
 		)
 	}
 
-	expected := "Hello, World!"
+	expected := "Hello, world."
 	if rr.Body.String() != expected {
 		t.Errorf(
 			"unexpected body: got (%v) want (%v)",
