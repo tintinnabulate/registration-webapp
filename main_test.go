@@ -90,3 +90,38 @@ func TestPostSignupHandler(t *testing.T) {
 
 	}
 }
+
+func TestPostSignupHandlerEmptyEmail(t *testing.T) {
+
+	formData := url.Values{}
+	formData.Set("Email_Address", "")
+
+	req, err := http.NewRequest("POST", "/signup", strings.NewReader(formData.Encode()))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Length", strconv.Itoa(len(formData.Encode())))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(postSignupHandler)
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusNotFound {
+		t.Errorf(
+			"unexpected status: got (%v) want (%v)",
+			status,
+			http.StatusNotFound,
+		)
+	}
+
+	expected := "could not send verification email"
+	if !strings.Contains(rr.Body.String(), expected) {
+		t.Errorf(
+			"unexpected body: got (%v) want (%v)",
+			rr.Body.String(),
+			expected,
+		)
+
+	}
+}
