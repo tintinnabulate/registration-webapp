@@ -4,6 +4,7 @@ all:
 	go run .
 test:
 	# verbose mode, get code coverage, check for race conditions, on all *_test.go files in this package
+	go mod download
 	go test -v -cover -race ./...
 deploy:
 	# deploy to live site, creating a new instance (do this before overwrite!).

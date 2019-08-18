@@ -10,5 +10,4 @@ install:
   - export PATH="$PATH:/tmp/sdk/bin"
 
 script:
-  - go mod download
   - make test
