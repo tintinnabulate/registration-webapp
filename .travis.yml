@@ -5,13 +5,13 @@ go:
 
 env:
   - GO111MODULES=on
+  - CLOUD_SDK_VERSION=258.0.0
 
 install:
   - mkdir /tmp/sdk
-  - curl -o /tmp/sdk.tar.gz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-255.0.0-linux-x86_64.tar.gz"
+  - curl -o /tmp/sdk.tar.gz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz"
   - tar xzf /tmp/sdk.tar.gz -C /tmp/sdk
   - export PATH="$PATH:/tmp/sdk/bin"
-  - export APPENGINE_DEV_APPSERVER=/tmp/sdk/bin/dev_appserver.py
 
 script:
   - make test
