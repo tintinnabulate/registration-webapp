@@ -33,6 +33,8 @@ github.com/tintinnabulate/strunger v0.0.0-20190724225612-545ac0d1f06d h1:zxl0l+C
 github.com/tintinnabulate/strunger v0.0.0-20190724225612-545ac0d1f06d/go.mod h1:FFNXrEowCWqCzCoBELmToSY8ZN1qXeFiBK09bAD5zLE=
 github.com/tintinnabulate/vmail v0.0.0-20190305224030-c507d8c0b29b h1:waePud8QQOwiX2amh25EcueO7XZjd5YigpMO+Un/3yQ=
 github.com/tintinnabulate/vmail v0.0.0-20190305224030-c507d8c0b29b/go.mod h1:bm5xPdlY/rzAJmKljJYZppPBJNdjyAcxo9CopKIZalk=
+github.com/tintinnabulate/vmail v0.0.0-20190818213727-7447218b6607 h1:Pjk+A+tFiLfE9SDp6Z4cvMWGTMjlLfl3KPxCoNjyxE8=
+github.com/tintinnabulate/vmail v0.0.0-20190818213727-7447218b6607/go.mod h1:bm5xPdlY/rzAJmKljJYZppPBJNdjyAcxo9CopKIZalk=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190506204251-e1dfcc566284/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
 golang.org/x/net v0.0.0-20190311183353-d8887717615a/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
