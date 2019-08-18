@@ -34,7 +34,7 @@ func TestSignupHandler(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(signupHandler)
+	handler := http.HandlerFunc(getSignupHandler)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
