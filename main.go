@@ -51,11 +51,12 @@ func init() {
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "9090"
 		log.Printf("Defaulting to port %s", port)
 	}
 
 	log.Printf("Listening on port %s", port)
+	log.Printf("Start here: http://localhost:%s/signup", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 

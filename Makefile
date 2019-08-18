@@ -1,6 +1,6 @@
 all:
-	# launch dev version of app on localhost:9090
-	PORT=9090 go run .
+	# launch dev version of app on localhost
+	go run .
 test:
 	# verbose mode, get code coverage, check for race conditions, on all *_test.go files in this package
 	go test -v -cover -race ./...
