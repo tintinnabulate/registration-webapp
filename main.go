@@ -1,11 +1,15 @@
 package main
 
 import (
+	"github.com/BurntSushi/toml"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/stripe/stripe-go"
 	"github.com/tintinnabulate/gonfig"
+	"golang.org/x/text/language"
 
 	"encoding/gob"
 	"fmt"
@@ -18,8 +22,12 @@ import (
 
 func main() {
 
-	routerInit()
+	configInit("config.json")
 	templatesInit()
+	schemaDecoderInit()
+	translatorInit()
+	routerInit()
+	stripeInit()
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -100,6 +108,30 @@ func templatesInit() {
 		ParseGlob("templates/*.tmpl"))
 }
 
+// schemaDecoderInit : create the schema decoder for decoding req.PostForm
+func schemaDecoderInit() {
+	schemaDecoder = schema.NewDecoder()
+	schemaDecoder.RegisterConverter(time.Time{}, timeConverter)
+	schemaDecoder.IgnoreUnknownKeys(true)
+}
+
+// stripeInit : set up important Stripe variables
+func stripeInit() {
+	if config.IsLiveSite {
+		publishableKey = config.StripePublishableKey
+		stripe.Key = config.StripeSecretKey
+	} else {
+		publishableKey = config.StripeTestPK
+		stripe.Key = config.StripeTestSK
+	}
+}
+
+func translatorInit() {
+	translator = i18n.NewBundle(language.English)
+	translator.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	translator.MustLoadMessageFile("locales/active.es.toml")
+}
+
 // Config is our configuration file format
 type Config struct {
 	SiteName             string `id:"SiteName"             default:"MyDomain"`
@@ -119,8 +151,10 @@ type Config struct {
 }
 
 var (
-	templates  *template.Template
-	translator *i18n.Bundle
-	store      *sessions.CookieStore
-	config     Config
+	schemaDecoder  *schema.Decoder
+	publishableKey string
+	templates      *template.Template
+	config         Config
+	store          *sessions.CookieStore
+	translator     *i18n.Bundle
 )
