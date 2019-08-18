@@ -3,14 +3,12 @@ language: go
 go:
   - 1.12.x
 
-env:
-  - GO111MODULES=on
-
 install:
   - mkdir /tmp/sdk
   - curl -o /tmp/sdk.tar.gz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-258.0.0-linux-x86_64.tar.gz"
   - tar xzf /tmp/sdk.tar.gz -C /tmp/sdk
   - export PATH="$PATH:/tmp/sdk/bin"
+  - go mod download
 
 script:
   - make test
