@@ -1,6 +1,15 @@
 package main
 
 import (
+	"context"
+	"encoding/gob"
+	"fmt"
+	"html/template"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
@@ -10,17 +19,19 @@ import (
 	"github.com/stripe/stripe-go"
 	"github.com/tintinnabulate/gonfig"
 	"golang.org/x/text/language"
-
-	"context"
-	"encoding/gob"
-	"fmt"
-	"html/template"
-	"log"
-	"net/http"
-	"os"
-	"time"
 )
 
+// globals
+var (
+	schemaDecoder        *schema.Decoder
+	stripePublishableKey string
+	templates            *template.Template
+	config               Config
+	cookieStore          *sessions.CookieStore
+	translator           *i18n.Bundle
+)
+
+// main : main entry point to application
 func main() {
 
 	configInit("config.json")
@@ -40,15 +51,16 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
+// createHTTPRouter : all of the routes that the web application handles
 func createHTTPRouter() *mux.Router {
 	appRouter := mux.NewRouter()
-	appRouter.HandleFunc("/signup", signupHandler).Methods("GET")
+	appRouter.HandleFunc("/signup", getSignupHandler).Methods("GET")
 	appRouter.HandleFunc("/signup", postSignupHandler).Methods("POST")
 	return appRouter
 }
 
-// signupHandler : show the signup form (SignupURL)
-func signupHandler(w http.ResponseWriter, r *http.Request) {
+// getSignupHandler : (route) show the signup form (this is config.SignupURL)
+func getSignupHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	c, err := getLatestConvention(ctx)
 	if err != nil {
@@ -63,7 +75,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, getVars(page))
 }
 
-// postSignupHandler : use the signup service to send the person a verification URL
+// postSignupHandler : (route) use the signup service, vmail, to send the person a verification URL
 func postSignupHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	err := r.ParseForm()
@@ -100,12 +112,7 @@ func postSignupHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, getVars(page))
 }
 
-func getLocalizer(r *http.Request) *i18n.Localizer {
-	lang := r.FormValue("lang")
-	accept := r.Header.Get("Accept-Language")
-	return i18n.NewLocalizer(translator, lang, accept)
-}
-
+// configInit : initialize the config using the config JSON file
 func configInit(configName string) {
 	err := gonfig.Load(&config, gonfig.Conf{
 		FileDefaultFilename: configName,
@@ -117,18 +124,9 @@ func configInit(configName string) {
 		return
 	}
 	gob.Register(&registrationForm{})
-	store = sessions.NewCookieStore(
+	cookieStore = sessions.NewCookieStore(
 		[]byte(config.CookieStoreAuth),
 		[]byte(config.CookieStoreEnc))
-}
-
-func routerInit() {
-	router := createHTTPRouter()
-	csrfProtector := csrf.Protect(
-		[]byte(config.CSRFKey),
-		csrf.Secure(config.IsLiveSite))
-	csrfProtectedRouter := csrfProtector(router)
-	http.Handle("/", csrfProtectedRouter)
 }
 
 // templatesInit : parse the HTML templates, including any predefined functions (FuncMap)
@@ -145,24 +143,46 @@ func schemaDecoderInit() {
 	schemaDecoder.IgnoreUnknownKeys(true)
 }
 
-// stripeInit : set up important Stripe variables
-func stripeInit() {
-	if config.IsLiveSite {
-		publishableKey = config.StripePublishableKey
-		stripe.Key = config.StripeSecretKey
-	} else {
-		publishableKey = config.StripeTestPK
-		stripe.Key = config.StripeTestSK
-	}
-}
-
+// translatorInit : initialize the internationalisation handler
 func translatorInit() {
 	translator = i18n.NewBundle(language.English)
 	translator.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	translator.MustLoadMessageFile("locales/active.es.toml")
 }
 
-// Config is our configuration file format
+// routerInit : initialize the application's CSRF-protected router
+func routerInit() {
+	router := createHTTPRouter()
+	csrfProtector := csrf.Protect(
+		[]byte(config.CSRFKey),
+		csrf.Secure(config.IsLiveSite))
+	csrfProtectedRouter := csrfProtector(router)
+	http.Handle("/", csrfProtectedRouter)
+}
+
+// stripeInit : set up Stripe public and secret keys
+func stripeInit() {
+	if config.IsLiveSite {
+		stripePublishableKey = config.StripePublishableKey
+		stripe.Key = config.StripeSecretKey
+	} else {
+		stripePublishableKey = config.StripeTestPK
+		stripe.Key = config.StripeTestSK
+	}
+}
+
+// getLocalizer : used to localise content on a page given a *http.Request
+func getLocalizer(r *http.Request) *i18n.Localizer {
+	lang := r.FormValue("lang")
+	accept := r.Header.Get("Accept-Language")
+	return i18n.NewLocalizer(translator, lang, accept)
+}
+
+// Config : the application's JSON configuration file format
+// IsLiveSite : set this false during testing, true when deployed
+// SignupServiceURL : this is URL of the github.com/tintinnabulate/vmail deployment
+// TestEmailAddress : the email address that is used during testing
+// CSVUser : the special user that can download a CSV of all the registered Users
 type Config struct {
 	SiteName             string `id:"SiteName"             default:"MyDomain"`
 	ProjectID            string `id:"ProjectID"            default:"my-appspot-project-id"`
@@ -177,14 +197,5 @@ type Config struct {
 	TestEmailAddress     string `id:"TestEmailAddress"     default:"foo@example.com"`
 	CookieStoreAuth      string `id:"CookieStoreAuth"      default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	CookieStoreEnc       string `id:"CookieStoreEnc"       default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
-	CSVUser              string `id:"CSVUser"              default:"CSVUser"`
+	CSVUser              string `id:"CSVUser"              default:"special-user@example.com"`
 }
-
-var (
-	schemaDecoder  *schema.Decoder
-	publishableKey string
-	templates      *template.Template
-	config         Config
-	store          *sessions.CookieStore
-	translator     *i18n.Bundle
-)
