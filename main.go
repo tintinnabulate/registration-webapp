@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/gob"
 	"fmt"
 	"html/template"
@@ -69,8 +68,7 @@ func createHTTPRouter() *mux.Router {
 
 // getSignupHandler : (route) show the signup form (this is config.SignupURL)
 func getSignupHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	c, err := getLatestConvention(ctx)
+	c, err := getLatestConvention(r.Context())
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
 		return
@@ -85,7 +83,6 @@ func getSignupHandler(w http.ResponseWriter, r *http.Request) {
 
 // postSignupHandler : (route) use the signup service, vmail, to send the person a verification URL
 func postSignupHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not parse email form: %v", err), http.StatusInternalServerError)
@@ -106,7 +103,7 @@ func postSignupHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "could not send verification email", resp.StatusCode)
 		return
 	}
-	c, err := getLatestConvention(ctx)
+	c, err := getLatestConvention(r.Context())
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
 		return
