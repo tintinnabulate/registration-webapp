@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -63,6 +64,7 @@ func createHTTPRouter() *mux.Router {
 	appRouter := mux.NewRouter()
 	appRouter.HandleFunc("/signup", getSignupHandler).Methods("GET")
 	appRouter.HandleFunc("/signup", postSignupHandler).Methods("POST")
+	appRouter.HandleFunc("/register", postRegistrationFormHandler).Methods("POST")
 	return appRouter
 }
 
@@ -111,6 +113,65 @@ func postSignupHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := templates.Lookup("check_email.tmpl")
 	page := &pageInfo{
 		convention: c,
+		localizer:  getLocalizer(r),
+		r:          r,
+	}
+	tmpl.Execute(w, getVars(page))
+}
+
+// postRegistrationFormHandler : if they've signed up, show the payment form, otherwise redirect to SignupURL
+func postRegistrationFormHandler(w http.ResponseWriter, r *http.Request) {
+	var regform registrationForm
+	var s signup
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not parse registration form: %v", err), http.StatusInternalServerError)
+		return
+	}
+	err = schemaDecoder.Decode(&regform, r.PostForm)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not encode registration form: %v", err), http.StatusInternalServerError)
+		return
+	}
+	resp, err := http.Get(fmt.Sprintf("%s/%s", config.SignupServiceURL, regform.Email_Address))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not connect to email verifier: %v", err), http.StatusInternalServerError)
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		http.Error(w, "could not verify email address", resp.StatusCode)
+		return
+	}
+	json.NewDecoder(resp.Body).Decode(&s)
+	session, err := cookieStore.Get(r, "regform")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not create cookie session: %v", err), http.StatusInternalServerError)
+		return
+	}
+	if s.Success {
+		session.Values["regform"] = regform
+		err := session.Save(r, w)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("could not save cookie session: %v", err), http.StatusInternalServerError)
+			return
+		}
+		showPaymentForm(w, r, &regform)
+	} else {
+		http.Redirect(w, r, "/signup", http.StatusNotFound)
+		return
+	}
+}
+
+func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrationForm) {
+	convention, err := getLatestConvention(r.Context())
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
+	}
+	tmpl := templates.Lookup("stripe.tmpl")
+	page := &pageInfo{
+		convention: convention,
+		email:      regform.Email_Address,
 		localizer:  getLocalizer(r),
 		r:          r,
 	}
