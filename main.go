@@ -31,16 +31,24 @@ var (
 	translator           *i18n.Bundle
 )
 
+// init : initialize applicaiton
+func init() {
+	// Load configuration from config file
+	configInit("config.json")
+	// Load HTML templates from templates directory
+	templatesInit()
+	// Create a form decoder for parsing user form data
+	schemaDecoderInit()
+	// Create a translator for internationalisation
+	translatorInit()
+	// Set up all the routes e.g. /signup /register ...
+	routerInit()
+	// Set up Stripe payment platform
+	stripeInit()
+}
+
 // main : main entry point to application
 func main() {
-
-	configInit("config.json")
-	templatesInit()
-	schemaDecoderInit()
-	translatorInit()
-	routerInit()
-	stripeInit()
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -179,11 +187,11 @@ func getLocalizer(r *http.Request) *i18n.Localizer {
 }
 
 // Config : the application's JSON configuration file format
-// IsLiveSite : set this false during testing, true when deployed
-// SignupServiceURL : this is URL of the github.com/tintinnabulate/vmail deployment
-// TestEmailAddress : the email address that is used during testing
-// CSVUser : the special user that can download a CSV of all the registered Users
 type Config struct {
+	// IsLiveSite : set this false during testing, true when deployed
+	// SignupServiceURL : this is URL of the github.com/tintinnabulate/vmail deployment
+	// TestEmailAddress : the email address that is used during testing
+	// CSVUser : the special user that can download a CSV of all the registered Users
 	SiteName             string `id:"SiteName"             default:"MyDomain"`
 	ProjectID            string `id:"ProjectID"            default:"my-appspot-project-id"`
 	CSRFKey              string `id:"CSRF_Key"             default:"my-random-32-bytes"`
