@@ -163,3 +163,33 @@ func TestPostRegistrationHandler(t *testing.T) {
 
 	}
 }
+
+func TestGetRegistrationHandler(t *testing.T) {
+
+	req, err := http.NewRequest("GET", "/register", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(getRegistrationFormHandler)
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf(
+			"unexpected status: got (%v) want (%v)",
+			status,
+			http.StatusOK,
+		)
+	}
+
+	expected := "Do you want to help outreach the convention?"
+	if !strings.Contains(rr.Body.String(), expected) {
+		t.Errorf(
+			"unexpected body: got (%v) want (%v)",
+			rr.Body.String(),
+			expected,
+		)
+
+	}
+}

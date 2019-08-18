@@ -64,6 +64,7 @@ func createHTTPRouter() *mux.Router {
 	appRouter := mux.NewRouter()
 	appRouter.HandleFunc("/signup", getSignupHandler).Methods("GET")
 	appRouter.HandleFunc("/signup", postSignupHandler).Methods("POST")
+	appRouter.HandleFunc("/register", getRegistrationFormHandler).Methods("GET")
 	appRouter.HandleFunc("/register", postRegistrationFormHandler).Methods("POST")
 	return appRouter
 }
@@ -80,6 +81,22 @@ func getSignupHandler(w http.ResponseWriter, r *http.Request) {
 		convention: c,
 		localizer:  getLocalizer(r),
 		r:          r}
+	tmpl.Execute(w, getVars(page))
+}
+
+// getRegistrationFormHandler : show the registration form
+func getRegistrationFormHandler(w http.ResponseWriter, r *http.Request) {
+	c, err := getLatestConvention(r.Context())
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
+	}
+	tmpl := templates.Lookup("registration_form.tmpl")
+	page := &pageInfo{
+		convention: c,
+		localizer:  getLocalizer(r),
+		r:          r,
+	}
 	tmpl.Execute(w, getVars(page))
 }
 
@@ -163,14 +180,14 @@ func postRegistrationFormHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrationForm) {
-	convention, err := getLatestConvention(r.Context())
+	c, err := getLatestConvention(r.Context())
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
 		return
 	}
 	tmpl := templates.Lookup("stripe.tmpl")
 	page := &pageInfo{
-		convention: convention,
+		convention: c,
 		email:      regform.Email_Address,
 		localizer:  getLocalizer(r),
 		r:          r,
