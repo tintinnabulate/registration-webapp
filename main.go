@@ -11,6 +11,7 @@ import (
 	"github.com/tintinnabulate/gonfig"
 	"golang.org/x/text/language"
 
+	"context"
 	"encoding/gob"
 	"fmt"
 	"html/template"
@@ -48,20 +49,11 @@ func createHTTPRouter() *mux.Router {
 
 // signupHandler : show the signup form (SignupURL)
 func signupHandler(w http.ResponseWriter, r *http.Request) {
-	c := convention{
-		Name:              "Name",
-		Creation_Date:     time.Now(),
-		Year:              2019,
-		Country:           Albania_,
-		City:              "City",
-		Cost:              2000,
-		Currency_Code:     "EUR",
-		Start_Date:        time.Now(),
-		End_Date:          time.Now(),
-		Hotel:             "Hotel",
-		Hotel_Is_Venue:    false,
-		Venue:             "Venue",
-		Stripe_Product_ID: "Stripe_Product_ID",
+	ctx := context.Background()
+	c, err := getLatestConvention(ctx)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
 	}
 	tmpl := templates.Lookup("signup_form.tmpl")
 	page := &pageInfo{
@@ -73,6 +65,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 
 // postSignupHandler : use the signup service to send the person a verification URL
 func postSignupHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not parse email form: %v", err), http.StatusInternalServerError)
@@ -93,20 +86,10 @@ func postSignupHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "could not send verification email", resp.StatusCode)
 		return
 	}
-	c := convention{
-		Name:              "Name",
-		Creation_Date:     time.Now(),
-		Year:              2019,
-		Country:           Albania_,
-		City:              "City",
-		Cost:              2000,
-		Currency_Code:     "EUR",
-		Start_Date:        time.Now(),
-		End_Date:          time.Now(),
-		Hotel:             "Hotel",
-		Hotel_Is_Venue:    false,
-		Venue:             "Venue",
-		Stripe_Product_ID: "Stripe_Product_ID",
+	c, err := getLatestConvention(ctx)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
 	}
 	tmpl := templates.Lookup("check_email.tmpl")
 	page := &pageInfo{
