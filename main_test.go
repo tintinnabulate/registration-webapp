@@ -3,17 +3,34 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
 )
 
-func TestIndexHandler(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+func TestMain(m *testing.M) {
+	testSetup()
+	retCode := m.Run()
+	os.Exit(retCode)
+}
+
+func testSetup() {
+	configInit("config.example.json")
+	templatesInit()
+	schemaDecoderInit()
+	translatorInit()
+	stripeInit()
+	//go mockverifier.Start(config.TestEmailAddress)
+}
+
+func TestSignupHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/signup", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(indexHandler)
+	handler := http.HandlerFunc(signupHandler)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -24,31 +41,13 @@ func TestIndexHandler(t *testing.T) {
 		)
 	}
 
-	expected := "Hello, world."
-	if rr.Body.String() != expected {
+	expected := "you@example.com"
+	if !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf(
 			"unexpected body: got (%v) want (%v)",
 			rr.Body.String(),
-			"Hello, World!",
+			expected,
 		)
-	}
-}
 
-func TestIndexHandlerNotFound(t *testing.T) {
-	req, err := http.NewRequest("GET", "/404", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(indexHandler)
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusNotFound {
-		t.Errorf(
-			"unexpected status: got (%v) want (%v)",
-			status,
-			http.StatusNotFound,
-		)
 	}
 }
