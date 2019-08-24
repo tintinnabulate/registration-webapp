@@ -17,7 +17,6 @@
 
         <div class="col-md-8 mx-auto order-md-1">
           <h4 class="mb-3">{{.frmPaymentDetails}}</h4>
-            <form action="/charge" method="post" class="payment">
 		    {{ .csrfField }}
             <div class="row">
               <div class="col-md-6 mb-3">
@@ -32,20 +31,38 @@
             </div>
 
             <hr class="mb-4">
-  <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="{{ .Key }}"
-    data-description="{{ .Name }} Registration"
-    data-amount="{{ .Cost }}"
-	data-currency="{{ .Currency }}"
-    data-locale="auto"
-	data-email="{{ .Email }}"
-	data-zip-code="true"></script>
-          </form>
+  <script src="https://js.stripe.com/v3/"></script>
+
+<!-- Create a button that your customers click to complete their purchase. -->
+<button id="checkout-button">Click here to complete registration</button>
+<div id="error-message"></div>
+
+<script>
+  var stripe = Stripe('{{ .Key }}');
+
+  var checkoutButton = document.getElementById('checkout-button');
+  checkoutButton.addEventListener('click', function () {
+    // When the customer clicks on the button, redirect
+    // them to Checkout.
+    stripe.redirectToCheckout({
+      sessionId: '{{ .StripeSessionID }}'
+    })
+    .then(function (result) {
+      if (result.error) {
+        // If `redirectToCheckout` fails due to a browser or network
+        // error, display the localized error message to your customer.
+        var displayError = document.getElementById('error-message');
+        displayError.textContent = result.error.message;
+      }
+    });
+  });
+</script>
+
         </div>
       </div>
 
       <footer class="my-5 pt-5 text-muted text-center text-small">
-        <p class="mb-1">&copy; 2019</p>
+        <p class="mb-1">&copy; 2019--2020</p>
       </footer>
 
 	  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

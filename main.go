@@ -17,6 +17,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/stripe/stripe-go"
+	stripeSession "github.com/stripe/stripe-go/checkout/session"
 	"github.com/tintinnabulate/gonfig"
 	"golang.org/x/text/language"
 )
@@ -45,6 +46,8 @@ func init() {
 	routerInit()
 	// Set up Stripe payment platform
 	stripeInit()
+	// Set up environment variables
+	environmentInit()
 }
 
 // main : main entry point to application
@@ -181,17 +184,63 @@ func postRegistrationFormHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrationForm) {
-	c, err := getLatestConvention(r.Context())
+	convention, err := getLatestConvention(r.Context())
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
 		return
 	}
+
+	params := &stripe.CheckoutSessionParams{
+		CustomerEmail: stripe.String(regform.Email_Address),
+		PaymentMethodTypes: stripe.StringSlice([]string{
+			"card",
+		}),
+		LineItems: []*stripe.CheckoutSessionLineItemParams{
+			&stripe.CheckoutSessionLineItemParams{
+				Name:        stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
+				Description: stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
+				Amount:      stripe.Int64(int64(convention.Cost)),
+				Currency:    stripe.String(string(convention.Currency_Code)),
+				Quantity:    stripe.Int64(1),
+			},
+		},
+		SuccessURL: stripe.String(config.SignupURL),
+		CancelURL:  stripe.String(config.SignupURL),
+	}
+
+	ss, err := stripeSession.New(params)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not create stripe session: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	user := &user{
+		First_Name:         regform.First_Name,
+		Last_Name:          regform.Last_Name,
+		Email_Address:      regform.Email_Address,
+		Password:           regform.Password,
+		Country:            regform.Country,
+		City:               regform.City,
+		Sobriety_Date:      regform.Sobriety_Date,
+		Member_Of:          regform.Member_Of,
+		IsServant:          regform.IsServant == Yes_Willing,
+		IsOutreacher:       regform.IsOutreacher == Yes_Help_Outreach,
+		IsTshirtBuyer:      regform.IsTshirtBuyer == Yes_T_Shirt_Please,
+		Stripe_Customer_ID: "",
+		Stripe_Charge_ID:   ss.PaymentIntent.ID,
+	}
+	_, err = addUser(r.Context(), user)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not add new user to user table: %v", err), http.StatusInternalServerError)
+		return
+	}
+
 	tmpl := templates.Lookup("stripe.tmpl")
 	page := &pageInfo{
-		convention: c,
+		convention: convention,
 		email:      regform.Email_Address,
-		localizer:  getLocalizer(r),
-		r:          r,
+		localizer:  getLocalizer(r), r: r,
+		stripeSessionID: ss.ID,
 	}
 	tmpl.Execute(w, getVars(page))
 }
@@ -255,6 +304,11 @@ func stripeInit() {
 	}
 }
 
+// environmentInit : set up environment variables
+func environmentInit() {
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", config.GoogleCredentials)
+}
+
 // getLocalizer : used to localise content on a page given a *http.Request
 func getLocalizer(r *http.Request) *i18n.Localizer {
 	lang := r.FormValue("lang")
@@ -268,6 +322,7 @@ type Config struct {
 	// SignupServiceURL : this is URL of the github.com/tintinnabulate/vmail deployment
 	// TestEmailAddress : the email address that is used during testing
 	// CSVUser : the special user that can download a CSV of all the registered Users
+	// GoogleCredentials : the JSON Google Cloud Platform service account key
 	SiteName             string `id:"SiteName"             default:"MyDomain"`
 	ProjectID            string `id:"ProjectID"            default:"my-appspot-project-id"`
 	CSRFKey              string `id:"CSRF_Key"             default:"my-random-32-bytes"`
@@ -282,4 +337,5 @@ type Config struct {
 	CookieStoreAuth      string `id:"CookieStoreAuth"      default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	CookieStoreEnc       string `id:"CookieStoreEnc"       default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	CSVUser              string `id:"CSVUser"              default:"special-user@example.com"`
+	GoogleCredentials    string `id:"GoogleCredentials"    default:"GoogleCredentialsJSONFile"`
 }

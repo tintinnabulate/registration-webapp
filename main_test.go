@@ -24,6 +24,7 @@ func testSetup() {
 	schemaDecoderInit()
 	translatorInit()
 	stripeInit()
+	environmentInit()
 	go mockverifier.Start(config.TestEmailAddress)
 }
 
@@ -153,7 +154,7 @@ func TestPostRegistrationHandler(t *testing.T) {
 		)
 	}
 
-	expected := "stripe-button"
+	expected := "checkout-button"
 	if !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf(
 			"unexpected body: got (%v) want (%v)",

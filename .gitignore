@@ -19,3 +19,7 @@ config.json
 
 # Vim swap files
 .*.swp
+
+# Other config files
+eurypaa2020.json
+fanjoula.json

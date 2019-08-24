@@ -41,3 +41,21 @@ type signup struct {
 	Success       bool   `json:"success"`
 	Note          string `json:"note"`
 }
+
+type user struct {
+	Email_Address      string
+	Creation_Date      time.Time
+	First_Name         string
+	Last_Name          string
+	Password           string
+	Conf_Password      string
+	Country            CountryType
+	City               string
+	Sobriety_Date      time.Time
+	Member_Of          Fellowship
+	IsServant          bool
+	IsOutreacher       bool
+	IsTshirtBuyer      bool
+	Stripe_Customer_ID string
+	Stripe_Charge_ID   string
+}
