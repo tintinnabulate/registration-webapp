@@ -1,15 +1,17 @@
 language: go
 
 go:
-  - 1.11.x
+  - 1.12.x
+
+env:
+  - GO111MODULE=on
 
 install:
-  - go get -u -v $(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' ./... | sort | uniq )
   - mkdir /tmp/sdk
-  - curl -o /tmp/sdk.zip "https://storage.googleapis.com/appengine-sdks/featured/go_appengine_sdk_linux_amd64-1.9.40.zip"
-  - unzip -q /tmp/sdk.zip -d /tmp/sdk
-  - export PATH="$PATH:/tmp/sdk/go_appengine"
-  - export APPENGINE_DEV_APPSERVER=/tmp/sdk/go_appengine/dev_appserver.py
+  - curl -o /tmp/sdk.tar.gz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-258.0.0-linux-x86_64.tar.gz"
+  - tar xzf /tmp/sdk.tar.gz -C /tmp/sdk
+  - export PATH="$PATH:/tmp/sdk/bin"
+  - go mod download
 
 script:
   - make test

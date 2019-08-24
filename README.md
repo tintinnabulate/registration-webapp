@@ -8,7 +8,7 @@ It is currently very tailored to its use in production, so it can't be used for 
 
 It runs on Google App Engine, using Google Datastore to store registrations.
 
-It depends on Go 1.9, and the Google App Engine 'stable' platform 1.9 (soon to be deprecated in favour of 1.11!)
+It depends on Go 1.12, and the Google App Engine 'stable' platform 1.12
 
 ## Features
 

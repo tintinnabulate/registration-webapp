@@ -1,34 +1,21 @@
 package main
 
-import (
-	"time"
-)
+import "time"
 
-// Email_Address is primary key
-type user struct {
-	Email_Address      string
-	Creation_Date      time.Time
-	First_Name         string
-	Last_Name          string
-	Password           string
-	Conf_Password      string
-	Country            CountryType
-	City               string
-	Sobriety_Date      time.Time
-	Member_Of          Fellowship
-	IsServant          bool
-	IsOutreacher       bool
-	IsTshirtBuyer      bool
-	Stripe_Customer_ID string
-	Stripe_Charge_ID   string
-}
-
-type registration struct {
-	ID                 int64  // pk
-	User_Email_Address string // fk
-	Convention_ID      int64  // fk
-	Creation_Date      time.Time
-	Stripe_Charge_ID   string
+type registrationForm struct {
+	Email_Address string
+	Creation_Date time.Time
+	First_Name    string
+	Last_Name     string
+	Password      string
+	Conf_Password string
+	Country       CountryType
+	City          string
+	Sobriety_Date time.Time
+	Member_Of     Fellowship
+	IsServant     Willing
+	IsOutreacher  HelpOutreach
+	IsTshirtBuyer Tshirt
 }
 
 type convention struct {
@@ -48,26 +35,27 @@ type convention struct {
 	Stripe_Product_ID string
 }
 
-// Email_Address is primary key
-type registrationForm struct {
-	Email_Address string
-	Creation_Date time.Time
-	First_Name    string
-	Last_Name     string
-	Password      string
-	Conf_Password string
-	Country       CountryType
-	City          string
-	Sobriety_Date time.Time
-	Member_Of     Fellowship
-	IsServant     Willing
-	IsOutreacher  HelpOutreach
-	IsTshirtBuyer Tshirt
-}
-
-// Signup is used to parse JSON response from the signup microservice
+// signup is used to parse JSON response from the signup microservice
 type signup struct {
 	Email_Address string `json:"address"`
 	Success       bool   `json:"success"`
 	Note          string `json:"note"`
+}
+
+type user struct {
+	Email_Address      string
+	Creation_Date      time.Time
+	First_Name         string
+	Last_Name          string
+	Password           string
+	Conf_Password      string
+	Country            CountryType
+	City               string
+	Sobriety_Date      time.Time
+	Member_Of          Fellowship
+	IsServant          bool
+	IsOutreacher       bool
+	IsTshirtBuyer      bool
+	Stripe_Customer_ID string
+	Stripe_Charge_ID   string
 }

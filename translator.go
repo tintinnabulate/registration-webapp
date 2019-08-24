@@ -11,10 +11,11 @@ import (
 type templateVars map[string]interface{}
 
 type pageInfo struct {
-	convention convention
-	email      string
-	localizer  *i18n.Localizer
-	r          *http.Request
+	convention      convention
+	email           string
+	localizer       *i18n.Localizer
+	r               *http.Request
+	stripeSessionID string
 }
 
 func getVars(i *pageInfo) templateVars {
@@ -211,8 +212,9 @@ func getVars(i *pageInfo) templateVars {
 		"Willings":              Willings,
 		"HelpOutreaches":        HelpOutreaches,
 		"Tshirts":               Tshirts,
-		"Key":                   publishableKey,
+		"Key":                   stripePublishableKey,
 		csrf.TemplateTag:        csrf.TemplateField(i.r),
 		"Email":                 i.email,
+		"StripeSessionID":       i.stripeSessionID,
 	}
 }
