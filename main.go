@@ -246,8 +246,8 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 	tmpl.Execute(w, getVars(page))
 }
 
-// getSignupHandler : (route) show the signup form (this is config.SignupURL)
-func getSignupHandler(w http.ResponseWriter, r *http.Request) {
+// getSuccessHandler: (route) show the success message (this is config.SuccessURL)
+func getSuccessHandler(w http.ResponseWriter, r *http.Request) {
 	c, err := getLatestConvention(r.Context())
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
