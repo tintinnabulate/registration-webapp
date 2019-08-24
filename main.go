@@ -70,6 +70,7 @@ func createHTTPRouter() *mux.Router {
 	appRouter.HandleFunc("/signup", postSignupHandler).Methods("POST")
 	appRouter.HandleFunc("/register", getRegistrationFormHandler).Methods("GET")
 	appRouter.HandleFunc("/register", postRegistrationFormHandler).Methods("POST")
+	appRouter.HandleFunc("/success", getSuccessHandler).Methods("POST")
 	return appRouter
 }
 
@@ -204,7 +205,7 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 				Quantity:    stripe.Int64(1),
 			},
 		},
-		SuccessURL: stripe.String(config.SignupURL),
+		SuccessURL: stripe.String(config.SuccessURL),
 		CancelURL:  stripe.String(config.SignupURL),
 	}
 
@@ -242,6 +243,21 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 		localizer:  getLocalizer(r), r: r,
 		stripeSessionID: ss.ID,
 	}
+	tmpl.Execute(w, getVars(page))
+}
+
+// getSignupHandler : (route) show the signup form (this is config.SignupURL)
+func getSignupHandler(w http.ResponseWriter, r *http.Request) {
+	c, err := getLatestConvention(r.Context())
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get latest convention: %v", err), http.StatusInternalServerError)
+		return
+	}
+	tmpl := templates.Lookup("registration_successful.tmpl")
+	page := &pageInfo{
+		convention: c,
+		localizer:  getLocalizer(r),
+		r:          r}
 	tmpl.Execute(w, getVars(page))
 }
 
@@ -338,4 +354,5 @@ type Config struct {
 	CookieStoreEnc       string `id:"CookieStoreEnc"       default:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	CSVUser              string `id:"CSVUser"              default:"special-user@example.com"`
 	GoogleCredentials    string `id:"GoogleCredentials"    default:"GoogleCredentialsJSONFile"`
+	SuccessURL           string `id:"SuccessURL"           default:"this-apps-payment-success-url.com/success"`
 }

@@ -11,5 +11,6 @@
     "StripeTestSK":         "sk_test_kzWkPqNtEvHzjFGLZhsaCMck",
     "TestEmailAddress":     "foo@example.com",
     "CSVUser":              "user_accessing_csv@gmail.com",
-    "GoogleCredentials":    "fanjoula.json"
+    "GoogleCredentials":    "fanjoula.json",
+    "SuccessURL":           "https://fanjoula.appspot.com/success"
 }
