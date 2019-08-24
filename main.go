@@ -70,7 +70,7 @@ func createHTTPRouter() *mux.Router {
 	appRouter.HandleFunc("/signup", postSignupHandler).Methods("POST")
 	appRouter.HandleFunc("/register", getRegistrationFormHandler).Methods("GET")
 	appRouter.HandleFunc("/register", postRegistrationFormHandler).Methods("POST")
-	appRouter.HandleFunc("/success", getSuccessHandler).Methods("POST")
+	appRouter.HandleFunc("/success", getSuccessHandler).Methods("GET")
 	return appRouter
 }
 
