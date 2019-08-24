@@ -66,6 +66,7 @@ func main() {
 // createHTTPRouter : all of the routes that the web application handles
 func createHTTPRouter() *mux.Router {
 	appRouter := mux.NewRouter()
+	appRouter.HandleFunc("/", getSignupHandler).Methods("GET")
 	appRouter.HandleFunc("/signup", getSignupHandler).Methods("GET")
 	appRouter.HandleFunc("/signup", postSignupHandler).Methods("POST")
 	appRouter.HandleFunc("/register", getRegistrationFormHandler).Methods("GET")
