@@ -10,12 +10,12 @@ import (
 
 func getLatestConvention(context context.Context) (convention, error) {
 	return convention{
-		Name:              "Name",
+		Name:              "EURYPAA",
 		Creation_Date:     time.Now(),
-		Year:              2019,
-		Country:           Albania_,
-		City:              "City",
-		Cost:              2000,
+		Year:              2020,
+		Country:           Poland_,
+		City:              "Warsaw",
+		Cost:              1500,
 		Currency_Code:     "EUR",
 		Start_Date:        time.Now(),
 		End_Date:          time.Now(),
