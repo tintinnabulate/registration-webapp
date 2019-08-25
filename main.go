@@ -34,10 +34,10 @@ var (
 
 // init : initialize applicaiton
 func init() {
-	// Set up environment variables
-	environmentInit()
 	// Load configuration from config file
 	configInit("config.json")
+	// Set up environment variables
+	environmentInit()
 	// Load HTML templates from templates directory
 	templatesInit()
 	// Create a form decoder for parsing user form data

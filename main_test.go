@@ -19,8 +19,8 @@ func TestMain(m *testing.M) {
 }
 
 func testSetup() {
-	environmentInit()
 	configInit("config.example.json")
+	environmentInit()
 	templatesInit()
 	schemaDecoderInit()
 	translatorInit()
