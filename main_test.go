@@ -19,12 +19,12 @@ func TestMain(m *testing.M) {
 }
 
 func testSetup() {
+	environmentInit()
 	configInit("config.example.json")
 	templatesInit()
 	schemaDecoderInit()
 	translatorInit()
 	stripeInit()
-	environmentInit()
 	go mockverifier.Start(config.TestEmailAddress)
 }
 

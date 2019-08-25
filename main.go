@@ -34,6 +34,8 @@ var (
 
 // init : initialize applicaiton
 func init() {
+	// Set up environment variables
+	environmentInit()
 	// Load configuration from config file
 	configInit("config.json")
 	// Load HTML templates from templates directory
@@ -46,8 +48,6 @@ func init() {
 	routerInit()
 	// Set up Stripe payment platform
 	stripeInit()
-	// Set up environment variables
-	environmentInit()
 }
 
 // main : main entry point to application
