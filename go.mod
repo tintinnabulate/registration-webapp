@@ -6,6 +6,8 @@ require (
 	cloud.google.com/go v0.44.3 // indirect
 	cloud.google.com/go/datastore v1.0.0
 	github.com/BurntSushi/toml v0.3.1
+	github.com/go-critic/go-critic v0.3.4 // indirect
+	github.com/go-lintpack/lintpack v0.5.2 // indirect
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/google/pprof v0.0.0-20190723021845-34ac40c74b70 // indirect
 	github.com/gorilla/csrf v1.6.0
