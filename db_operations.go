@@ -6,24 +6,31 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"google.golang.org/api/iterator"
 )
 
-func getLatestConvention(context context.Context) (convention, error) {
-	return convention{
-		Name:              "EURYPAA",
-		Creation_Date:     time.Now(),
-		Year:              2020,
-		Country:           Poland_,
-		City:              "Warsaw",
-		Cost:              1500,
-		Currency_Code:     "EUR",
-		Start_Date:        time.Now(),
-		End_Date:          time.Now(),
-		Hotel:             "Hotel",
-		Hotel_Is_Venue:    false,
-		Venue:             "Venue",
-		Stripe_Product_ID: "Stripe_Product_ID",
-	}, nil
+func getLatestConvention(ctx context.Context) (convention, error) {
+	var theConvention convention
+	client, err := datastore.NewClient(ctx, config.ProjectID)
+	if err != nil {
+		return convention{}, fmt.Errorf("could not create datastore client: %v", err)
+	}
+
+	query := datastore.NewQuery("Convention").
+		Order("-Creation_Date")
+
+	it := client.Run(ctx, query)
+	for {
+		_, err := it.Next(&theConvention)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return convention{}, fmt.Errorf("convention not in DB: %v", err)
+		}
+		return theConvention, nil
+	}
+	return convention{}, fmt.Errorf("no conventions not in DB: %v", err)
 }
 
 // addUser : adds user to User table
