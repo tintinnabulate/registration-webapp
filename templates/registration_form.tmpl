@@ -84,15 +84,6 @@
                   Please select a valid option.
                 </div>
               </div>
-              <div class="col-md-6 mb-3">
-                <label for="IsTshirtBuyer">{{ .frmGetTshirt }}</label>
-                <select name="IsTshirtBuyer" id="IsTshirtBuyer" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $tshirt := .Tshirts }}
-                  <option value="{{ inc $i }}">{{ $tshirt }}</option>{{ end }}
-                </select>
-                <div class="invalid-feedback">
-                  Please select a valid option.
-                </div>
-              </div>
             </div>
 
             <hr class="mb-4">

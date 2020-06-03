@@ -227,7 +227,6 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 		Member_Of:          regform.Member_Of,
 		IsServant:          regform.IsServant == Yes_Willing,
 		IsOutreacher:       regform.IsOutreacher == Yes_Help_Outreach,
-		IsTshirtBuyer:      regform.IsTshirtBuyer == Yes_T_Shirt_Please,
 		Stripe_Customer_ID: "",
 		Stripe_Charge_ID:   ss.PaymentIntent.ID,
 	}

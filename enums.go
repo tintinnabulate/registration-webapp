@@ -639,19 +639,3 @@ var HelpOutreaches = []HelpOutreach{
 	Yes_Help_Outreach,
 	No_Thanks,
 }
-
-// Tshirt : whether or not someone is willing to do service
-//go:generate strunger -type=Tshirt
-type Tshirt int
-
-// T_Shirt_Please : start of tshirt enumeration
-const (
-	Yes_T_Shirt_Please Tshirt = iota + 1
-	No_T_Shirt
-)
-
-// Tshirts : all the tshirts
-var Tshirts = []Tshirt{
-	Yes_T_Shirt_Please,
-	No_T_Shirt,
-}

@@ -15,7 +15,6 @@ type registrationForm struct {
 	Member_Of     Fellowship
 	IsServant     Willing
 	IsOutreacher  HelpOutreach
-	IsTshirtBuyer Tshirt
 }
 
 type convention struct {
@@ -55,7 +54,6 @@ type user struct {
 	Member_Of          Fellowship
 	IsServant          bool
 	IsOutreacher       bool
-	IsTshirtBuyer      bool
 	Stripe_Customer_ID string
 	Stripe_Charge_ID   string
 }
