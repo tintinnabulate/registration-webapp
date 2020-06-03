@@ -539,6 +539,7 @@ const (
 	Sweden_
 	Turkey_
 	United_Kingdom_
+	Online_
 )
 
 var EURYPAA_Countries = []EURYPAA_Country{
@@ -588,6 +589,7 @@ var EURYPAA_Countries = []EURYPAA_Country{
 	Sweden_,
 	Turkey_,
 	United_Kingdom_,
+	Online_,
 }
 
 // Fellowship : which fellowship someone belongs to
