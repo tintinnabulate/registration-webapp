@@ -218,15 +218,8 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 
 	user := &user{
 		First_Name:         regform.First_Name,
-		Last_Name:          regform.Last_Name,
 		Email_Address:      regform.Email_Address,
-		Password:           regform.Password,
-		Country:            regform.Country,
-		City:               regform.City,
-		Sobriety_Date:      regform.Sobriety_Date,
 		Member_Of:          regform.Member_Of,
-		IsServant:          regform.IsServant == Yes_Willing,
-		IsOutreacher:       regform.IsOutreacher == Yes_Help_Outreach,
 		Stripe_Customer_ID: "",
 		Stripe_Charge_ID:   ss.PaymentIntent.ID,
 	}
