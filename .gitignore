@@ -16,12 +16,12 @@ index.yaml
 
 # App config file
 config.json
-it_config.json
+config.json.2021
 
 # Vim swap files
 .*.swp
 
 # Other config files
+eurypaa2021.json
 eurypaa2020.json
 fanjoula.json
-italy2020.json
