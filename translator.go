@@ -54,18 +54,6 @@ func getVars(i *pageInfo) templateVars {
 			"Currency":  i.convention.Currency_Code,
 		},
 	})
-	frmCity := i.localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "frmCity",
-			Other: "City",
-		},
-	})
-	frmCountry := i.localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "frmCountry",
-			Other: "Country",
-		},
-	})
 	frmEnterEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "frmEnterEmail",
@@ -76,12 +64,6 @@ func getVars(i *pageInfo) templateVars {
 		DefaultMessage: &i18n.Message{
 			ID:    "frmFirstName",
 			Other: "First name",
-		},
-	})
-	frmILiveIn := i.localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "frmILiveIn",
-			Other: "I live in...",
 		},
 	})
 	frmPaymentDetails := i.localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -106,18 +88,6 @@ func getVars(i *pageInfo) templateVars {
 		DefaultMessage: &i18n.Message{
 			ID:    "frmWhoAreYou",
 			Other: "Who are you? Member of AA, Al-Anon or Guest?",
-		},
-	})
-	frmWillingService := i.localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "frmWillingService",
-			Other: "Are you willing to be of service at the convention?",
-		},
-	})
-	frmHelpOutreach := i.localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "frmHelpOutreach",
-			Other: "Do you want to help outreach the convention?",
 		},
 	})
 	pgCheckEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{

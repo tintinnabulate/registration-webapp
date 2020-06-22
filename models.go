@@ -3,6 +3,7 @@ package main
 import "time"
 
 type registrationForm struct {
+    First_Name    string
 	Email_Address string
 	Creation_Date time.Time
 	Member_Of     Fellowship
