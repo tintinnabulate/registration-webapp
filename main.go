@@ -199,8 +199,8 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 		}),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			&stripe.CheckoutSessionLineItemParams{
-				Name:        stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
-				Description: stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
+				Name:        stripe.String(fmt.Sprintf("%s Donation", convention.Name)),
+				Description: stripe.String(fmt.Sprintf("%s Donation", convention.Name)),
 				Amount:      stripe.Int64(int64(regform.Donation_Amount * 100)),
 				Currency:    stripe.String(string(convention.Currency_Code)),
 				Quantity:    stripe.Int64(1),
@@ -236,6 +236,7 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 		email:      regform.Email_Address,
 		localizer:  getLocalizer(r), r: r,
 		stripeSessionID: ss.ID,
+		donationAmount:  regform.Donation_Amount * 100,
 	}
 	tmpl.Execute(w, getVars(page))
 }

@@ -16,6 +16,7 @@ type pageInfo struct {
 	localizer       *i18n.Localizer
 	r               *http.Request
 	stripeSessionID string
+	donationAmount  int
 }
 
 func getVars(i *pageInfo) templateVars {
@@ -23,7 +24,7 @@ func getVars(i *pageInfo) templateVars {
 	btnCompletePayment := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "btnCompletePayment",
-			Other: "Complete payment to Register",
+			Other: "Complete payment to donate",
 		},
 	})
 	btnSendVerifEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -108,13 +109,13 @@ func getVars(i *pageInfo) templateVars {
 	pgNowRegistered := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "pgNowRegistered",
-			Other: "You are now registered!",
+			Other: "You have now donated! Thank you for your donation :)",
 		},
 	})
 	pgRegisterFor := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "pgRegisterFor",
-			Other: "Register for {{ .Name }}",
+			Other: "Donate to {{ .Name }}",
 		},
 		TemplateData: map[string]string{
 			"Name": i.convention.Name,
@@ -123,7 +124,7 @@ func getVars(i *pageInfo) templateVars {
 	pgRegisteredFor := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "pgRegisteredFor",
-			Other: "Registered for {{ .Name }}",
+			Other: "Donated to {{ .Name }}",
 		},
 		TemplateData: map[string]string{
 			"Name": i.convention.Name,
@@ -171,6 +172,7 @@ func getVars(i *pageInfo) templateVars {
 		"Name":                  i.convention.Name,
 		"Cost":                  i.convention.Cost,
 		"CostPrint":             i.convention.Cost / 100,
+		"DonationAmount":        i.donationAmount / 100,
 		"Currency":              i.convention.Currency_Code,
 		"Year":                  i.convention.Year,
 		"City":                  i.convention.City,
