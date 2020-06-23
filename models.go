@@ -3,10 +3,11 @@ package main
 import "time"
 
 type registrationForm struct {
-    First_Name    string
-	Email_Address string
-	Creation_Date time.Time
-	Member_Of     Fellowship
+	First_Name      string
+	Email_Address   string
+	Creation_Date   time.Time
+	Member_Of       Fellowship
+	Donation_Amount int
 }
 
 type convention struct {
@@ -38,6 +39,7 @@ type user struct {
 	Creation_Date      time.Time
 	First_Name         string
 	Member_Of          Fellowship
+	Donation_Amount    int
 	Stripe_Customer_ID string
 	Stripe_Charge_ID   string
 }

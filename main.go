@@ -201,7 +201,7 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 			&stripe.CheckoutSessionLineItemParams{
 				Name:        stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
 				Description: stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
-				Amount:      stripe.Int64(int64(convention.Cost)),
+				Amount:      stripe.Int64(int64(regform.Donation_Amount * 100)),
 				Currency:    stripe.String(string(convention.Currency_Code)),
 				Quantity:    stripe.Int64(1),
 			},
@@ -220,6 +220,7 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 		First_Name:         regform.First_Name,
 		Email_Address:      regform.Email_Address,
 		Member_Of:          regform.Member_Of,
+		Donation_Amount:    regform.Donation_Amount * 100,
 		Stripe_Customer_ID: "",
 		Stripe_Charge_ID:   ss.PaymentIntent.ID,
 	}

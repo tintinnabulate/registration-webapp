@@ -21,3 +21,4 @@ valSameEmail = "Please enter a valid email address so we can send you convention
 frmWhoAreYou = "Who are you? Member of AA, Al-Anon or Guest?"
 frmWillingService = "Are you willing to be of service at the convention?"
 frmHelpOutreach = "Do you want to help outreach the convention?"
+frmDonationAmount = "Donation amount ({{ .Currency }})"

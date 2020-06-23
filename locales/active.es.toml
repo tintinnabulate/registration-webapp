@@ -21,3 +21,4 @@ valSameEmail = "Ingresa una dirección de correo electrónico válida para que p
 frmWhoAreYou = "¿Quién eres? ¿Miembro de AA, Al-Anon o invitado?" 
 frmWillingService = "¿Quieres hacer servicio en la convención?" 
 frmHelpOutreach = "¿Quieres ayudar a promocionar el evento?"
+frmDonationAmount = "Monto de donación ({{.Currency}})"

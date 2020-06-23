@@ -14,6 +14,7 @@ require (
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/stripe/stripe-go v62.1.1+incompatible
 	github.com/tintinnabulate/gonfig v0.1.1
+	github.com/tintinnabulate/strunger v0.0.0-20190724225612-545ac0d1f06d // indirect
 	github.com/tintinnabulate/vmail v0.0.0-20190818215020-3cfca7b893a0
 	golang.org/x/text v0.3.2
 	google.golang.org/api v0.24.0

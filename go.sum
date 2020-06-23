@@ -143,6 +143,8 @@ github.com/stripe/stripe-go v62.1.1+incompatible h1:uOFSOyBRPVXee0/mGThu6PIhoFrc
 github.com/stripe/stripe-go v62.1.1+incompatible/go.mod h1:A1dQZmO/QypXmsL0T8axYZkSN/uA/T/A64pfKdBAMiY=
 github.com/tintinnabulate/gonfig v0.1.1 h1:Nckg9lh2lmVaQnC9WQUQCDcRio/lyz0O1K5DQamm6Rs=
 github.com/tintinnabulate/gonfig v0.1.1/go.mod h1:37ZxjBXIpxiteFnAAoENipkAjbOprTeBddUiZpl9GVs=
+github.com/tintinnabulate/strunger v0.0.0-20190724225612-545ac0d1f06d h1:zxl0l+CYMZYI+cTJTnOWugakSry2LnKGF7Sx0eeayeY=
+github.com/tintinnabulate/strunger v0.0.0-20190724225612-545ac0d1f06d/go.mod h1:FFNXrEowCWqCzCoBELmToSY8ZN1qXeFiBK09bAD5zLE=
 github.com/tintinnabulate/vmail v0.0.0-20190818215020-3cfca7b893a0 h1:RoJ+kMZKLaRDVTgrjQfH/gygSBaShs9TIuLTkWCKMcU=
 github.com/tintinnabulate/vmail v0.0.0-20190818215020-3cfca7b893a0/go.mod h1:bm5xPdlY/rzAJmKljJYZppPBJNdjyAcxo9CopKIZalk=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

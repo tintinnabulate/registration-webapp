@@ -66,6 +66,15 @@ func getVars(i *pageInfo) templateVars {
 			Other: "First name",
 		},
 	})
+	frmDonationAmount := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmDonationAmount",
+			Other: "Amount to donate ({{ .Currency }})",
+		},
+		TemplateData: map[string]string{
+			"Currency": i.convention.Currency_Code,
+		},
+	})
 	frmPaymentDetails := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "frmPaymentDetails",
@@ -145,6 +154,7 @@ func getVars(i *pageInfo) templateVars {
 		"btnSendVerifEmail":     btnSendVerifEmail,
 		"errProcessPayment":     errProcessPayment,
 		"frmAmount":             frmAmount,
+		"frmDonationAmount":     frmDonationAmount,
 		"frmEnterEmail":         frmEnterEmail,
 		"frmFirstName":          frmFirstName,
 		"frmPaymentDetails":     frmPaymentDetails,
