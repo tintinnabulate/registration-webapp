@@ -7,7 +7,7 @@ type registrationForm struct {
 	Email_Address   string
 	Creation_Date   time.Time
 	Member_Of       Fellowship
-	Donation_Amount int
+	Donation_Amount float32
 }
 
 type convention struct {
@@ -39,7 +39,7 @@ type user struct {
 	Creation_Date      time.Time
 	First_Name         string
 	Member_Of          Fellowship
-	Donation_Amount    int
+	Donation_Amount    int64
 	Stripe_Customer_ID string
 	Stripe_Charge_ID   string
 }
