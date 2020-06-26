@@ -16,7 +16,7 @@ type pageInfo struct {
 	localizer       *i18n.Localizer
 	r               *http.Request
 	stripeSessionID string
-	donationAmount  int
+	donationAmount  float32
 }
 
 func getVars(i *pageInfo) templateVars {
@@ -172,7 +172,7 @@ func getVars(i *pageInfo) templateVars {
 		"Name":                  i.convention.Name,
 		"Cost":                  i.convention.Cost,
 		"CostPrint":             i.convention.Cost / 100,
-		"DonationAmount":        i.donationAmount / 100,
+		"DonationAmount":        i.donationAmount,
 		"Currency":              i.convention.Currency_Code,
 		"Year":                  i.convention.Year,
 		"City":                  i.convention.City,
