@@ -36,7 +36,7 @@ func getVars(i *pageInfo) templateVars {
 	btnContinueToCheckout := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "btnContinueToCheckout",
-			Other: "Continue to checkout",
+			Other: "Click to Donate",
 		},
 	})
 	errProcessPayment := i.localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -85,7 +85,7 @@ func getVars(i *pageInfo) templateVars {
 	frmSameEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "frmSameEmail",
-			Other: "Email - use the same one you verified with",
+			Other: "Your email address",
 		},
 	})
 	frmYourDetails := i.localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -98,6 +98,12 @@ func getVars(i *pageInfo) templateVars {
 		DefaultMessage: &i18n.Message{
 			ID:    "frmWhoAreYou",
 			Other: "Who are you? Member of AA, Al-Anon or Guest?",
+		},
+	})
+	frmTraditionSeven := i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "frmTraditionSeven",
+			Other: "AA is fully self-supporting declining outside contributions. In keeping with Tradition 7, EURYPAA can only accept donations from AA members - please only donate if you are a member of AA.",
 		},
 	})
 	pgCheckEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -162,6 +168,7 @@ func getVars(i *pageInfo) templateVars {
 		"frmSameEmail":          frmSameEmail,
 		"frmYourDetails":        frmYourDetails,
 		"frmWhoAreYou":          frmWhoAreYou,
+		"frmTraditionSeven":     frmTraditionSeven,
 		"pgCheckEmail":          pgCheckEmail,
 		"pgNowRegistered":       pgNowRegistered,
 		"pgRegisterFor":         pgRegisterFor,
