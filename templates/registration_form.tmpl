@@ -42,24 +42,19 @@
             <div class="row">
 
               <div class="col-md-6 mb-3">
-                <label for="Member_Of">{{.frmWhoAreYou}}</label>
-                <select name="Member_Of" id="Member_Of" class="custom-select d-block w-100 form-control medium valid">{{ range $i, $fellowship := .Fellowships }}
-                  <option value="{{ inc $i }}">{{ $fellowship }}</option>{{ end }}
-                </select>
-                <div class="invalid-feedback">
-                  Please select a valid fellowship.
-                </div>
+                <label for="Donation_Amount">{{.frmDonationAmount}}</label>
+                <input type="number" class="form-control required" id="Donation_Amount" name="Donation_Amount" placeholder="{{.frmDonationAmount}}" value="3" required>
               </div>
 
               <div class="col-md-6 mb-3">
-                <label for="Donation_Amount">{{.frmDonationAmount}}</label>
-                <input type="number" class="form-control required" id="Donation_Amount" name="Donation_Amount" placeholder="3" value="3" required>
+                <label for="clickToDonate">{{.btnContinueToCheckout}}</label>
+                <button class="btn btn-primary btn-lg btn-block" type="submit">{{.btnContinueToCheckout}}</button>
               </div>
 
             </div>
 
-            <hr class="mb-4">
-            <button class="btn btn-primary btn-lg btn-block" type="submit">{{.btnContinueToCheckout}}</button>
+            {{.frmTraditionSeven}}
+
           </form>
         </div>
       </div>
