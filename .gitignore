@@ -24,4 +24,7 @@ config.json.2021
 # Other config files
 eurypaa2021.json
 eurypaa2020.json
-#fanjoula.json
+fanjoula.json
+
+# Secrets
+secrets.tar
