@@ -3,6 +3,10 @@ go:
 - 1.12.x
 env:
 - GO111MODULE=on
+before_install:
+- openssl aes-256-cbc -K $encrypted_3b9f0b9d36d1_key -iv $encrypted_3b9f0b9d36d1_iv
+  -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
 install:
 - mkdir /tmp/sdk
 - curl -o /tmp/sdk.tar.gz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-258.0.0-linux-x86_64.tar.gz"
@@ -11,7 +15,3 @@ install:
 - go mod download
 script:
 - make test
-before_install:
-- openssl aes-256-cbc -K $encrypted_3b9f0b9d36d1_key -iv $encrypted_3b9f0b9d36d1_iv
-  -in secrets.tar.enc -out secrets.tar -d
-- tar xvf secrets.tar
