@@ -31,10 +31,9 @@ func testSetup() {
 func TestPostRegistrationHandler(t *testing.T) {
 
 	formData := url.Values{}
-	formData.Set("Email_Address", config.TestEmailAddress)
-	formData.Set("Country", "1")
-	formData.Set("City", "Foo")
 	formData.Set("First_Name", "Bar")
+	formData.Set("Email_Address", config.TestEmailAddress)
+	formData.Set("Donation_Amount", "3")
 
 	req, err := http.NewRequest("POST", "/register", strings.NewReader(formData.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -85,7 +84,7 @@ func TestGetRegistrationHandler(t *testing.T) {
 		)
 	}
 
-	expected := "Do you want to help outreach the convention?"
+	expected := "Amount to donate"
 	if !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf(
 			"unexpected body: got (%v) want (%v)",
@@ -115,7 +114,7 @@ func TestGetRegistrationHandlerSpanish(t *testing.T) {
 		)
 	}
 
-	expected := "¿Quieres ayudar a promocionar el evento?"
+	expected := "Monto de donación"
 	if !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf(
 			"unexpected body: got (%v) want (%v)",
