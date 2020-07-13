@@ -154,7 +154,7 @@ func TestPostRegistrationHandler(t *testing.T) {
 		)
 	}
 
-	expected := "checkout-button"
+	expected := "Amount 20"
 	if !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf(
 			"unexpected body: got (%v) want (%v)",
