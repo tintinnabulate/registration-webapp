@@ -2,6 +2,10 @@ all:
 	# launch dev version of app on localhost
 	staticcheck ./...
 	go run .
+docker:
+	docker build -t my-golang-app .
+	docker run -it --rm --name my-running-app my-golang-app
+
 test:
 	# verbose mode, get code coverage, check for race conditions, on all *_test.go files in this package
 	go test -v -cover -race ./...
