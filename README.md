@@ -38,3 +38,10 @@ A user can take the following steps through the registration process:
 2. Take payment. If successful payment, GOTO (4), else GOTO (1).
 3. Redirect to signup page
 4. Store user object in Registrations database.
+
+## Contributing
+
+There is a Dockerfile which sets up a docker image to run the test suite. 
+
+If you are familiar with Docker, you can also use this docker image to set up a
+development environment.
