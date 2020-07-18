@@ -31,4 +31,4 @@ COPY --from=builder /app/config.example.json .
 COPY --from=builder /app/fanjoula.json .
 
 # run testsuite
-CMD ["./main.test -test.v"]
+ENTRYPOINT ["./main.test"]
