@@ -14,10 +14,8 @@ RUN CGO_ENABLED=1 GOOS=linux GOPROXY=https://proxy.golang.org go test -c -o main
 
 ############ start a new stage from scratch ############
 
-FROM google/cloud-sdk:alpine as alpine
+FROM google/cloud-sdk:alpine
 RUN apk --no-cache add ca-certificates
-# gcompat is necessary for libc
-RUN apk update && apk add --no-cache gcompat
 WORKDIR /root/
 
 # copy the built test binary into the docker container
