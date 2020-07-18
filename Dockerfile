@@ -20,15 +20,15 @@ RUN apk --no-cache add ca-certificates
 RUN apk update && apk add --no-cache gcompat
 WORKDIR /root/
 
-# copy the test binary into the docker container
+# copy the built test binary into the docker container
 COPY --from=builder /app/main.test .
 
 # copy necessary environment files
-COPY --from=builder /app/templates ./templates
-COPY --from=builder /app/locales ./locales
-COPY --from=builder /app/config.example.json .
+COPY ./templates ./templates
+COPY ./locales ./locales
+COPY config.example.json .
 # TODO: can we remove the need for this?
-COPY --from=builder /app/fanjoula.json .
+COPY fanjoula.json .
 
 # run testsuite
 ENTRYPOINT ["./main.test"]
