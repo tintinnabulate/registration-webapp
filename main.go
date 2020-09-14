@@ -185,6 +185,21 @@ func postRegistrationFormHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func buildDescription(r *registrationForm) string {
+	description := ""
+
+	description += r.First_Name + ", "
+	description += r.Email_Address + ", "
+	description += "Tshirt? " + r.IsTshirtBuyer.String() + ", "
+	description += "From: " + (r.Country + 2).String() + ", "
+	description += r.City + ", "
+	description += "Fellowship: " + r.Member_Of.String() + ", "
+	description += "Helper? " + r.IsServant.String() + ", "
+	description += "Outreach? " + r.IsOutreacher.String() + "."
+
+	return description
+}
+
 func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrationForm) {
 	convention, err := getLatestConvention(r.Context())
 	if err != nil {
@@ -200,7 +215,7 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			&stripe.CheckoutSessionLineItemParams{
 				Name:        stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
-				Description: stripe.String(fmt.Sprintf("%s Registration", convention.Name)),
+				Description: stripe.String(buildDescription(regform)),
 				Amount:      stripe.Int64(int64(convention.Cost)),
 				Currency:    stripe.String(string(convention.Currency_Code)),
 				Quantity:    stripe.Int64(1),
@@ -221,7 +236,7 @@ func showPaymentForm(w http.ResponseWriter, r *http.Request, regform *registrati
 		Last_Name:          regform.Last_Name,
 		Email_Address:      regform.Email_Address,
 		Password:           regform.Password,
-		Country:            regform.Country,
+		Country:            regform.Country + 2,
 		City:               regform.City,
 		Sobriety_Date:      regform.Sobriety_Date,
 		Member_Of:          regform.Member_Of,
