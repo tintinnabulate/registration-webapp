@@ -120,12 +120,6 @@ func getVars(i *pageInfo) templateVars {
 			Other: "Do you want to help outreach the convention?",
 		},
 	})
-	frmGetTshirt := i.localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "frmGetTshirt",
-			Other: "Would you be interested to get convention T-shirts?",
-		},
-	})
 	pgCheckEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "pgCheckEmail",
@@ -192,7 +186,6 @@ func getVars(i *pageInfo) templateVars {
 		"frmWhoAreYou":          frmWhoAreYou,
 		"frmWillingService":     frmWillingService,
 		"frmHelpOutreach":       frmHelpOutreach,
-		"frmGetTshirt":          frmGetTshirt,
 		"pgCheckEmail":          pgCheckEmail,
 		"pgNowRegistered":       pgNowRegistered,
 		"pgRegisterFor":         pgRegisterFor,
@@ -211,7 +204,6 @@ func getVars(i *pageInfo) templateVars {
 		"Fellowships":           Fellowships,
 		"Willings":              Willings,
 		"HelpOutreaches":        HelpOutreaches,
-		"Tshirts":               Tshirts,
 		"Key":                   stripePublishableKey,
 		csrf.TemplateTag:        csrf.TemplateField(i.r),
 		"Email":                 i.email,
