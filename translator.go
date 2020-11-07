@@ -103,7 +103,7 @@ func getVars(i *pageInfo) templateVars {
 	frmTraditionSeven := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID:    "frmTraditionSeven",
-			Other: "AA is fully self-supporting declining outside contributions. In keeping with Tradition 7, EURYPAA can only accept donations from AA members - please only donate if you are a member of AA.",
+			Other: "AA is fully self-supporting declining outside contributions. In keeping with Tradition 7, {{ .Name }} can only accept donations from AA members - please only donate if you are a member of AA.",
 		},
 	})
 	pgCheckEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
