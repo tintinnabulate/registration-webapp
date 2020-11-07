@@ -105,6 +105,9 @@ func getVars(i *pageInfo) templateVars {
 			ID:    "frmTraditionSeven",
 			Other: "AA is fully self-supporting declining outside contributions. In keeping with Tradition 7, {{ .Name }} can only accept donations from AA members - please only donate if you are a member of AA.",
 		},
+		TemplateData: map[string]string{
+			"Name": i.convention.Name,
+		},
 	})
 	pgCheckEmail := i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
