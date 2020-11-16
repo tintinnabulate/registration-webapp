@@ -23,8 +23,12 @@ it_config.json
 .*.swp
 
 # Other config files
+eurypaa2021.json
 eurypaa2020.json
 eurypaa2021.json
 scancypaa2020.json
 fanjoula.json
 italy2020.json
+
+# Secrets
+secrets.tar
